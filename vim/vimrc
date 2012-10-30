@@ -1,0 +1,83 @@
+set t_Co=256
+set nocp
+
+set softtabstop=4
+set shiftwidth=4
+set autoindent
+set hidden	    "buffers keep change history
+set scrolloff=3	    "keep 3 lines below and above cursor
+
+" filetype plugins
+filetype on
+filetype plugin on
+filetype plugin indent on
+
+" Display
+set number
+:syntax on
+set background=dark
+colorscheme BusyBee
+"colorscheme herald
+set foldmethod=indent
+set foldlevel=100
+set nowrap
+set hlsearch
+set cursorline
+
+" Autocomplete features in the status bar
+set wildmenu
+
+"""" Djagno snippets
+autocmd FileType python set ft=python.django
+autocmd FileType html set ft=htmldjango.html
+
+"""" MiniBufExplorer
+let g:miniBufExplMapWindowNavVim = 1
+let g:miniBufExplMapWindowNavArrows = 1
+let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplModSelTarget = 1 
+
+"""" SuperTab
+let g:SuperTabDefaultCompletionType = 'context'
+
+"""" TagList
+let Tlist_WinWidth = 50
+let Tlist_Exit_OnlyWindow = 1
+let Tlist_GainFocus_On_ToggleOpen = 1
+let Tlist_File_Fold_Auto_Close = 1
+let Tlist_Close_On_Select = 1
+let Tlist_Sort_Type = 'name'
+"map P :TlistToggle<CR>
+map <F8> :TlistToggle<CR>
+
+"""" TaskList
+map T :TaskList<CR>
+
+"""" NERDTree
+let NERDTreeQuitOnOpen = 1
+let NERDTreeWinSize = 50
+let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
+map F :NERDTreeToggle<CR>
+"map ob :NERDTreeFromBookmark 
+
+"""" BufExplorer
+map <F2> :BufExplorer<CR>
+
+"""" Key Mappings
+" bind ctrl+space for omnicompletion
+inoremap <Nul> <C-x><C-o>
+" Use tab and shift-tab to indent in normal mode
+"nmap <Tab> >>
+"nmap <S-Tab> <<
+" Code folding toggle
+nmap <CR> za 
+" git diff
+nnoremap <silent> <F10> :w<CR>:!git diff %<CR>
+" bash
+nnoremap <silent> <F3> :w<CR>:!zsh<CR>
+
+"""" Trac Servers
+let g:tracServerList = {}
+" let g:tracServerList['(Server Name)'] = 'http://(user):(password)@(trac serverpath)/login/xmlrpc' 
+
+call pathogen#infect()
