@@ -27,9 +27,15 @@ set cursorline
 " Autocomplete features in the status bar
 set wildmenu
 
+set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P\ %{fugitive#statusline()}
+"set statusline=%{fugitive#statusline()}
+
 """" Djagno snippets
 autocmd FileType python set ft=python.django
 autocmd FileType html set ft=htmldjango.html
+
+"""" PySmell
+"autocmd FileType python setlocal omnifunc=pysmell#Complete
 
 """" MiniBufExplorer
 let g:miniBufExplMapWindowNavVim = 1
@@ -39,6 +45,10 @@ let g:miniBufExplModSelTarget = 1
 
 """" SuperTab
 let g:SuperTabDefaultCompletionType = 'context'
+"let g:SuperTabDefaultCompletionType = "<C-x><C-o>"
+
+"""" completion menu tweaks
+set completeopt=longest,menuone
 
 """" TagList
 let Tlist_WinWidth = 50
@@ -59,6 +69,10 @@ let NERDTreeWinSize = 50
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
 map F :NERDTreeToggle<CR>
 "map ob :NERDTreeFromBookmark 
+
+"""" Rope
+map <leader>j :RopeGotoDefinition<CR>
+map <leader>r :RopeRename<CR>
 
 """" BufExplorer
 map <F2> :BufExplorer<CR>
@@ -81,3 +95,15 @@ let g:tracServerList = {}
 " let g:tracServerList['(Server Name)'] = 'http://(user):(password)@(trac serverpath)/login/xmlrpc' 
 
 call pathogen#infect()
+
+"""" VirtualEnv
+py << EOF
+import os.path
+import sys
+import vim
+if 'VIRTUAL_ENV' in os.environ:
+    project_base_dir = os.environ['VIRTUAL_ENV']
+    sys.path.insert(0, project_base_dir)
+    activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+    execfile(activate_this, dict(__file__=activate_this))
+EOF
