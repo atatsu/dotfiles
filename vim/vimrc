@@ -27,8 +27,9 @@ set cursorline
 " Autocomplete features in the status bar
 set wildmenu
 
+"""" statusline
 set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P\ %{fugitive#statusline()}
-"set statusline=%{fugitive#statusline()}
+set laststatus=2
 
 """" Djagno snippets
 autocmd FileType python set ft=python.django
@@ -58,16 +59,16 @@ let Tlist_File_Fold_Auto_Close = 1
 let Tlist_Close_On_Select = 1
 let Tlist_Sort_Type = 'name'
 "map P :TlistToggle<CR>
-map <F8> :TlistToggle<CR>
+map <leader>t :TlistToggle<CR>
 
 """" TaskList
-map T :TaskList<CR>
+"map T :TaskList<CR>
 
 """" NERDTree
 let NERDTreeQuitOnOpen = 1
 let NERDTreeWinSize = 50
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
-map F :NERDTreeToggle<CR>
+map <leader>n :NERDTreeToggle<CR>
 "map ob :NERDTreeFromBookmark 
 
 """" Rope
@@ -75,7 +76,7 @@ map <leader>j :RopeGotoDefinition<CR>
 map <leader>r :RopeRename<CR>
 
 """" BufExplorer
-map <F2> :BufExplorer<CR>
+map <leader>b :BufExplorer<CR>
 
 """" Key Mappings
 " bind ctrl+space for omnicompletion
@@ -98,12 +99,17 @@ call pathogen#infect()
 
 """" VirtualEnv
 py << EOF
-import os.path
+import os
 import sys
 import vim
-if 'VIRTUAL_ENV' in os.environ:
+project_base_dir = None
+if 'virtualenv' in os.listdir('.'):
+    project_base_dir = os.path.join(os.path.abspath('.'), 'virtualenv')
+elif 'VIRTUAL_ENV' in os.environ:
     project_base_dir = os.environ['VIRTUAL_ENV']
+if project_base_dir:
     sys.path.insert(0, project_base_dir)
     activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
     execfile(activate_this, dict(__file__=activate_this))
 EOF
+

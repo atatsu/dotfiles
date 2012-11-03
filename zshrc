@@ -126,6 +126,11 @@ function prompt_char {
     git branch >/dev/null 2>/dev/null && echo '±' && return
     echo '○'
 }
+
+parse_git_branch () {
+    git branch 2> /dev/null | grep "*" | sed -e 's/* \(.*\)/ %F{green}(%F{yellow}\1%F{green})/g'
+}
+
 function precmd {
     ###
     # terminal width to one less than the actual width for lineup
@@ -241,7 +246,7 @@ $PR_RED%$PR_PWDLEN<...<%~%<<$PR_GREEN)$PR_SHIFT_IN$PR_HBAR$PR_GREEN$PR_URCORNER$
 $PR_GREEN$PR_SHIFT_IN$PR_LLCORNER$PR_GREEN$PR_HBAR$PR_SHIFT_OUT(\
 %(?..$PR_RED%?$PR_WHITE:)%(!.$PR_RED.$PR_YELLOW)%#$PR_GREEN)$PR_NO_COLOUR '
 
-            RPROMPT=' $PR_GREEN$PR_SHIFT_IN$PR_HBAR$PR_GREEN$PR_LRCORNER$PR_SHIFT_OUT$PR_NO_COLOUR'
+RPROMPT=' $PR_GREEN$(parse_git_branch)$PR_GREEN$PR_SHIFT_IN$PR_HBAR$PR_GREEN$PR_LRCORNER$PR_SHIFT_OUT$PR_NO_COLOUR'
 
             PS2='$PR_GREEN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT\
 $PR_GREEN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT(\
