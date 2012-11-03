@@ -1,5 +1,6 @@
 set t_Co=256
 set nocp
+set encoding=utf-8
 
 set softtabstop=4
 set shiftwidth=4
@@ -16,8 +17,8 @@ filetype plugin indent on
 set number
 :syntax on
 set background=dark
-colorscheme BusyBee
-"colorscheme herald
+"colorscheme BusyBee
+colorscheme herald
 set foldmethod=indent
 set foldlevel=100
 set nowrap
@@ -28,12 +29,20 @@ set cursorline
 set wildmenu
 
 """" statusline
-set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P\ %{fugitive#statusline()}
+"set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P\ %{fugitive#statusline()}
 set laststatus=2
 
 """" Djagno snippets
-autocmd FileType python set ft=python.django
+"autocmd FileType python set ft=python.django
 autocmd FileType html set ft=htmldjango.html
+
+"""" Powerline
+"let g:Powerline_cache_dir = simplify(expand('<sfile>:p:h') .'/..')
+let g:Powerline_symbols = 'fancy'
+let g:Powerline_theme = 'solarized256'
+let g:Powerline_colorscheme = 'solarized256'
+let g:Powerline_stl_path_style = 'full'
+set guifont=Terminus\ for\ Powerline\ 10
 
 """" PySmell
 "autocmd FileType python setlocal omnifunc=pysmell#Complete
