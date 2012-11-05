@@ -53,6 +53,7 @@ alias sound='aplay /usr/share/sounds/alsa/Front_Center.wav'
 alias fm='pcmanfm ~/'
 alias ivim='ps aux | grep vim'
 alias cdd='source cd.sh'
+alias vimhelp='vim -c "call pathogen#helptags()|q"'
 # }}}
 
 # {{{ SSH

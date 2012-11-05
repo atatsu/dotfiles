@@ -3,6 +3,8 @@ set nocp
 set encoding=utf-8
 
 set softtabstop=4
+set tabstop=4
+set expandtab
 set shiftwidth=4
 set autoindent
 set hidden	    "buffers keep change history
@@ -17,8 +19,7 @@ filetype plugin indent on
 set number
 :syntax on
 set background=dark
-"colorscheme BusyBee
-colorscheme herald
+colorscheme BusyBee
 set foldmethod=indent
 set foldlevel=100
 set nowrap
@@ -39,10 +40,9 @@ autocmd FileType html set ft=htmldjango.html
 """" Powerline
 "let g:Powerline_cache_dir = simplify(expand('<sfile>:p:h') .'/..')
 let g:Powerline_symbols = 'fancy'
-let g:Powerline_theme = 'solarized256'
+let g:Powerline_theme = 'default'
 let g:Powerline_colorscheme = 'solarized256'
-let g:Powerline_stl_path_style = 'full'
-set guifont=Terminus\ for\ Powerline\ 10
+let g:Powerline_stl_path_style = 'relative'
 
 """" PySmell
 "autocmd FileType python setlocal omnifunc=pysmell#Complete
@@ -70,6 +70,9 @@ let Tlist_Sort_Type = 'name'
 "map P :TlistToggle<CR>
 map <leader>t :TlistToggle<CR>
 
+"""" Command-T
+map <leader>c :CommandT<CR>
+
 """" TaskList
 "map T :TaskList<CR>
 
@@ -85,7 +88,7 @@ map <leader>j :RopeGotoDefinition<CR>
 map <leader>r :RopeRename<CR>
 
 """" BufExplorer
-map <leader>b :BufExplorer<CR>
+"map <leader>b :BufExplorer<CR>
 
 """" Key Mappings
 " bind ctrl+space for omnicompletion
