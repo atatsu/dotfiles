@@ -10,6 +10,9 @@ set autoindent
 set hidden	    "buffers keep change history
 set scrolloff=3	    "keep 3 lines below and above cursor
 
+" ignores
+set wildignore+=virtualenv/**,node_modules/**
+
 " filetype plugins
 filetype on
 filetype plugin on
@@ -80,7 +83,7 @@ map <leader>c :CommandT<CR>
 let NERDTreeQuitOnOpen = 1
 let NERDTreeWinSize = 50
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
-map <leader>n :NERDTreeToggle<CR>
+map <leader>N :NERDTreeToggle<CR>
 "map ob :NERDTreeFromBookmark 
 
 """" Rope
@@ -93,15 +96,17 @@ map <leader>r :RopeRename<CR>
 """" Key Mappings
 " bind ctrl+space for omnicompletion
 inoremap <Nul> <C-x><C-o>
-" Use tab and shift-tab to indent in normal mode
-"nmap <Tab> >>
-"nmap <S-Tab> <<
 " Code folding toggle
 nmap <CR> za 
 " git diff
 nnoremap <silent> <F10> :w<CR>:!git diff %<CR>
-" bash
+" zsh
 nnoremap <silent> <F3> :w<CR>:!zsh<CR>
+" window sizing
+map <silent> <A-h> <C-W><
+map <silent> <A-j> <C-W>-
+map <silent> <A-k> <C-W>+
+map <silent> <A-l> <C-W>>
 
 """" Trac Servers
 let g:tracServerList = {}

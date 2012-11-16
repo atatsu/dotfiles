@@ -11,7 +11,6 @@ export VISUAL="vim"
 export EDITOR=$VISUAL
 export BROWSER="firefox"
 export XTERM="xterm"
-export VIRTUAL_ENV_DIR=~/dev/virt
 export PACMAN=pacman-color
 eval `dircolors -b`
 #source ~/.ssh_hosts
@@ -54,10 +53,10 @@ alias fm='pcmanfm ~/'
 alias ivim='ps aux | grep vim'
 alias cdd='source cd.sh'
 alias vimhelp='vim -c "call pathogen#helptags()|q"'
+alias wine='WINEPREFIX=~/wine32 wine'
 # }}}
 
 # {{{ SSH
-alias nippon='ssh oblivion@nippon'
 # }}}
 
 # {{{ Pacman
@@ -74,6 +73,17 @@ alias sw='git checkout'
 alias swc='git checkout -b'
 # }}}
 
+# }}}
+
+# {{{ virtualenv
+virt () {
+    if [[ (-e virtualenv/bin/activate) ]] {
+        local activate=virtualenv/bin/activate
+        source ${activate}
+    } else {
+        echo 'no dice'
+    }
+}
 # }}}
 
 # {{{ Keybindings
