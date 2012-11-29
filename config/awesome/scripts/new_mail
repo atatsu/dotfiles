@@ -1,0 +1,27 @@
+#!/usr/bin/env python2
+
+import os
+import sys
+import yaml
+
+try:
+    CONFIG = yaml.load(open(os.path.expanduser('~/.new_mail.rc')))
+except IOError:
+    CONFIG = {}
+
+BASE_PATH = CONFIG.get('base-path', '')
+MBOXES = CONFIG.get('mboxes', [])
+new_mail_in = []
+for mbox in MBOXES:
+    full_path = os.path.join(BASE_PATH, mbox)
+    try:
+        access_time = os.path.getatime(full_path)
+        modified_time = os.path.getmtime(full_path)
+        if modified_time > access_time:
+            new_mail_in.append(mbox)
+    except os.error:
+        pass
+
+new_mail_in.sort()
+output = ','.join(new_mail_in) if new_mail_in else '-'
+print output
