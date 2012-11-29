@@ -147,7 +147,7 @@ oftc.nicks = "atatsu,oblivion"
 oftc.username
 oftc.realname
 oftc.local_hostname
-oftc.command = "/msg nickserv identify Oct1012"
+oftc.command = "/msg nickserv identify XXXXXX"
 oftc.command_delay
 oftc.autojoin = "#dssuite spunky.l0bst3r"
 oftc.autorejoin
@@ -181,7 +181,7 @@ freenode.nicks = "atatsu"
 freenode.username = "atatsu"
 freenode.realname
 freenode.local_hostname
-freenode.command = "/msg nickserv identify cadderly"
+freenode.command = "/msg nickserv identify XXXXXX"
 freenode.command_delay
 freenode.autojoin = "#flask,#romc"
 freenode.autorejoin
@@ -215,7 +215,7 @@ bitlbee.nicks = "atatsu"
 bitlbee.username = "atatsu"
 bitlbee.realname
 bitlbee.local_hostname
-bitlbee.command = "/msg nickserv identify cadderly"
+bitlbee.command = "/msg nickserv identify XXXXXX"
 bitlbee.command_delay
 bitlbee.autojoin
 bitlbee.autorejoin
