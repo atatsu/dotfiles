@@ -103,7 +103,7 @@ tags = {
     }, 
     {
 	names  = { "web",            "chat",           "run",            "debug"          }, -- tags[2]
-	layout = { layout.magnifier, layout.magnifier, layout.magnifier, layout.magnifier }
+	layout = { layout.tile, layout.tile, layout.tile, layout.tile }
     }
 }
 
