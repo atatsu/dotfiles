@@ -183,7 +183,7 @@ freenode.realname
 freenode.local_hostname
 freenode.command = "/msg nickserv identify XXXXXX"
 freenode.command_delay
-freenode.autojoin = "#flask,#romc"
+freenode.autojoin = "#flask,#romc,#node.js"
 freenode.autorejoin
 freenode.autorejoin_delay
 freenode.connection_timeout
