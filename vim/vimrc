@@ -36,6 +36,11 @@ set wildmenu
 "set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P\ %{fugitive#statusline()}
 set laststatus=2
 
+"""" Paste mode toggle
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
+set showmode
+
 """" Djagno snippets
 "autocmd FileType python set ft=python.django
 autocmd FileType html set ft=htmldjango.html
@@ -102,6 +107,8 @@ nmap <CR> za
 nnoremap <silent> <F10> :w<CR>:!git diff %<CR>
 " zsh
 nnoremap <silent> <F3> :w<CR>:!zsh<CR>
+" ranger
+nnoremap <silent> <F4> :w<CR>:!ranger<CR>
 " window sizing
 map <silent> <A-h> <C-W><
 map <silent> <A-j> <C-W>-
