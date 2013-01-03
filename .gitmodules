@@ -4,3 +4,6 @@
 [submodule "vim/bundle-available/Command-T"]
 	path = vim/bundle-available/Command-T
 	url = git://github.com/wincent/Command-T.git
+[submodule "vim/bundle-available/bufexplorer.zip"]
+	path = vim/bundle-available/bufexplorer.zip
+	url = git://github.com/vim-scripts/bufexplorer.zip.git
