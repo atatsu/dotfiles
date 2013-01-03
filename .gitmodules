@@ -10,3 +10,60 @@
 [submodule "vim/bundle-available/gundo.vim"]
 	path = vim/bundle-available/gundo.vim
 	url = git://github.com/sjl/gundo.vim.git
+[submodule "vim/bundle-available/jedi-vim"]
+	path = vim/bundle-available/jedi-vim
+	url = git://github.com/davidhalter/jedi-vim.git
+[submodule "vim/bundle-available/jshint.vim"]
+	path = vim/bundle-available/jshint.vim
+	url = git://github.com/wookiehangover/jshint.vim.git
+[submodule "vim/bundle-available/minibufexpl.vim"]
+	path = vim/bundle-available/minibufexpl.vim
+	url = git://github.com/fholgado/minibufexpl.vim.git
+[submodule "vim/bundle-available/pydoc.vim"]
+	path = vim/bundle-available/pydoc.vim
+	url = git://github.com/fs111/pydoc.vim.git
+[submodule "vim/bundle-available/pythoncomplete"]
+	path = vim/bundle-available/pythoncomplete
+	url = git://github.com/vim-scripts/pythoncomplete.git
+[submodule "vim/bundle-available/rope-vim"]
+	path = vim/bundle-available/rope-vim
+	url = git://github.com/klen/rope-vim.git
+[submodule "vim/bundle-available/snipmate.vim"]
+	path = vim/bundle-available/snipmate.vim
+	url = git://github.com/msanders/snipmate.vim.git
+[submodule "vim/bundle-available/supertab"]
+	path = vim/bundle-available/supertab
+	url = git://github.com/ervandew/supertab.git
+[submodule "vim/bundle-available/syntastic"]
+	path = vim/bundle-available/syntastic
+	url = git://github.com/scrooloose/syntastic.git
+[submodule "vim/bundle-available/tabular"]
+	path = vim/bundle-available/tabular
+	url = git://github.com/godlygeek/tabular.git
+[submodule "vim/bundle-available/taglist.vim"]
+	path = vim/bundle-available/taglist.vim
+	url = git://github.com/vim-scripts/taglist.vim.git
+[submodule "vim/bundle-available/vim-colors-solarized"]
+	path = vim/bundle-available/vim-colors-solarized
+	url = git://github.com/altercation/vim-colors-solarized.git
+[submodule "vim/bundle-available/vim-fugitive"]
+	path = vim/bundle-available/vim-fugitive
+	url = git://github.com/tpope/vim-fugitive.git
+[submodule "vim/bundle-available/vim-jade"]
+	path = vim/bundle-available/vim-jade
+	url = git://github.com/digitaltoad/vim-jade.git
+[submodule "vim/bundle-available/vim-javascript"]
+	path = vim/bundle-available/vim-javascript
+	url = git://github.com/pangloss/vim-javascript.git
+[submodule "vim/bundle-available/vim-nodejs-complete"]
+	path = vim/bundle-available/vim-nodejs-complete
+	url = git://github.com/myhere/vim-nodejs-complete.git
+[submodule "vim/bundle-available/vim-powerline"]
+	path = vim/bundle-available/vim-powerline
+	url = git://github.com/Lokaltog/vim-powerline.git
+[submodule "vim/bundle-available/vim-surround"]
+	path = vim/bundle-available/vim-surround
+	url = git://github.com/tpope/vim-surround.git
+[submodule "vim/bundle-available/zencoding-vim"]
+	path = vim/bundle-available/zencoding-vim
+	url = git://github.com/mattn/zencoding-vim.git
