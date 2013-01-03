@@ -7,3 +7,6 @@
 [submodule "vim/bundle-available/bufexplorer.zip"]
 	path = vim/bundle-available/bufexplorer.zip
 	url = git://github.com/vim-scripts/bufexplorer.zip.git
+[submodule "vim/bundle-available/gundo.vim"]
+	path = vim/bundle-available/gundo.vim
+	url = git://github.com/sjl/gundo.vim.git
