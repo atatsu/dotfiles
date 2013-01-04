@@ -25,9 +25,6 @@
 [submodule "vim/bundle-available/pythoncomplete"]
 	path = vim/bundle-available/pythoncomplete
 	url = git://github.com/vim-scripts/pythoncomplete.git
-[submodule "vim/bundle-available/rope-vim"]
-	path = vim/bundle-available/rope-vim
-	url = git://github.com/klen/rope-vim.git
 [submodule "vim/bundle-available/snipmate.vim"]
 	path = vim/bundle-available/snipmate.vim
 	url = git://github.com/msanders/snipmate.vim.git
