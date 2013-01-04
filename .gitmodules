@@ -64,3 +64,6 @@
 [submodule "vim/bundle-available/zencoding-vim"]
 	path = vim/bundle-available/zencoding-vim
 	url = git://github.com/mattn/zencoding-vim.git
+[submodule "vim/bundle-available/python-mode"]
+	path = vim/bundle-available/python-mode
+	url = git://github.com/klen/python-mode.git
