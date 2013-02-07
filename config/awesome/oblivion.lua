@@ -4,22 +4,23 @@
 --       License: GNU GPL v2      -- 
 ------------------------------------
 
+local awful = require("awful")
+
 -- {{{ Main
 theme = {}
 theme.confdir = awful.util.getdir("config")
-theme.wallpaper_cmd = { "/usr/bin/nitrogen --restore" }
 
 -- {{{ Styles
 theme.font      = "glisp 8"
 
 -- {{{ Colors
-white		= "#FFFFFF"
-green		= "#AFD700"
-blue		= "#8585AC"
-orange		= "#C96E07"
-lightgrey	= "#949494"
-midgrey		= "#3E3E3E"
-darkgrey	= "#1C1C1C"
+local white		= "#FFFFFF"
+local green		= "#AFD700"
+local blue		= "#8585AC"
+local orange	= "#C96E07"
+local lightgrey	= "#949494"
+local midgrey	= "#3E3E3E"
+local darkgrey	= "#1C1C1C"
 
 theme.fg_normal = white
 theme.fg_focus  = green
