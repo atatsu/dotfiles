@@ -34,6 +34,7 @@ local vicious = require("vicious")
 -- Community 
 local teardrop = require("teardrop")
 local utils = require("utils")
+local widgets = require("widgets")
 -- }}}
 
 -- {{{ Variable definitions
@@ -99,12 +100,13 @@ layouts = {
 
 tags = {
     {
-	names  = { "dev",       "music",     "email",     "video",         "gfx",           "ssh"       }, -- tags[1]
-	layout = { layout.tile, layout.tile, layout.tile, layout.floating, layout.floating, layout.tile }
+        names  = { "dev",       "music",     "email",     "video",         "gfx",           "ssh"       }, -- tags[1]
+        layout = { layout.tile, layout.tile, layout.tile, layout.floating, layout.floating, layout.tile }
     }, 
+
     {
-	names  = { "web",            "chat",           "run",            "debug"          }, -- tags[2]
-	layout = { layout.tile, layout.tile, layout.tile, layout.tile }
+        names  = { "web",            "chat",           "run",            "debug"          }, -- tags[2]
+        layout = { layout.tile, layout.tile, layout.tile, layout.tile }
     }
 }
 
@@ -188,7 +190,7 @@ pacwidget = wibox.widget.textbox()
 pacwidget:set_text(pread("pacman -Qu | wc -l"))
 -- Timer for getting dataz
 pactimer = timer({ timeout = 3600 })
-pactimer:connect_signal("timeout", function (t) pacwidget:set_text(pread("pacman -Qu | wc -l")) end)
+pactimer:connect_signal("timeout", function () pacwidget:set_text(pread("pacman -Qu | wc -l")) end)
 pactimer:start()
 -- }}}
 
@@ -200,17 +202,8 @@ mpdwidget = wibox.widget.textbox()
 mpdwidget:set_text("-")
 -- Timer for getting dataz
 mpdtimer = timer({ timeout = 1.2 })
-mpdtimer:connect_signal("timeout", function (t) mpdwidget:set_text(pread(scripts .. "mpd.sh")) end)
+mpdtimer:connect_signal("timeout", function () mpdwidget:set_text(pread(scripts .. "mpd.sh")) end)
 mpdtimer:start()
--- }}}
-
--- {{{ Volume
-volicon = wibox.widget.imagebox()
-volicon:set_image(beautiful.widget_volume)
---Initialize widget
-volwidget = wibox.widget.textbox()
---Register widget
-vicious.register(volwidget, vicious.widgets.volume, "$1%", 2, "Master")
 -- }}}
 
 -- {{{ Clock
@@ -317,8 +310,8 @@ for s = 1, screen.count() do
     right_layout:add(mailicon)
     right_layout:add(mailwidget)
     right_layout:add(spacer)
-    right_layout:add(volicon)
-    right_layout:add(volwidget)
+    right_layout:add(widgets.volume.icon)
+    right_layout:add(widgets.volume.widget)
     right_layout:add(spacer)
     right_layout:add(pacicon)
     right_layout:add(pacwidget)
@@ -361,8 +354,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, ",", function () exec("mpc prev") end), 
     --awful.key({ modkey, "Shift"   }, ".", function () exec("clementine --next") end), 
     awful.key({ modkey, "Shift"   }, ".", function () exec("mpc next") end), 
-    awful.key({ modkey, "Control" }, "-", function () exec("amixer set Master 5%-") end), 
-    awful.key({ modkey, "Control" }, "=", function () exec("amixer set Master 5%+") end), 
+    awful.key({ modkey, "Control" }, "-", function () exec("amixer set Master 5%- >/dev/null") end), 
+    awful.key({ modkey, "Control" }, "=", function () exec("amixer set Master 5%+ >/dev/null") end), 
     awful.key({ modkey            }, "grave", function () teardrop(terminal, "bottom", "center", 1000) end), 
     awful.key({ }, "Print", function () exec("scrot -e 'mv $f ~/pics/screenshots/ 2>/dev/null'") end), 
     awful.key({ modkey }, "g", function () exec("xinit /usr/bin/awesome -c /home/atatsu/.config/awesome/gaming.lua -- :1") end), 
