@@ -1,7 +1,7 @@
 -- {{{ License
 --
 -- Awesome configuration, using awesome 3.4.5-1 on Arch Linux
--- Nathan Lundquist <!-- <nathan.lundquist@gmail.com> -->
+-- Nathan Lundquist <nathan.lundquist@gmail.com>
 --
 -- }}}
 
@@ -42,8 +42,6 @@ local utils = require("utils")
 --beautiful.init("/usr/share/awesome/themes/sky/theme.lua")
 beautiful.init(awful.util.getdir("config") .. "/oblivion.lua")
 
-local scripts = awful.util.getdir("config") .. "/scripts/"
-
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
 editor = os.getenv("EDITOR") or "nano"
@@ -59,8 +57,6 @@ local modkey = "Mod4"
 -- Function aliases
 local exec = awful.util.spawn
 local sexec = awful.util.spawn_with_shell
-local pread = awful.util.pread
-
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 layout = {
@@ -99,12 +95,12 @@ layouts = {
 
 tags = {
     {
-	names  = { "dev",       "music",     "email",     "video",         "gfx",           "ssh"       }, -- tags[1]
-	layout = { layout.tile, layout.tile, layout.tile, layout.floating, layout.floating, layout.tile }
+	names  = { "game on"       }, 
+	layout = { layout.floating }
     }, 
     {
-	names  = { "web",            "chat",           "run",            "debug"          }, -- tags[2]
-	layout = { layout.tile, layout.tile, layout.tile, layout.tile }
+	names  = { "game on"       }, 
+	layout = { layout.floating }
     }
 }
 
@@ -117,17 +113,15 @@ end
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 myawesomemenu = {
-   { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
-   { "edit menu", editor_cmd .. " " .. awful.util.getdir("config") .. "/menu.lua" }, 
-   { "restart", awesome.restart },
-   { "quit", awesome.quit }
+    -- Set resolution
+    { "set resolution", exec("xrandr --output DVI-1 --primary --mode 1680x1050 --output DVI-0 --auto --left-of DVI-1") }, 
+    { "restart", awesome.restart }, 
+    { "quit", awesome.quit }
 }
 
 mymainmenu = awful.menu({ items = { 
 	{ "awesome", myawesomemenu, beautiful.awesome_icon },
-	{ "firefox", "firefox" }, 
-	{ "terminal", terminal }, 
+    { "Ryzom", "ryzom" }, 
     }
 })
 
@@ -153,8 +147,6 @@ tzswidget = wibox.widget.textbox()
 -- Graph properties
 cpugraph:set_width(40):set_height(14)
 cpugraph:set_background_color(beautiful.fg_off_widget)
---cpugraph:set_color("linear:0,0:8,14:0," .. "#C96E07" ..  ":0.5," .. 
---   "#8585AC" .. ":1," .. "#AFD700")
 cpugraph:set_color("linear:0,0:8,14:0," .. beautiful.fg_end_widget ..  ":0.5," .. 
     beautiful.fg_center_widget .. ":1," .. beautiful.fg_widget)
 -- Register widgets
@@ -169,39 +161,6 @@ memicon:set_image(beautiful.widget_mem)
 memwidget = wibox.widget.textbox()
 -- Register widget
 vicious.register(memwidget, vicious.widgets.mem, "$1%", 13)
--- }}}
-
--- {{{ New mail
-mailicon = wibox.widget.imagebox()
-mailicon:set_image(beautiful.widget_mail)
--- Initialize widget
-mailwidget = wibox.widget.textbox()
--- TODO: Register widget
-mailwidget:set_text("TODO")
--- }}}
-
--- {{{ Pacman updates
-pacicon = wibox.widget.imagebox()
-pacicon:set_image(beautiful.widget_pacman)
--- Initialize widget
-pacwidget = wibox.widget.textbox()
-pacwidget:set_text(pread("pacman -Qu | wc -l"))
--- Timer for getting dataz
-pactimer = timer({ timeout = 3600 })
-pactimer:connect_signal("timeout", function (t) pacwidget:set_text(pread("pacman -Qu | wc -l")) end)
-pactimer:start()
--- }}}
-
--- {{{ MPD Status
-mpdicon = wibox.widget.imagebox()
-mpdicon:set_image(beautiful.widget_mpd)
--- Initialize widget
-mpdwidget = wibox.widget.textbox()
-mpdwidget:set_text("-")
--- Timer for getting dataz
-mpdtimer = timer({ timeout = 1.2 })
-mpdtimer:connect_signal("timeout", function (t) mpdwidget:set_text(pread(scripts .. "mpd.sh")) end)
-mpdtimer:start()
 -- }}}
 
 -- {{{ Volume
@@ -306,25 +265,14 @@ for s = 1, screen.count() do
     -- widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(spacer)
-    right_layout:add(spacer)
     right_layout:add(cpuicon)
     right_layout:add(cpugraph)
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
     right_layout:add(spacer)
-    right_layout:add(mailicon)
-    right_layout:add(mailwidget)
-    right_layout:add(spacer)
     right_layout:add(volicon)
     right_layout:add(volwidget)
-    right_layout:add(spacer)
-    right_layout:add(pacicon)
-    right_layout:add(pacwidget)
-    right_layout:add(spacer)
-    right_layout:add(mpdicon)
-    right_layout:add(mpdwidget)
     right_layout:add(spacer)
     right_layout:add(clockicon)
     right_layout:add(clockwidget)
@@ -363,9 +311,9 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, ".", function () exec("mpc next") end), 
     awful.key({ modkey, "Control" }, "-", function () exec("amixer set Master 5%-") end), 
     awful.key({ modkey, "Control" }, "=", function () exec("amixer set Master 5%+") end), 
+    awful.key({ }, "XF86AudioRaiseVolume", function () exec("amixer set Master 5%+") end), 
+    awful.key({ }, "XF86AudioLowerVolume", function () exec("amixer set Master 5%-") end), 
     awful.key({ modkey            }, "grave", function () teardrop(terminal, "bottom", "center", 1000) end), 
-    awful.key({ }, "Print", function () exec("scrot -e 'mv $f ~/pics/screenshots/ 2>/dev/null'") end), 
-    awful.key({ modkey }, "g", function () exec("xinit /usr/bin/awesome -c /home/atatsu/.config/awesome/gaming.lua -- :1") end), 
     -- }}}
     
     -- {{{ Prompt Menus

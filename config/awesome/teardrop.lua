@@ -51,7 +51,7 @@ function toggle(prog, vert, horiz, width, height, sticky, screen)
         dropdown[prog] = {}
 
         -- Add unmanage signal for teardrop programs
-        capi.client.add_signal("unmanage", function (c)
+        capi.client.connect_signal("unmanage", function (c)
             for scr, cl in pairs(dropdown[prog]) do
                 if cl == c then
                     dropdown[prog][scr] = nil
@@ -91,11 +91,11 @@ function toggle(prog, vert, horiz, width, height, sticky, screen)
 
             c:raise()
             capi.client.focus = c
-            capi.client.remove_signal("manage", spawnw)
+            capi.client.disconnect_signal("manage", spawnw)
         end
 
         -- Add manage signal and spawn the program
-        capi.client.add_signal("manage", spawnw)
+        capi.client.connect_signal("manage", spawnw)
         awful.util.spawn(prog, false)
     else
         -- Get a running client
