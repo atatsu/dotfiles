@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# from /etc/skel/.xinitrc
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+  for f in /etc/X11/xinit/xinitrc.d/*; do
+    [ -x "$f" ] && . "$f"
+  done
+  unset f
+fi
+
 # {{{ Display settings
 if [[ `xrandr | grep -c "1280x1024"` -gt 1 ]]; then
     xrandr --output DVI-1 --primary --mode 1680x1050 --output DVI-0 --auto --left-of DVI-1
@@ -18,7 +26,7 @@ xrdb -merge "${HOME}/.Xresources"
 
 #start up xcompmgr
 xcompmgr -c -t-5 -l-5 -r4.2 -o.55 -f -D5 &
-xscreensaver -nosplash &
+#xscreensaver -nosplash &
 
 #if [[ `xrandr | grep -c "1280x1024"` -gt 1 ]]
 #then	

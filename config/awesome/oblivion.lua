@@ -51,6 +51,7 @@ theme.border_marked = blue
 -- {{{ Misc icons
 theme.awesome_icon      = theme.confdir .. "/icons/awesome_oblivion.png"
 -- }}}
+--
 -- {{{ Layout icons
 theme.layout_tile       = theme.confdir .. "/icons/layouts/tile.png"
 theme.layout_tileleft   = theme.confdir .. "/icons/layouts/tileleft.png"
@@ -99,6 +100,10 @@ theme.widget_mail   = theme.confdir .. "/icons/mail_oblivion.png"
 theme.widget_mpd    = theme.confdir .. "/icons/music_oblivion.png"
 theme.widget_pacman = theme.confdir .. "/icons/pacman_oblivion.png"
 theme.widget_volume = theme.confdir .. "/icons/vol_oblivion.png"
+-- }}}
+
+-- {{{ Game Icons
+theme.ryzom_icon    = theme.confdir .. "/icons/ryzom.png"
 -- }}}
 
 return theme
