@@ -103,6 +103,7 @@ theme.widget_volume = theme.confdir .. "/icons/vol_oblivion.png"
 -- }}}
 
 -- {{{ Game Icons
+theme.mumble_icon   = theme.confdir .. "/icons/mumble.png"
 theme.ryzom_icon    = theme.confdir .. "/icons/ryzom.png"
 -- }}}
 
