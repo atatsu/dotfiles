@@ -133,6 +133,7 @@ mymainmenu = awful.menu({ items = {
     { "Mumble", "mumble", beautiful.mumble_icon }, 
     { "KAG", "kag", beautiful.kag_icon }, 
     { "Ryzom", myryzommenu, beautiful.ryzom_icon }, 
+    { "Steam", "steam", beautiful.steam_icon }, 
     { "wine", mywinemenu }, 
     { "", "" }, 
 	{ "awesome", myawesomemenu, beautiful.awesome_icon }
