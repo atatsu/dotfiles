@@ -30,6 +30,8 @@ set number
 :syntax on
 set background=dark
 colorscheme BusyBee
+hi clear SpellBad
+hi SpellBad cterm=underline,bold ctermfg=magenta
 set foldmethod=indent
 set foldlevel=100
 set nowrap
