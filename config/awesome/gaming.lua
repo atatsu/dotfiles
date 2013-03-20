@@ -121,19 +121,20 @@ myawesomemenu = {
 }
 
 mywinemenu = {
-    { "Dota 2", "dota2" }
+    { "dota 2", "dota2" }, 
+    { "kill dota 2", exec("WINEARCH=win32 WINEPREFIX=/home/atatsu/games/dota2 wineserver -k") }
 }
 
 myryzommenu = {
-    { "Atatsu", "ryzom_atatsu" }, 
-    { "Aeru", "ryzom_aeru" }
+    { "atatsu", "ryzom_atatsu" }, 
+    { "aeru", "ryzom_aeru" }
 }
 
 mymainmenu = awful.menu({ items = { 
-    { "Mumble", "mumble", beautiful.mumble_icon }, 
-    { "KAG", "kag", beautiful.kag_icon }, 
-    { "Ryzom", myryzommenu, beautiful.ryzom_icon }, 
-    { "Steam", "steam", beautiful.steam_icon }, 
+    { "mumble", "mumble", beautiful.mumble_icon }, 
+    { "kag", "kag", beautiful.kag_icon }, 
+    { "ryzom", myryzommenu, beautiful.ryzom_icon }, 
+    { "steam", "steam", beautiful.steam_icon }, 
     { "wine", mywinemenu }, 
     { "", "" }, 
 	{ "awesome", myawesomemenu, beautiful.awesome_icon }
