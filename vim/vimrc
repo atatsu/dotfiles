@@ -11,6 +11,13 @@ set autoindent
 set hidden	    "buffers keep change history
 set scrolloff=3	    "keep 3 lines below and above cursor
 
+if &term =~ 'screen'
+    " Disable Background Color Erase (BCE) so that color schemes
+    " work properly when Vim is used inside tmux and GNU screen.
+    " http://snk.tuxfamily.org/log/vim-256color-bce.html
+    set t_ut=
+endif
+
 " ignores
 set wildignore+=virtualenv/**,node_modules/**,static/js/lib/**
 
@@ -24,6 +31,8 @@ set number
 :syntax on
 set background=dark
 colorscheme BusyBee
+hi clear SpellBad
+hi SpellBad cterm=underline,bold ctermfg=magenta
 set foldmethod=indent
 set foldlevel=100
 set nowrap

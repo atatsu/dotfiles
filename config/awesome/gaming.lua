@@ -34,6 +34,7 @@ local vicious = require("vicious")
 -- Community 
 local teardrop = require("teardrop")
 local utils = require("utils")
+local widgets = require("widgets")
 -- }}}
 
 -- {{{ Variable definitions
@@ -119,11 +120,25 @@ myawesomemenu = {
     { "quit", awesome.quit }
 }
 
+mywinemenu = {
+    { "dota 2", "dota2" }, 
+    { "kill dota 2", exec("WINEARCH=win32 WINEPREFIX=/home/atatsu/games/dota2 wineserver -k") }
+}
+
+myryzommenu = {
+    { "atatsu", "ryzom_atatsu" }, 
+    { "aeru", "ryzom_aeru" }
+}
+
 mymainmenu = awful.menu({ items = { 
-	{ "awesome", myawesomemenu, beautiful.awesome_icon },
-    { "Ryzom", "ryzom" }, 
-    }
-})
+    { "mumble", "mumble", beautiful.mumble_icon }, 
+    { "kag", "kag", beautiful.kag_icon }, 
+    { "ryzom", myryzommenu, beautiful.ryzom_icon }, 
+    { "steam", "steam", beautiful.steam_icon }, 
+    { "wine", mywinemenu }, 
+    { "", "" }, 
+	{ "awesome", myawesomemenu, beautiful.awesome_icon }
+}})
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
@@ -161,15 +176,6 @@ memicon:set_image(beautiful.widget_mem)
 memwidget = wibox.widget.textbox()
 -- Register widget
 vicious.register(memwidget, vicious.widgets.mem, "$1%", 13)
--- }}}
-
--- {{{ Volume
-volicon = wibox.widget.imagebox()
-volicon:set_image(beautiful.widget_volume)
---Initialize widget
-volwidget = wibox.widget.textbox()
---Register widget
-vicious.register(volwidget, vicious.widgets.volume, "$1%", 2, "Master")
 -- }}}
 
 -- {{{ Clock
@@ -264,18 +270,18 @@ for s = 1, screen.count() do
 
     -- widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(cpuicon)
     right_layout:add(cpugraph)
     right_layout:add(spacer)
     right_layout:add(memicon)
     right_layout:add(memwidget)
     right_layout:add(spacer)
-    right_layout:add(volicon)
-    right_layout:add(volwidget)
+    right_layout:add(widgets.volume.icon)
+    right_layout:add(widgets.volume.widget)
     right_layout:add(spacer)
     right_layout:add(clockicon)
     right_layout:add(clockwidget)
+    if s == 1 then right_layout:add(wibox.widget.systray()) end
 
     -- now bring it all together
     local layout = wibox.layout.align.horizontal()
@@ -314,6 +320,7 @@ globalkeys = awful.util.table.join(
     awful.key({ }, "XF86AudioRaiseVolume", function () exec("amixer set Master 5%+") end), 
     awful.key({ }, "XF86AudioLowerVolume", function () exec("amixer set Master 5%-") end), 
     awful.key({ modkey            }, "grave", function () teardrop(terminal, "bottom", "center", 1000) end), 
+    awful.key({ }, "Print", function () exec("scrot -e 'mv $f ~/pics/screenshots/ 2>/dev/null'") end), 
     -- }}}
     
     -- {{{ Prompt Menus
@@ -360,6 +367,8 @@ globalkeys = awful.util.table.join(
                 client.focus:raise()
             end
         end),
+    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
+    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
@@ -372,8 +381,6 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
 
     awful.key({ modkey }, "x",
