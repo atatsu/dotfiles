@@ -1,3 +1,4 @@
+set bs=2
 set t_Co=256
 set nocp
 set encoding=utf-8
