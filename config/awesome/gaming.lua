@@ -132,6 +132,7 @@ myryzommenu = {
 
 mymainmenu = awful.menu({ items = { 
     { "mumble", "mumble", beautiful.mumble_icon }, 
+    { "minecraft", "minecraft", beautiful.minecraft_icon }, 
     { "kag", "kag", beautiful.kag_icon }, 
     { "ryzom", myryzommenu, beautiful.ryzom_icon }, 
     { "steam", "steam", beautiful.steam_icon }, 

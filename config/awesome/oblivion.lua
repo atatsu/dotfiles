@@ -103,10 +103,12 @@ theme.widget_volume = theme.confdir .. "/icons/vol_oblivion.png"
 -- }}}
 
 -- {{{ Game Icons
-theme.mumble_icon   = theme.confdir .. "/icons/mumble.png"
-theme.ryzom_icon    = theme.confdir .. "/icons/ryzom.png"
-theme.kag_icon      = theme.confdir .. "/icons/kag.png"
-theme.steam_icon    = theme.confdir .. "/icons/steam.png"
+theme.mumble_icon     = theme.confdir .. "/icons/mumble.png"
+theme.ryzom_icon      = theme.confdir .. "/icons/ryzom.png"
+theme.kag_icon        = theme.confdir .. "/icons/kag.png"
+theme.steam_icon      = theme.confdir .. "/icons/steam.png"
+theme.minecraft_icon  = theme.confdir .. "/icons/minecraft.png"
+theme.spoutcraft_icon = theme.confdir .. "/icons/spoutcraft.png"
 -- }}}
 
 return theme

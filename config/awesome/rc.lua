@@ -100,14 +100,13 @@ layouts = {
 
 tags = {
     {
-        names  = { "web",           "dev",       "music",     "email",     "video",         "gfx",           "ssh"       }, -- tags[1]
-        layout = { layout.floating, layout.tile, layout.tile, layout.tile, layout.floating, layout.floating, layout.tile }
+        names  = { "web",           "dev",       "music",     "email",     "video",         "gfx",           "ssh",       "game" }, -- tags[1]
+        layout = { layout.floating, layout.tile, layout.tile, layout.tile, layout.floating, layout.floating, layout.tile, layout.floating }
     }, 
-
     {
         names  = { "web",            "chat",           "run",            "debug"          }, -- tags[2]
-        layout = { layout.tile, layout.tile, layout.tile, layout.tile }
-    }
+        layout = { layout.floating, layout.tile, layout.tile, layout.tile }
+    } 
 }
 
 for s = 1, screen.count() do
@@ -126,9 +125,32 @@ myawesomemenu = {
    { "quit", awesome.quit }
 }
 
+winemenu = {
+    { "dota 2", "dota2" }, 
+    { "kill dota 2", sexec("WINEARCH=win32 WINEPREFIX=/home/atatsu/games/dota2 wineserver -k") }
+}
+
+ryzommenu = {
+    { "atatsu", "ryzom_atatsu" }, 
+    { "aeru", "ryzom_aeru" }
+}
+
+gamemenu = {
+    { "mumble", "mumble", beautiful.mumble_icon }, 
+    { "", "" }, 
+    { "kag", "kag", beautiful.kag_icon }, 
+    { "minecraft", "minecraft", beautiful.minecraft_icon }, 
+    { "spoutcraft", "spoutcraft", beautiful.spoutcraft_icon }, 
+    { "ryzom", ryzommenu, beautiful.ryzom_icon }, 
+    { "steam", "steam", beautiful.steam_icon }, 
+    { "wine", winemenu }, 
+}
+
 mymainmenu = awful.menu({ items = { 
 	{ "awesome", myawesomemenu, beautiful.awesome_icon },
+    { "", "" }, 
 	{ "terminal", terminal }, 
+    { "games", gamemenu }
     }
 })
 
