@@ -11,7 +11,7 @@ export VISUAL="vim"
 export EDITOR=$VISUAL
 export BROWSER="firefox"
 export XTERM="xterm"
-export PACMAN=pacman-color
+#export PACMAN=pacman-color
 eval `dircolors -b`
 #source ~/.ssh_hosts
 # }}}
@@ -60,7 +60,7 @@ alias wine='WINEPREFIX=~/wine32 wine'
 # }}}
 
 # {{{ Pacman
-alias pacman='pacman-color'
+#alias pacman='pacman-color'
 # }}}
 
 # {{{ git

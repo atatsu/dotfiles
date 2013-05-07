@@ -10,7 +10,7 @@ fi
 
 # {{{ Display settings
 if [[ `xrandr | grep -c "1280x1024"` -gt 1 ]]; then
-    xrandr --output DVI-1 --primary --mode 1680x1050 --output DVI-0 --auto --left-of DVI-1
+    xrandr --output DVI-I-2 --primary --mode 1680x1050 --output DVI-I-3 --auto --right-of DVI-I-2
 else
     xrandr --output DVI-1 --primary --mode 1680x1050
 fi;

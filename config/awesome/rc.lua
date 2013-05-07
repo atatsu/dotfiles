@@ -127,7 +127,7 @@ myawesomemenu = {
 
 winemenu = {
     { "dota 2", "dota2" }, 
-    { "kill dota 2", sexec("WINEARCH=win32 WINEPREFIX=/home/atatsu/games/dota2 wineserver -k") }
+    { "kill dota 2", "killdota2" }
 }
 
 ryzommenu = {

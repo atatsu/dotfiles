@@ -1,8 +1,11 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_cnt =9
 let g:netrw_dirhist_1='/home/atatsu/.ncmpcpp'
 let g:netrw_dirhist_2='/home/atatsu/.config/awesome'
 let g:netrw_dirhist_3='/etc/rc.d'
 let g:netrw_dirhist_4='/home/atatsu/dev/romc/src/colosseum/app/static/maps'
 let g:netrw_dirhist_5='/home/atatsu/dev/romc/src/colosseum/app/characters/tests'
 let g:netrw_dirhist_6='/home/atatsu/dev/romc/src/praetor/app/operations'
+let g:netrw_dirhist_7='/home/atatsu/dev/romc/src/hypogeum/test/bin'
+let g:netrw_dirhist_8='/home/atatsu/backups'
+let g:netrw_dirhist_9='/home/atatsu/.config/awesome'
