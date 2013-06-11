@@ -38,4 +38,4 @@ if [[ -z $wm_bin ]] ; then
     wm_bin="awesome"
 fi;
 eval $(cat ~/.fehbg)
-exec ssh-agent ck-launch-session ${wm_bin}
+exec ssh-agent ${wm_bin}
