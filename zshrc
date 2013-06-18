@@ -1,7 +1,7 @@
 # {{{ User Settings
 
 # {{{ Environment
-export PATH=$PATH:~/bin
+export PATH=$PATH:~/bin:~/.i3/bin
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000

@@ -35,7 +35,7 @@ xcompmgr -c -t-5 -l-5 -r4.2 -o.55 -f -D5 &
 #start awesome
 wm_bin="$1"
 if [[ -z $wm_bin ]] ; then
-    wm_bin="awesome"
+    wm_bin="i3"
 fi;
 eval $(cat ~/.fehbg)
 exec ssh-agent ${wm_bin}
