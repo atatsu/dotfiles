@@ -13,73 +13,73 @@ Xft.rgba:      rgb
 !{{{ URXVT
 !
 ! General
-!urxvt*geometry:         80x26
-urxvt.termName:  rxvt-256color
-urxvt.loginShell:         true
-urxvt.scrollBar:         false
-urxvt.secondaryScroll:    true
-urxvt.saveLines:         65535
-urxvt.cursorBlink:       false
-urxvt.urgentOnBell:       true
-urxvt.override-redirect: false
-!urxvt.borderLess:       false
-!urxvt.borderWidth:          1
-!urxvt.internalBorder:       0
+!URxvt*.geometry:         80x26
+URxvt*.termName:  rxvt-256color
+URxvt*.loginShell:         true
+URxvt*.scrollBar:         false
+URxvt*.secondaryScroll:    true
+URxvt*.saveLines:         65535
+URxvt*.cursorBlink:       false
+URxvt*.urgentOnBell:       true
+URxvt*.override-redirect: false
+!URxvt.borderLess:       false
+!URxvt.borderWidth:          1
+!URxvt.internalBorder:       0
 !
 ! Extensions
-urxvt*perl-lib:         /usr/lib/urxvt/perl/
-urxvt*perl-ext-common:  default,matcher,searchable-scrollback
-urxvt*urlLauncher:      /usr/local/bin/firefox
-urxvt*matcher.button:   1
+URxvt*.perl-lib:         /usr/lib/URxvt/perl/
+URxvt*.perl-ext-common:  default,matcher,searchable-scrollback
+URxvt*.urlLauncher:      /usr/local/bin/firefox
+URxvt*.matcher.button:   1
 ! So we catch even nasty URLs
-urxvt.cutchars:         `()*<>[]{|}
+URxvt.cutchars:         `()*<>[]{|}
 !
 ! Appearance
-!urxvt*font:	    xft:Terminus:pixelsize=10
-!urxvt*boldFont:    xft:Terminus:pixelsize=10
-urxvt*font:		xft:Terminus for Powerline:regular:size=10
-urxvt*imFont:		xft:Terminus for Powerline:regular:size=10
-urxvt*boldFont:		xft:Terminus for Powerline:bold:size=10
-urxvt*italicFont:	xft:Terminus for Powerline:italic:size=10
-urxvt*boldItalicFont:	xft:Terminus for Powerline:bold:italic:size=10
-!urxvt.font:     -xos4-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
-!urxvt.boldFont: -xos4-terminus-bold-*-*-*-12-*-*-*-*-*-*-*
+!URxvt*.font:	    xft:Terminus:pixelsize=10
+!URxvt*.boldFont:    xft:Terminus:pixelsize=10
+URxvt*.font:		xft:Terminus for Powerline:regular:size=10
+URxvt*.imFont:		xft:Terminus for Powerline:regular:size=10
+URxvt*.boldFont:		xft:Terminus for Powerline:bold:size=10
+URxvt*.italicFont:	xft:Terminus for Powerline:italic:size=10
+URxvt*.boldItalicFont:	xft:Terminus for Powerline:bold:italic:size=10
+!URxvt.font:     -xos4-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
+!URxvt.boldFont: -xos4-terminus-bold-*-*-*-12-*-*-*-*-*-*-*
 !
 ! Cursor
-urxvt.cursorColor: #DCDCCC
+URxvt.cursorColor: #DCDCCC
 !
 ! Pseudo Transparency
-urxvt*depth: 32
-urxvt*background: rgba:0000/0000/0000/dddd
-!urxvt.shading:     30
-!urxvt.transparent: false
+URxvt*.depth: 32
+URxvt*.background: rgba:1111/1111/1111/dddd
+!URxvt.shading:     30
+!URxvt.transparent: false
 ! 
-!urxvt*background:       #1c1c1c
-urxvt*foreground:       #c8c6c3
+!URxvt*.background:       #1c1c1c
+URxvt*.foreground:       #c8c6c3
 ! black + red
-urxvt*color0:      #000000
-urxvt*color1:      #a30811
+URxvt*.color0:      #000000
+URxvt*.color1:      #a30811
 ! green + yellow
-urxvt*color2:      #677f00
-urxvt*color3:      #da7e16
+URxvt*.color2:      #677f00
+URxvt*.color3:      #da7e16
 ! blue + purple
-urxvt*color4:      #506070
-urxvt*color5:      #b40097
+URxvt*.color4:      #506070
+URxvt*.color5:      #b40097
 ! cyan + white
-urxvt*color6:      #33a7a7
-urxvt*color7:      #cccccc
+URxvt*.color6:      #33a7a7
+URxvt*.color7:      #cccccc
 ! bright-black + bright-red
-urxvt*color8:      #757575
-urxvt*color9:      #fb2100
+URxvt*.color8:      #757575
+URxvt*.color9:      #fb2100
 ! bright-green + bright-yellow
-urxvt*color10:     #afd700
-urxvt*color11:     #fb8500
+URxvt*.color10:     #afd700
+URxvt*.color11:     #fb8500
 ! bright-blue + bright-purple
-urxvt*color12:     #8585ac
-urxvt*color13:     #e503c1
+URxvt*.color12:     #8585ac
+URxvt*.color13:     #e503c1
 ! bright-cyan + bright-white
-urxvt*color14:     #8fcfcf
-urxvt*color15:     #ffffff
+URxvt*.color14:     #8fcfcf
+URxvt*.color15:     #ffffff
 !}}}
 
 
