@@ -1,0 +1,7 @@
+#!/bin/sh
+
+i3status | while :
+do
+    read line
+    echo "⇧ `pacman -Qu | wc -l` | $line" || exit 1
+done
