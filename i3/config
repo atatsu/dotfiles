@@ -102,8 +102,8 @@ bindsym $mod+m [title="^Volume Control$"] scratchpad show
 # switch to workspace
 bindsym $mod+1 workspace 1: web
 bindsym $mod+2 workspace 2: comm
-bindsym $mod+3 workspace 3
-bindsym $mod+4 workspace 4
+bindsym $mod+3 workspace 3: dev
+bindsym $mod+4 workspace 4: music
 bindsym $mod+5 workspace 5
 bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
@@ -114,8 +114,8 @@ bindsym $mod+0 workspace 10: games
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace "1: web"
 bindsym $mod+Shift+2 move container to workspace "2: comm"
-bindsym $mod+Shift+3 move container to workspace 3
-bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+3 move container to workspace "3: dev"
+bindsym $mod+Shift+4 move container to workspace "4: music"
 bindsym $mod+Shift+5 move container to workspace 5
 bindsym $mod+Shift+6 move container to workspace 6
 bindsym $mod+Shift+7 move container to workspace 7
@@ -125,6 +125,8 @@ bindsym $mod+Shift+0 move container to workspace "10: games"
 
 # workspace rules
 workspace "2: comm" output DVI-I-3
+workspace "3: dev" output DVI-I-2
+workspace "4: music" output DVI-I-3
 workspace "9: steam" output DVI-I-2
 workspace "10: games" output DVI-I-2
 
@@ -136,6 +138,8 @@ assign [class="Steam"] "9: steam"
 for_window [class="Steam" title="Friends"] move left; resize shrink width 100px or 100 ppt
 for_window [class="Steam" title="Chat"] floating enable
 for_window [class="Steam" title="Updating Steam"] floating enable
+
+assign [class="Clementine"] "4: music"
 
 
 # reload the configuration file
