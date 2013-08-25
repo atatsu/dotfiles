@@ -89,6 +89,9 @@ bindsym $mod+c focus child
 # cycle next workspace on output
 bindsym $mod+n workspace next_on_output
 
+# move the current workspace to the next output
+bindsym $mod+x move workspace to output right
+
 # cycle previous workspace on output
 bindsym $mod+p workspace prev_on_output
 
