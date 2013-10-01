@@ -50,7 +50,7 @@ URxvt.cursorColor: #DCDCCC
 !
 ! Pseudo Transparency
 URxvt*.depth: 32
-URxvt*.background: rgba:1111/1111/1111/dddd
+URxvt*.background: rgba:1111/1111/1111/0000
 !URxvt.shading:     30
 !URxvt.transparent: false
 ! 

@@ -133,7 +133,10 @@ workspace "4: music" output DVI-I-3
 workspace "9: steam" output DVI-I-2
 workspace "10: games" output DVI-I-2
 
+
 # application rules
+for_window [class="URxvt"] border none
+
 assign [class="Mumble"] "2: comm"
 for_window [class="Mumble"] move right
 
@@ -185,4 +188,16 @@ bar {
         # status_command status
         status_command i3status | ~/.i3/contrib/wrapper
         position top
+        colors {
+            focused_workspace  #444444 #444444 #ffffff
+            inactive_workspace #222222 #222222 #666666
+            active_workspace   #222222 #222222 #999999
+        }
 }
+
+# Colors
+# class                  border  backgr. text    indicator
+client.focused           #444444 #444444 #ffffff #0099ff
+client.focused_inactive  #222222 #222222 #666666 #0099ff
+#client.unfocused
+#client.urgent
