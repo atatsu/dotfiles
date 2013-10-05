@@ -44,15 +44,21 @@ URxvt*.italicFont:	xft:Terminus for Powerline:italic:size=10
 URxvt*.boldItalicFont:	xft:Terminus for Powerline:bold:italic:size=10
 !URxvt.font:     -xos4-terminus-medium-*-*-*-12-*-*-*-*-*-*-*
 !URxvt.boldFont: -xos4-terminus-bold-*-*-*-12-*-*-*-*-*-*-*
+URxvt*.fading:      20
+URxvt*.fadeColor:   #2d2d2d
+URxvt*.colorBD:     green
+URxvt*.colorIT:     yellow
 !
 ! Cursor
 URxvt.cursorColor: #DCDCCC
 !
 ! Pseudo Transparency
 URxvt*.depth: 32
-URxvt*.background: rgba:1111/1111/1111/0000
+URxvt*.background: rgba:0000/0000/0000/0000
 !URxvt.shading:     30
-!URxvt.transparent: false
+URxvt.transparent: false
+URxvt.buffered: true
+URxvt.reverseVideo: false
 ! 
 !URxvt*.background:       #1c1c1c
 URxvt*.foreground:       #c8c6c3
