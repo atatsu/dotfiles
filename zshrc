@@ -71,6 +71,7 @@ alias brd='git branch -d'
 alias brD='git branch -D'
 alias sw='git checkout'
 alias swc='git checkout -b'
+alias gtree='git log --graph --oneline --all'
 # }}}
 
 # }}}
