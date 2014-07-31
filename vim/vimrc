@@ -115,11 +115,16 @@ nnoremap <silent> <F10> :w<CR>:!git diff %<CR>
 nnoremap <silent> <F3> :w<CR>:!zsh<CR>
 " ranger
 nnoremap <silent> <F4> :w<CR>:!ranger<CR>
-" window sizing
+" buffer sizing
 map <silent> <A-h> <C-W><
 map <silent> <A-j> <C-W>-
 map <silent> <A-k> <C-W>+
 map <silent> <A-l> <C-W>>
+" buffer navigation
+map <silent> <C-h> <C-W>h
+map <silent> <C-k> <C-W>k
+map <silent> <C-l> <C-W>l
+map <silent> <C-j> <C-W>j
 
 """" Trac Servers
 let g:tracServerList = {}
