@@ -38,4 +38,5 @@ if [[ -z $wm_bin ]] ; then
     wm_bin="i3"
 fi;
 eval $(cat ~/.fehbg)
+export LC_ALL=en_US.UTF-8
 exec ssh-agent ${wm_bin}

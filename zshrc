@@ -9,7 +9,7 @@ export LESSHISTFILE="-"
 export PAGER="less"
 export VISUAL="vim"
 export EDITOR=$VISUAL
-export BROWSER="firefox"
+export BROWSER="luakit"
 export XTERM="xterm"
 #export PACMAN=pacman-color
 eval `dircolors -b`
@@ -53,7 +53,7 @@ alias fm='pcmanfm ~/'
 alias ivim='ps aux | grep vim'
 alias cdd='source cd.sh'
 alias vimhelp='vim -c "call pathogen#helptags()|q"'
-alias wine='WINEPREFIX=~/wine32 wine'
+alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
 # }}}
 
 # {{{ SSH

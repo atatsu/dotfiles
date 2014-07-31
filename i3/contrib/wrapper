@@ -11,6 +11,11 @@ def update_count():
     return count.strip().decode('utf-8')
 
 
+def update_music():
+    stats = subprocess.check_output(['/home/atatsu/.i3/contrib/mpd.sh'])
+    return stats.strip().decode('utf-8')
+
+
 def read_line():
     try:
         line = sys.stdin.readline().strip()
@@ -55,6 +60,16 @@ if __name__ == '__main__':
                 color='#80FF00',
             ),
         )
+
+        status.insert(
+            1,
+            dict(
+                full_text=update_music(),
+                name='music',
+                color='#FFFFFF',
+            ),
+        )
+
         print_line('{prefix}{status}'.format(
             prefix=prefix,
             status=json.dumps(status),

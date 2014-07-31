@@ -3,7 +3,7 @@
 ps aux | grep pavucontrol | grep -v grep >/dev/null
 if [ $? -ne 0 ]; then
     i3-msg exec pavucontrol >/dev/null
-    sleep 1
+    sleep 2
     i3-msg '[title="Volume Control"] move scratchpad' >/dev/null
     i3-msg '[title="Volume Control"] scratchpad show' >/dev/null
 else
