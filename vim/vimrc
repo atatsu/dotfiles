@@ -56,11 +56,7 @@ set showmode
 autocmd FileType html set ft=htmldjango.html
 
 """" Powerline
-"let g:Powerline_cache_dir = simplify(expand('<sfile>:p:h') .'/..')
-let g:Powerline_symbols = 'fancy'
-let g:Powerline_theme = 'default'
-let g:Powerline_colorscheme = 'solarized256'
-let g:Powerline_stl_path_style = 'relative'
+set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 """" PySmell
 "autocmd FileType python setlocal omnifunc=pysmell#Complete
