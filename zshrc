@@ -1,7 +1,7 @@
 # {{{ User Settings
 
 # {{{ Environment
-export PATH=$PATH:~/bin:~/.i3/bin
+export PATH=$PATH:~/bin:~/.i3/bin:~/games/bin
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
@@ -54,6 +54,7 @@ alias ivim='ps aux | grep vim'
 alias cdd='source cd.sh'
 alias vimhelp='vim -c "call pathogen#helptags()|q"'
 alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
+alias vim='~/bin/launch-vim'
 # }}}
 
 # {{{ SSH
