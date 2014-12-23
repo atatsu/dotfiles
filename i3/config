@@ -137,15 +137,15 @@ workspace "10: games" output DVI-I-2
 # application rules
 for_window [class="URxvt"] border none
 
-assign [class="Mumble"] "2: comm"
-for_window [class="Mumble"] move right
+#assign [class="Mumble"] "2: comm"
+#for_window [class="Mumble"] move right
+assign [class="TeamSpeak 3"] "2: comm"
+for_window [class="TeamSpeak 3"] move right
 
 assign [class="Steam"] "9: steam"
 for_window [class="Steam" title="Friends"] move left; resize shrink width 100px or 100 ppt
 for_window [class="Steam" title="Chat"] floating enable
 for_window [class="Steam" title="Updating Steam"] floating enable
-
-assign [class="Clementine"] "4: music"
 
 
 # reload the configuration file
