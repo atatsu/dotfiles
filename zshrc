@@ -2,6 +2,13 @@
 
 # {{{ Environment
 export PATH=$PATH:~/bin:~/.i3/bin:~/games/bin
+if [[ -d ~/.luarocks ]] {
+    PATH=$PATH:~/.luarocks/bin
+    eval `luarocks path`
+}
+
+# {{{ Set the appropriate paths for lua5.1 and lua5.2
+# }}}
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
@@ -85,6 +92,12 @@ virt () {
     } else {
         echo 'no dice'
     }
+}
+# }}}
+
+# {{{ LuaRocks
+if [[ -x `which luarocks-5.1` ]] {
+    eval `luarocks-5.1 path`
 }
 # }}}
 
