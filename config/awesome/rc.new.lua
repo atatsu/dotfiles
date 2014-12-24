@@ -1,5 +1,5 @@
 -- Awesome configuration, using awesome 3.5.5-1 on Arch Linux
--- Nathan Lundquist <!-- <nathan.lundquist@gmail.com> -->
+-- Nathan Lundquist <nathan.lundquist@gmail.com>
 
 -- {{{ Dependencies
 -- Packages:
@@ -23,6 +23,8 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 -- }}}
+
+local utils = {}
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -150,6 +152,7 @@ local tags = {
     }
   }
 }
+
 for s = 1, screen.count() do
   if tags[s] then
     tags[s] = awful.tag(tags[s].names, s, tags[s].layout)
@@ -157,6 +160,33 @@ for s = 1, screen.count() do
     -- if additional monitors get hooked up and haven't been accounted
     -- for, just use the stock tag setup on them
     tags[s] = awful.tag({1, 2, 3, 4, 5, 6, 7, 8, 9}, s, layout.tile)
+  end
+end
+
+-- Connect a signal to every tag so we know when the layout has changed. If the 
+-- layout changes to a floating layout, the clients need their titlebars shown. 
+-- If the layout changes to a non-floating layout, the clients need their
+-- titlebars hidden.
+for s = 1, screen.count() do
+  local screen_tags = awful.tag.gettags(s)
+  for _, tag in ipairs(screen_tags) do
+    tag:connect_signal("property::layout", function(t)
+      local clients = t:clients()
+
+      for _, c in ipairs(clients) do
+        if c.type ~= "normal" or awful.client.floating.get(c) then
+          -- ignore clients that aren't "normal"
+          -- ignore clients that are already floating
+          return
+        end
+
+        if awful.layout.get(c.screen) == layout.floating then
+          awful.titlebar.show(c)
+        else
+          awful.titlebar.hide(c)
+        end
+      end
+    end)
   end
 end
 -- }}}
@@ -173,7 +203,6 @@ local awesome_menu = {
 local main_menu = awful.menu({
   items = {
     {"awesome", awesome_menu, beautiful.awesome_icon},
-    {"", ""},
     {"terminal", terminal}
   }
 })
@@ -327,10 +356,10 @@ root.buttons(awful.util.table.join(
 local globalkeys = awful.util.table.join(
   --
   -- mod + left, go to previous tag
-  awful.key({ modkey, }, "Left", awful.tag.viewprev),
+  awful.key({ modkey, }, "p", awful.tag.viewprev),
   --
   -- mod + right, go to next tag
-  awful.key({ modkey, }, "Right", awful.tag.viewnext),
+  awful.key({ modkey, }, "n", awful.tag.viewnext),
   --
   -- mod + escape, go to last viewed tag
   awful.key({ modkey, }, "Escape", awful.tag.history.restore),
@@ -413,10 +442,12 @@ local globalkeys = awful.util.table.join(
   -- mod + control + n, unminimize a client
   awful.key({ modkey, "Control" }, "n", awful.client.restore),
   --
-  -- mod + r, display the main promptbox on whatever screen the cursor is at and execute the entered command
+  -- mod + r, display the main promptbox on whatever screen the cursor is at and execute 
+  -- the entered command
   awful.key({ modkey }, "r", function() main_promptbox[mouse.screen]:run() end),
   -- 
-  -- mod + x, display the main promptbox on whatever screen the cursor is at and execute the enetered Lua code
+  -- mod + x, display the main promptbox on whatever screen the cursor is at and execute 
+  -- the entered Lua code
   awful.key({ modkey }, "x",
     function ()
       awful.prompt.run({ prompt = "Run Lua code: " },
@@ -427,8 +458,8 @@ local globalkeys = awful.util.table.join(
   ),
   -- Menubar
   --
-  -- mod + p, show the menubar (the one that shows .desktop entries)
-  awful.key({ modkey }, "p", function() menubar.show() end)
+  -- mod + shift + p, show the menubar (the one that shows .desktop entries)
+  awful.key({ modkey, "Shift" }, "m", function() menubar.show() end)
 )
 
 local clientkeys = awful.util.table.join(
@@ -451,8 +482,8 @@ local clientkeys = awful.util.table.join(
   -- mod + t, toggle focused client state of being on top of other windows
   awful.key({ modkey, }, "t", function (c) c.ontop = not c.ontop end),
   --
-  -- mod + n, minimize the focused client
-  awful.key({ modkey, }, "n", function (c)
+  -- mod + shift + n, minimize the focused client
+  awful.key({ modkey, "Shift" }, "n", function (c)
     -- The client currently has the input focus, so it cannot be
     -- minimized, since minimized clients can't have the focus.
     c.minimized = true
@@ -585,65 +616,91 @@ client.connect_signal("manage", function (c, startup)
     end
   end
 
-  -- TODO: add titlebar for clients that get switched to floating
-  -- TODO: remove titlebar for clients that get switched out of floating
-  -- TODO: enable titlebars for non-tiled layouts
-  local titlebars_enabled = false
-  if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
-    -- buttons for the titlebar
-    local buttons = awful.util.table.join(
-      --
-      -- left-click, focus the clicked client, raise it, and move it
-      awful.button({ }, 1, function()
-        client.focus = c
-        c:raise()
-        awful.mouse.client.move(c)
-      end),
-      --
-      -- right-click, focus the clicked client, raise it, and resize it
-      awful.button({ }, 3, function()
-        client.focus = c
-        c:raise()
-        awful.mouse.client.resize(c)
-      end)
-    )
-
-    -- Widgets that are aligned to the left
-    local left_layout = wibox.layout.fixed.horizontal()
-    -- add an icon widget for the application
-    left_layout:add(awful.titlebar.widget.iconwidget(c))
-    left_layout:buttons(buttons)
-
-    -- Widgets that are aligned to the right
-    local right_layout = wibox.layout.fixed.horizontal()
-    -- add a floating button to the titlebar
-    right_layout:add(awful.titlebar.widget.floatingbutton(c))
-    -- add a maximize button to the titlebar
-    right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-    -- add a sticky button to the titlebar
-    right_layout:add(awful.titlebar.widget.stickybutton(c))
-    -- add an on top button to the titlebar
-    right_layout:add(awful.titlebar.widget.ontopbutton(c))
-    -- add a close button to the titlebar
-    right_layout:add(awful.titlebar.widget.closebutton(c))
-
-    -- The title goes in the middle
-    local middle_layout = wibox.layout.flex.horizontal()
-    local title = awful.titlebar.widget.titlewidget(c)
-    title:set_align("center")
-    middle_layout:add(title)
-    middle_layout:buttons(buttons)
-
-    -- Now bring it all together
-    local layout = wibox.layout.align.horizontal()
-    layout:set_left(left_layout)
-    layout:set_right(right_layout)
-    layout:set_middle(middle_layout)
-
-    awful.titlebar(c):set_widget(layout)
+  -- add a titlebar for every new "normal" or "dialog" client
+  if c.type == "normal" or c.type == "dialog" then
+    utils.add_titlebar(c)
   end
+
+  -- if the layout isn't a floating one hide the titlebar
+  if awful.layout.get(c.screen) ~= layout.floating then
+    awful.titlebar.toggle(c)
+  end
+
+  -- connect a signal so that we know when the client's floating property changes
+  -- and either hide or show the titlebar depending on the floating state
+  c:connect_signal("property::floating", function(c)
+    -- if the layout is floating mode the titlebar will already be displayed
+    -- so disregard
+    if awful.layout.get(c.screen) == layout.floating then
+      return
+    end
+
+    -- disregard clients that aren't "normal" or "dialog"
+    if c.type ~= "normal" and c.type ~= "dialog" then
+      return
+    end
+
+    awful.titlebar.toggle(c)
+  end)
 end)
 
+-- affects all clients
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- }}}
+
+-- {{{ Utility functions
+function utils.add_titlebar(c)
+  -- buttons for the titlebar
+  local buttons = awful.util.table.join(
+    --
+    -- left-click, focus the clicked client, raise it, and move it
+    awful.button({ }, 1, function()
+      client.focus = c
+      c:raise()
+      awful.mouse.client.move(c)
+    end),
+    --
+    -- right-click, focus the clicked client, raise it, and resize it
+    awful.button({ }, 3, function()
+      client.focus = c
+      c:raise()
+      awful.mouse.client.resize(c)
+    end)
+  )
+
+  -- Widgets that are aligned to the left
+  local left_layout = wibox.layout.fixed.horizontal()
+  -- add an icon widget for the application
+  left_layout:add(awful.titlebar.widget.iconwidget(c))
+  left_layout:buttons(buttons)
+
+  -- Widgets that are aligned to the right
+  local right_layout = wibox.layout.fixed.horizontal()
+  -- add a floating button to the titlebar
+  --right_layout:add(awful.titlebar.widget.floatingbutton(c))
+  -- add a maximize button to the titlebar
+  right_layout:add(awful.titlebar.widget.maximizedbutton(c))
+  -- add a sticky button to the titlebar
+  right_layout:add(awful.titlebar.widget.stickybutton(c))
+  -- add an on top button to the titlebar
+  right_layout:add(awful.titlebar.widget.ontopbutton(c))
+  -- add a close button to the titlebar
+  right_layout:add(awful.titlebar.widget.closebutton(c))
+
+  -- The title goes in the middle
+  local middle_layout = wibox.layout.flex.horizontal()
+  local title = awful.titlebar.widget.titlewidget(c)
+  title:set_align("center")
+  middle_layout:add(title)
+  middle_layout:buttons(buttons)
+
+  -- Now bring it all together
+  local layout = wibox.layout.align.horizontal()
+  layout:set_left(left_layout)
+  layout:set_right(right_layout)
+  layout:set_middle(middle_layout)
+
+  awful.titlebar(c):set_widget(layout)
+end
 -- }}}
