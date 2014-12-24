@@ -24,6 +24,7 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 -- }}}
 
+-- table to hold utility functions
 local utils = {}
 
 -- {{{ Error handling
@@ -108,6 +109,334 @@ local layouts = {
   awful.layout.suit.max.fullscreen,
   awful.layout.suit.magnifier
 }
+
+-- placeholder for all the main widgets so they can be referenced in the 
+-- keybindings and buttons if need be
+local main_menu, main_promptbox, main_wibox, main_layoutbox, main_tasklist, main_taglist
+
+-- table for all button bindings so they're all centralized and easy to find/modify
+local buttons
+buttons = {
+  -- {{{ Main taglist specific buttons
+  main_taglist = awful.util.table.join(
+    --
+    -- left-click, view the selected tag only
+    awful.button({ }, 1, awful.tag.viewonly),
+    --
+    -- mod + left-click, move the focused client to the selected tag
+    awful.button({ modkey }, 1, awful.client.movetotag),
+    --
+    -- right-click, toggle selection of the selected tag
+    awful.button({ }, 3, awful.tag.viewtoggle),
+    --
+    -- mod + right-click, toggle the tag the focused client is on
+    awful.button({ modkey }, 3, awful.client.toggletag),
+    --
+    -- scroll up, view next tag
+    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    --
+    -- scroll down, view previous tag
+    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+  ),
+  -- }}}
+
+  -- {{{ Main tasklist specific buttons 
+  main_tasklist = awful.util.table.join(
+    --
+    -- left-click, if client is not minimized, minimize it, if client
+    -- is minimized, unminimize it
+    awful.button({ }, 1, function (c)
+      if c == client.focus then
+        c.minimized = true
+      else
+        -- Without this, the following
+        -- :isvisible() makes no sense
+        c.minimized = false
+
+        if not c:isvisible() then
+          awful.tag.viewonly(c:tags()[1])
+        end
+
+        -- This will also un-minimize
+        -- the client, if needed
+        client.focus = c
+        c:raise()
+      end
+    end),
+    --
+    -- right-click, show a pop-up menu of clients on this tag, if the pop-up is
+    -- already visible, close it
+    awful.button({ }, 3, function ()
+      if _clients_popup then
+        _clients_popup:hide()
+        _clients_popup = nil
+      else
+        _clients_popup = awful.menu.clients({
+          theme = { width = 250 }
+        })
+      end
+    end),
+    --
+    -- scroll up, cycle forward through the clients on current tag, also
+    -- raises the focused client so it is on top of other windows
+    awful.button({ }, 4, function ()
+      awful.client.focus.byidx(1)
+      if client.focus then client.focus:raise() end
+    end),
+    --
+    -- scroll down, cycle backward through the clients on the current tag, 
+    -- also raises the focused client so it is on top of other windows
+    awful.button({ }, 5, function ()
+      awful.client.focus.byidx(-1)
+      if client.focus then client.focus:raise() end
+    end)
+  ),
+  -- }}}
+
+  -- {{{ Main layoutbox specific buttons 
+  main_layoutbox = awful.util.table.join(
+    --
+    -- left-click, go to next layout
+    awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+    --
+    -- right-click, go to previous layout
+    awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
+    --
+    -- scroll up, go to next layout
+    awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
+    --
+    -- scroll down, go to previous layout
+    awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)
+  ),
+  -- }}}
+
+  -- {{{ Root window specific buttons
+  root = awful.util.table.join(
+    --
+    -- right-click, toggle the main menu
+    awful.button({ }, 3, function () main_menu:toggle() end),
+    --
+    -- scroll up, view next tag
+    awful.button({ }, 4, awful.tag.viewnext),
+    --
+    -- scroll down, view previous tag
+    awful.button({ }, 5, awful.tag.viewprev)
+  ),
+  -- }}}
+
+  -- {{{ Global buttons/keybindings
+  globalkeys = awful.util.table.join(
+    --
+    -- mod + left, go to previous tag
+    awful.key({ modkey, }, "p", awful.tag.viewprev),
+    --
+    -- mod + right, go to next tag
+    awful.key({ modkey, }, "n", awful.tag.viewnext),
+    --
+    -- mod + escape, go to last viewed tag
+    awful.key({ modkey, }, "Escape", awful.tag.history.restore),
+    --
+    -- mod + j, switch focus to the next client, also raises client so that it is on top
+    awful.key({ modkey, }, "j", function()
+      awful.client.focus.byidx(1)
+      if client.focus then client.focus:raise() end
+    end),
+    --
+    -- mod + k, switch focus to the prev client, also raises client so that it is on top
+    awful.key({ modkey, }, "k", function()
+      awful.client.focus.byidx(-1)
+      if client.focus then client.focus:raise() end
+    end),
+    --
+    -- mod + w, show the main menu
+    awful.key({ modkey, }, "w", function() main_menu:show() end),
+
+    -- Layout manipulation
+    --
+    -- mod + shift + j, swap client forward
+    awful.key({ modkey, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
+    --
+    -- mod + shift + k, swap client backward
+    awful.key({ modkey, "Shift"   }, "k", function() awful.client.swap.byidx(-1) end),
+    --
+    -- mod + control + j, focus next screen
+    awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_relative(1) end),
+    --
+    -- mod + control + k, focus prev screen
+    awful.key({ modkey, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
+    --
+    -- mod + u, jump to the client that received the urgent hint first
+    awful.key({ modkey, }, "u", awful.client.urgent.jumpto),
+    --
+    -- mod + tab, cycle backward through the client history, also raises client so it is on top
+    awful.key({ modkey, }, "Tab", function()
+      awful.client.focus.history.previous()
+      if client.focus then
+          client.focus:raise()
+      end
+    end),
+
+    -- Standard program
+    --
+    -- mod + enter, spawn a terminal
+    awful.key({ modkey, }, "Return", function() awful.util.spawn(terminal) end),
+    --
+    -- mod + control + r, restart awesome
+    awful.key({ modkey, "Control" }, "r", awesome.restart),
+    --
+    -- mod + shift + q, quit awesome
+    awful.key({ modkey, "Shift" }, "q", awesome.quit),
+    --
+    -- mod + l, increase the master width factor by 0.05
+    awful.key({ modkey, }, "l", function() awful.tag.incmwfact(0.05) end),
+    --
+    -- mod + h, decrease the master width factor by 0.05
+    awful.key({ modkey, }, "h", function() awful.tag.incmwfact(-0.05) end),
+    --
+    -- mod + shift + h, increase the number of master windows by 1
+    awful.key({ modkey, "Shift" }, "h", function() awful.tag.incnmaster(1) end),
+    --
+    -- mod + shift + l, decrease the number of master windows by 1
+    awful.key({ modkey, "Shift" }, "l", function() awful.tag.incnmaster(-1) end),
+    --
+    -- mod + control + h, increase the number of column windows by 1
+    awful.key({ modkey, "Control" }, "h", function() awful.tag.incncol(1) end),
+    -- 
+    -- mod + control + l, decrease the number column windows by 1
+    awful.key({ modkey, "Control" }, "l", function() awful.tag.incncol(-1) end),
+    --
+    -- mod + space, cycle forward through the layouts
+    awful.key({ modkey, }, "space", function() awful.layout.inc(layouts, 1) end),
+    --
+    -- mod + shift + space, cycle backward through the layouts
+    awful.key({ modkey, "Shift" }, "space", function() awful.layout.inc(layouts, -1) end),
+    --
+    -- mod + control + n, unminimize a client
+    awful.key({ modkey, "Control" }, "n", awful.client.restore),
+    --
+    -- mod + r, display the main promptbox on whatever screen the cursor is at and execute 
+    -- the entered command
+    awful.key({ modkey }, "r", function() main_promptbox[mouse.screen]:run() end),
+    -- 
+    -- mod + x, display the main promptbox on whatever screen the cursor is at and execute 
+    -- the entered Lua code
+    awful.key({ modkey }, "x",
+      function ()
+        awful.prompt.run({ prompt = "Run Lua code: " },
+        main_promptbox[mouse.screen].widget,
+        awful.util.eval, nil,
+        awful.util.getdir("cache") .. "/history_eval")
+      end
+    ),
+    --
+    -- mod + d, run dmenu
+    awful.key({ modkey }, "d", function()
+      sexec("dmenu_run -b -nf '#ffffff' -nb '#000000' -sf '#afd700' -sb '#3e3e3e'")
+    end),
+    --
+    -- Menubar
+    --
+    -- mod + shift + p, show the menubar (the one that shows .desktop entries)
+    awful.key({ modkey, "Shift" }, "m", function() menubar.show() end)
+  ),
+  -- }}}
+
+  -- {{{ Client specific keybindings
+  clientkeys = awful.util.table.join(
+    --
+    -- mod + f, toggle focused client fullscreen mode
+    awful.key({ modkey, }, "f", function(c) c.fullscreen = not c.fullscreen end),
+    -- 
+    -- mod + shift + c, kill focused client
+    awful.key({ modkey, "Shift" }, "c", function(c) c:kill() end),
+    --
+    -- mod + control + space, toggle focused client floating mode
+    awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle),
+    -- 
+    -- mod + control + enter, swap focused client with client in master window
+    awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
+    --
+    -- mod + o, move focused client to next screen
+    awful.key({ modkey, }, "o", awful.client.movetoscreen),
+    --
+    -- mod + t, toggle focused client state of being on top of other windows
+    awful.key({ modkey, }, "t", function (c) c.ontop = not c.ontop end),
+    --
+    -- mod + shift + n, minimize the focused client
+    awful.key({ modkey, "Shift" }, "n", function (c)
+      -- The client currently has the input focus, so it cannot be
+      -- minimized, since minimized clients can't have the focus.
+      c.minimized = true
+    end),
+    -- 
+    -- mod + m, toggle focused client's maximize state
+    awful.key({ modkey, }, "m", function (c)
+      c.maximized_horizontal = not c.maximized_horizontal
+      c.maximized_vertical = not c.maximized_vertical
+    end)
+  ),
+  -- }}}
+
+  -- {{{ Client specific buttons
+  clientbuttons = awful.util.table.join(
+    --
+    -- left-click, focus/raise client
+    awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
+    --
+    -- mod + left-click, move client
+    awful.button({ modkey }, 1, awful.mouse.client.move),
+    --
+    -- mod + right-click, resize client
+    awful.button({ modkey }, 3, awful.mouse.client.resize)
+    ),
+  -- }}}
+
+  -- {{{ Bind all numbers to tags
+  bind_number_to_tag = function(tag_number)
+    buttons.globalkeys = awful.util.table.join(
+      buttons.globalkeys,
+      --
+      -- mod + 1-9, view tag only.
+      awful.key({ modkey }, "#" .. tag_number + 9, function()
+        local screen = mouse.screen
+        local tag = awful.tag.gettags(screen)[tag_number]
+        if tag then
+          awful.tag.viewonly(tag)
+        end
+      end),
+      --
+      -- mod + control + 1-9, toggle selection of tag.
+      awful.key({ modkey, "Control" }, "#" .. tag_number + 9, function()
+        local screen = mouse.screen
+        local tag = awful.tag.gettags(screen)[tag_number]
+        if tag then
+          awful.tag.viewtoggle(tag)
+        end
+      end),
+      --
+      -- mod + shift + 1-9, move client to tag.
+      awful.key({ modkey, "Shift" }, "#" .. tag_number + 9, function()
+        if client.focus then
+          local tag = awful.tag.gettags(client.focus.screen)[tag_number]
+          if tag then
+            awful.client.movetotag(tag)
+          end
+        end
+      end),
+      --
+      -- mod + control + shift + 1-9, toggle tag on focused client.
+      awful.key({ modkey, "Control", "Shift" }, "#" .. tag_number + 9, function()
+        if client.focus then
+          local tag = awful.tag.gettags(client.focus.screen)[tag_number]
+          if tag then
+            awful.client.toggletag(tag)
+          end
+        end
+      end)
+    )
+  end,
+  -- }}}
+}
 -- }}}
 
 -- {{{ Wallpaper
@@ -162,33 +491,6 @@ for s = 1, screen.count() do
     tags[s] = awful.tag({1, 2, 3, 4, 5, 6, 7, 8, 9}, s, layout.tile)
   end
 end
-
--- Connect a signal to every tag so we know when the layout has changed. If the 
--- layout changes to a floating layout, the clients need their titlebars shown. 
--- If the layout changes to a non-floating layout, the clients need their
--- titlebars hidden.
-for s = 1, screen.count() do
-  local screen_tags = awful.tag.gettags(s)
-  for _, tag in ipairs(screen_tags) do
-    tag:connect_signal("property::layout", function(t)
-      local clients = t:clients()
-
-      for _, c in ipairs(clients) do
-        if c.type ~= "normal" or awful.client.floating.get(c) then
-          -- ignore clients that aren't "normal"
-          -- ignore clients that are already floating
-          return
-        end
-
-        if awful.layout.get(c.screen) == layout.floating then
-          awful.titlebar.show(c)
-        else
-          awful.titlebar.hide(c)
-        end
-      end
-    end)
-  end
-end
 -- }}}
 
 -- {{{ Menu
@@ -200,7 +502,7 @@ local awesome_menu = {
   {"quit", awesome.quit}
 }
 
-local main_menu = awful.menu({
+main_menu = awful.menu({
   items = {
     {"awesome", awesome_menu, beautiful.awesome_icon},
     {"terminal", terminal}
@@ -220,75 +522,19 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- Create a textclock widget
 local clock = awful.widget.textclock()
 
--- Create a wibox for each screen and add it
-local main_wibox = {}
-local main_promptbox = {}
-local main_layoutbox = {}
+-- Create a Wibox for each screen and add it
+main_wibox = {}
+main_promptbox = {}
+main_layoutbox = {}
 
--- table of buttons for our taglist
-local taglist = {}
-taglist.buttons = awful.util.table.join(
-  -- left-click, view the selected tag only
-  awful.button({ }, 1, awful.tag.viewonly),
-  -- mod + left-click, move the focused client to the selected tag
-  awful.button({ modkey }, 1, awful.client.movetotag),
-  -- right-click, toggle selection of the selected tag
-  awful.button({ }, 3, awful.tag.viewtoggle),
-  -- mod + right-click, toggle the tag the focused client is on
-  awful.button({ modkey }, 3, awful.client.toggletag),
-  -- scroll up, view next tag
-  awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-  -- scroll down, view previous tag
-  awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
-)
+-- Create a Tag for each screen
+main_taglist = {}
+main_taglist.buttons = buttons.main_taglist
 
--- table of buttons for our tasklist
-local main_tasklist = {}
+-- Create a Tasklist for each screen
+main_tasklist = {}
 local _clients_popup
-main_tasklist.buttons = awful.util.table.join(
-  -- left-click, if client is not minimized, minimize it, if client
-  -- is minimized, unminimize it
-  awful.button({ }, 1, function (c)
-    if c == client.focus then
-      c.minimized = true
-    else
-      -- Without this, the following
-      -- :isvisible() makes no sense
-      c.minimized = false
-
-      if not c:isvisible() then
-        awful.tag.viewonly(c:tags()[1])
-      end
-
-      -- This will also un-minimize
-      -- the client, if needed
-      client.focus = c
-      c:raise()
-    end
-  end),
-  -- right-click, show a pop-up menu of clients on this tag, if the pop-up is
-  -- already visible, close it
-  awful.button({ }, 3, function ()
-    if _clients_popup then
-      _clients_popup:hide()
-      _clients_popup = nil
-    else
-      _clients_popup = awful.menu.clients({
-        theme = { width = 250 }
-      })
-    end
-  end),
-  -- scroll up, 
-  awful.button({ }, 4, function ()
-    awful.client.focus.byidx(1)
-    if client.focus then client.focus:raise() end
-  end),
-  -- scroll down, 
-  awful.button({ }, 5, function ()
-    awful.client.focus.byidx(-1)
-    if client.focus then client.focus:raise() end
-  end)
-)
+main_tasklist.buttons = buttons.main_tasklist
 
 -- now actually add the wibox, layoutbox, taglist, tasklist, and promptbox to each screen
 for s = 1, screen.count() do
@@ -298,19 +544,10 @@ for s = 1, screen.count() do
   -- Create an imagebox widget which will contains an icon indicating which layout we're using.
   -- We need one layoutbox per screen.
   main_layoutbox[s] = awful.widget.layoutbox(s)
-  main_layoutbox[s]:buttons(awful.util.table.join(
-    -- left-click, go to next layout
-    awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-    -- right-click, go to previous layout
-    awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-    -- scroll up, go to next layout
-    awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-    -- scroll down, go to previous layout
-    awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)
-  ))
+  main_layoutbox[s]:buttons(buttons.main_layoutbox)
 
   -- Create a taglist widget
-  taglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist.buttons)
+  main_taglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, main_taglist.buttons)
 
   -- Create a tasklist widget
   main_tasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, main_tasklist.buttons)
@@ -321,7 +558,7 @@ for s = 1, screen.count() do
   -- Widgets that are aligned to the left
   local left_layout = wibox.layout.fixed.horizontal()
   left_layout:add(launcher)
-  left_layout:add(taglist[s])
+  left_layout:add(main_taglist[s])
   left_layout:add(main_promptbox[s])
 
   -- Widgets that are aligned to the right
@@ -342,221 +579,18 @@ end
 -- }}}
 
 -- {{{ Mouse bindings for the root window (when no clients are covering it up)
-root.buttons(awful.util.table.join(
-  -- right-click, toggle the main menu
-  awful.button({ }, 3, function () main_menu:toggle() end),
-  -- scroll up, view next tag
-  awful.button({ }, 4, awful.tag.viewnext),
-  -- scroll down, view previous tag
-  awful.button({ }, 5, awful.tag.viewprev)
-))
+root.buttons(buttons.root)
 -- }}}
-
--- {{{ Key bindings
-local globalkeys = awful.util.table.join(
-  --
-  -- mod + left, go to previous tag
-  awful.key({ modkey, }, "p", awful.tag.viewprev),
-  --
-  -- mod + right, go to next tag
-  awful.key({ modkey, }, "n", awful.tag.viewnext),
-  --
-  -- mod + escape, go to last viewed tag
-  awful.key({ modkey, }, "Escape", awful.tag.history.restore),
-  --
-  -- mod + j, switch focus to the next client, also raises client so that it is on top
-  awful.key({ modkey, }, "j", function()
-    awful.client.focus.byidx(1)
-    if client.focus then client.focus:raise() end
-  end),
-  --
-  -- mod + k, switch focus to the prev client, also raises client so that it is on top
-  awful.key({ modkey, }, "k", function()
-    awful.client.focus.byidx(-1)
-    if client.focus then client.focus:raise() end
-  end),
-  --
-  -- mod + w, show the main menu
-  awful.key({ modkey, }, "w", function() main_menu:show() end),
-
-  -- Layout manipulation
-  --
-  -- mod + shift + j, swap client forward
-  awful.key({ modkey, "Shift" }, "j", function() awful.client.swap.byidx(1) end),
-  --
-  -- mod + shift + k, swap client backward
-  awful.key({ modkey, "Shift"   }, "k", function() awful.client.swap.byidx(-1) end),
-  --
-  -- mod + control + j, focus next screen
-  awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_relative(1) end),
-  --
-  -- mod + control + k, focus prev screen
-  awful.key({ modkey, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
-  --
-  -- mod + u, jump to the client that received the urgent hint first
-  awful.key({ modkey, }, "u", awful.client.urgent.jumpto),
-  --
-  -- mod + tab, cycle backward through the client history, also raises client so it is on top
-  awful.key({ modkey, }, "Tab", function()
-    awful.client.focus.history.previous()
-    if client.focus then
-        client.focus:raise()
-    end
-  end),
-
-  -- Standard program
-  --
-  -- mod + enter, spawn a terminal
-  awful.key({ modkey, }, "Return", function() awful.util.spawn(terminal) end),
-  --
-  -- mod + control + r, restart awesome
-  awful.key({ modkey, "Control" }, "r", awesome.restart),
-  --
-  -- mod + shift + q, quit awesome
-  awful.key({ modkey, "Shift" }, "q", awesome.quit),
-  --
-  -- mod + l, increase the master width factor by 0.05
-  awful.key({ modkey, }, "l", function() awful.tag.incmwfact(0.05) end),
-  --
-  -- mod + h, decrease the master width factor by 0.05
-  awful.key({ modkey, }, "h", function() awful.tag.incmwfact(-0.05) end),
-  --
-  -- mod + shift + h, increase the number of master windows by 1
-  awful.key({ modkey, "Shift" }, "h", function() awful.tag.incnmaster(1) end),
-  --
-  -- mod + shift + l, decrease the number of master windows by 1
-  awful.key({ modkey, "Shift" }, "l", function() awful.tag.incnmaster(-1) end),
-  --
-  -- mod + control + h, increase the number of column windows by 1
-  awful.key({ modkey, "Control" }, "h", function() awful.tag.incncol(1) end),
-  -- 
-  -- mod + control + l, decrease the number column windows by 1
-  awful.key({ modkey, "Control" }, "l", function() awful.tag.incncol(-1) end),
-  --
-  -- mod + space, cycle forward through the layouts
-  awful.key({ modkey, }, "space", function() awful.layout.inc(layouts, 1) end),
-  --
-  -- mod + shift + space, cycle backward through the layouts
-  awful.key({ modkey, "Shift" }, "space", function() awful.layout.inc(layouts, -1) end),
-  --
-  -- mod + control + n, unminimize a client
-  awful.key({ modkey, "Control" }, "n", awful.client.restore),
-  --
-  -- mod + r, display the main promptbox on whatever screen the cursor is at and execute 
-  -- the entered command
-  awful.key({ modkey }, "r", function() main_promptbox[mouse.screen]:run() end),
-  -- 
-  -- mod + x, display the main promptbox on whatever screen the cursor is at and execute 
-  -- the entered Lua code
-  awful.key({ modkey }, "x",
-    function ()
-      awful.prompt.run({ prompt = "Run Lua code: " },
-      main_promptbox[mouse.screen].widget,
-      awful.util.eval, nil,
-      awful.util.getdir("cache") .. "/history_eval")
-    end
-  ),
-  -- Menubar
-  --
-  -- mod + shift + p, show the menubar (the one that shows .desktop entries)
-  awful.key({ modkey, "Shift" }, "m", function() menubar.show() end)
-)
-
-local clientkeys = awful.util.table.join(
-  --
-  -- mod + f, toggle focused client fullscreen mode
-  awful.key({ modkey, }, "f", function(c) c.fullscreen = not c.fullscreen end),
-  -- 
-  -- mod + shift + c, kill focused client
-  awful.key({ modkey, "Shift" }, "c", function(c) c:kill() end),
-  --
-  -- mod + control + space, toggle focused client floating mode
-  awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle),
-  -- 
-  -- mod + control + enter, swap focused client with client in master window
-  awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
-  --
-  -- mod + o, move focused client to next screen
-  awful.key({ modkey, }, "o", awful.client.movetoscreen),
-  --
-  -- mod + t, toggle focused client state of being on top of other windows
-  awful.key({ modkey, }, "t", function (c) c.ontop = not c.ontop end),
-  --
-  -- mod + shift + n, minimize the focused client
-  awful.key({ modkey, "Shift" }, "n", function (c)
-    -- The client currently has the input focus, so it cannot be
-    -- minimized, since minimized clients can't have the focus.
-    c.minimized = true
-  end),
-  -- 
-  -- mod + m, toggle focused client's maximize state
-  awful.key({ modkey, }, "m", function (c)
-    c.maximized_horizontal = not c.maximized_horizontal
-    c.maximized_vertical = not c.maximized_vertical
-  end)
-)
 
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
-  globalkeys = awful.util.table.join(
-    globalkeys,
-    --
-    -- mod + 1-9, view tag only.
-    awful.key({ modkey }, "#" .. i + 9, function()
-      local screen = mouse.screen
-      local tag = awful.tag.gettags(screen)[i]
-      if tag then
-        awful.tag.viewonly(tag)
-      end
-    end),
-    --
-    -- mod + control + 1-9, toggle selection of tag.
-    awful.key({ modkey, "Control" }, "#" .. i + 9, function()
-      local screen = mouse.screen
-      local tag = awful.tag.gettags(screen)[i]
-      if tag then
-        awful.tag.viewtoggle(tag)
-      end
-    end),
-    --
-    -- mod + shift + 1-9, move client to tag.
-    awful.key({ modkey, "Shift" }, "#" .. i + 9, function()
-      if client.focus then
-        local tag = awful.tag.gettags(client.focus.screen)[i]
-        if tag then
-          awful.client.movetotag(tag)
-        end
-      end
-    end),
-    --
-    -- mod + control + shift + 1-9, toggle tag on focused client.
-    awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9, function()
-      if client.focus then
-        local tag = awful.tag.gettags(client.focus.screen)[i]
-        if tag then
-          awful.client.toggletag(tag)
-        end
-      end
-    end)
-  )
+  buttons.bind_number_to_tag(i)
 end
 
-local clientbuttons = awful.util.table.join(
-  --
-  -- left-click, focus/raise client
-  awful.button({ }, 1, function(c) client.focus = c; c:raise() end),
-  --
-  -- mod + left-click, move client
-  awful.button({ modkey }, 1, awful.mouse.client.move),
-  --
-  -- mod + right-click, resize client
-  awful.button({ modkey }, 3, awful.mouse.client.resize)
-)
-
--- Set keys
-root.keys(globalkeys)
+-- {{{ Set keys
+root.keys(buttons.globalkeys)
 -- }}}
 
 -- {{{ Rules
@@ -570,8 +604,8 @@ awful.rules.rules = {
       border_color = beautiful.border_normal,
       focus = awful.client.focus.filter,
       raise = true,
-      keys = clientkeys,
-      buttons = clientbuttons 
+      keys = buttons.clientkeys,
+      buttons = buttons.clientbuttons 
     } 
   },
   { 
@@ -617,8 +651,13 @@ client.connect_signal("manage", function (c, startup)
   end
 
   -- add a titlebar for every new "normal" or "dialog" client
-  if c.type == "normal" or c.type == "dialog" then
+  if c.type == "normal" or c.type == "dialog" or c.type == "utility" then
     utils.add_titlebar(c)
+    if c.type == "utility" then
+      -- if the client is a "utility" window (like GIMPS's toolboxes) we need
+      -- to skip below so its titlebar isn't toggled off for non-floating layouts
+      return
+    end
   end
 
   -- if the layout isn't a floating one hide the titlebar
@@ -643,6 +682,33 @@ client.connect_signal("manage", function (c, startup)
     awful.titlebar.toggle(c)
   end)
 end)
+
+-- Connect a signal to every tag so we know when the layout has changed. If the 
+-- layout changes to a floating layout, the clients need their titlebars shown. 
+-- If the layout changes to a non-floating layout, the clients need their
+-- titlebars hidden.
+for s = 1, screen.count() do
+  local screen_tags = awful.tag.gettags(s)
+  for _, tag in ipairs(screen_tags) do
+    tag:connect_signal("property::layout", function(t)
+      local clients = t:clients()
+
+      for _, c in ipairs(clients) do
+        if c.type ~= "normal" or awful.client.floating.get(c) then
+          -- ignore clients that aren't "normal"
+          -- ignore clients that are already floating
+          return
+        end
+
+        if awful.layout.get(c.screen) == layout.floating then
+          awful.titlebar.show(c)
+        else
+          awful.titlebar.hide(c)
+        end
+      end
+    end)
+  end
+end
 
 -- affects all clients
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
