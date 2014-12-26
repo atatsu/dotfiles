@@ -104,6 +104,15 @@ theme.layout_spiral = theme.confdir .. "layouts/spiral.png"
 theme.layout_dwindle = theme.confdir .. "layouts/dwindle.png"
 -- }}}
 
+-- {{{ Widget icons
+theme.widget_cpu = theme.confdir .. "icons/cpu.png"
+theme.widget_mem = theme.confdir .. "icons/mem.png"
+theme.widget_clock = theme.confdir .. "icons/clock.png"
+theme.widget_mail = theme.confdir .. "icons/mail.png"
+theme.widget_pacman = theme.confdir .. "icons/pacman.png"
+theme.widget_volume = theme.confdir .. "icons/vol.png"
+theme.widget_mpd = theme.confdir .. "icons/music.png"
+-- }}}
 theme.awesome_icon = theme.confdir .. "icons/awesome.png"
 
 -- Define the icon theme for application icons. If not set then the icons

@@ -22,6 +22,8 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
+-- widgets
+local vicious = require("vicious")
 -- }}}
 
 -- {{{ Utility functions
@@ -590,9 +592,6 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- }}}
 
 -- {{{ Wibox
--- Create a textclock widget
-local clock = awful.widget.textclock()
-
 -- Create a Wibox for each screen and add it
 main_wibox = {}
 main_promptbox = {}
@@ -606,6 +605,77 @@ main_taglist.buttons = buttons.main_taglist
 main_tasklist = {}
 local _clients_popup
 main_tasklist.buttons = buttons.main_tasklist
+
+-- {{{ Main wibox widgets
+local spacer = wibox.widget.textbox()
+spacer:set_text(" ")
+
+-- {{{ Pacman updates
+local pacicon = wibox.widget.imagebox()
+pacicon:set_image(beautiful.widget_pacman)
+local pacwidget = wibox.widget.textbox()
+pacwidget:set_text(pread("pacman -Qu | wc -l"))
+local pactimer = timer({timeout = 3637})
+pactimer:connect_signal(
+  "timeout",
+  function() pacwidget:set_text(pread("pacman -Qu | wc -l")) end
+)
+pactimer:start()
+-- }}}
+
+-- {{{ Volume
+local volicon = wibox.widget.imagebox()
+volicon:set_image(beautiful.widget_volume)
+local volwidget = wibox.widget.textbox()
+vicious.register(volwidget, vicious.widgets.volume, "$1", 13, "Master")
+-- }}}
+
+-- {{{ MPD
+local mpdicon = wibox.widget.imagebox()
+mpdicon:set_image(beautiful.widget_mpd)
+local mpdwidget = wibox.widget.textbox()
+vicious.register(mpdwidget, vicious.widgets.mpd, function(mpdwidget, args)
+  if args["{state}"] == "Stop" then
+    return " - "
+  else
+    return args["{Artist}"] .. ' - ' .. args["{Title}"]
+  end
+end, 11)
+-- }}}
+
+-- {{{ CPU usage
+local cpuicon = wibox.widget.imagebox()
+cpuicon:set_image(beautiful.widget_cpu)
+local cpuwidget = awful.widget.graph()
+cpuwidget:set_width(40)
+cpuwidget:set_background_color(beautiful.bg_normal)
+cpuwidget:set_color({
+  type = "linear",
+  from = {0, 0},
+  to = {10, 0},
+  stops = {
+    {0, "#ff5656",},
+    {0.5, "#88a175"},
+    {1, "#aecf96"},
+  },
+})
+vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
+-- }}}
+
+-- {{{ Memory usage
+local memicon = wibox.widget.imagebox()
+memicon:set_image(beautiful.widget_mem)
+local memwidget = wibox.widget.textbox()
+vicious.register(memwidget, vicious.widgets.mem, "$1% ($2MB/$3MB)", 13)
+-- }}}
+
+-- {{{ Clock and date
+local clockicon = wibox.widget.imagebox()
+clockicon:set_image(beautiful.widget_clock)
+local clockwidget = awful.widget.textclock()
+-- }}}
+
+-- }}}
 
 -- now actually add the wibox, layoutbox, taglist, tasklist, and promptbox to each screen
 for s = 1, screen.count() do
@@ -629,14 +699,43 @@ for s = 1, screen.count() do
   -- Widgets that are aligned to the left
   local left_layout = wibox.layout.fixed.horizontal()
   left_layout:add(launcher)
+  left_layout:add(spacer)
   left_layout:add(main_taglist[s])
+  left_layout:add(spacer)
   left_layout:add(main_promptbox[s])
 
   -- Widgets that are aligned to the right
   local right_layout = wibox.layout.fixed.horizontal()
+  -- pacman widget
+  right_layout:add(pacicon)
+  right_layout:add(pacwidget)
+  right_layout:add(spacer)
+  -- volume widget
+  right_layout:add(volicon)
+  right_layout:add(volwidget)
+  right_layout:add(spacer)
+  -- mpd widget
+  right_layout:add(mpdicon)
+  right_layout:add(mpdwidget)
+  right_layout:add(spacer)
+  -- cpu widget
+  right_layout:add(cpuicon)
+  right_layout:add(cpuwidget)
+  right_layout:add(spacer)
+  -- memory widget
+  right_layout:add(memicon)
+  right_layout:add(memwidget)
+  right_layout:add(spacer)
   -- add a systray to the first screen
-  if s == 1 then right_layout:add(wibox.widget.systray()) end
-  right_layout:add(clock)
+  if s == 1 then 
+    right_layout:add(wibox.widget.systray()) 
+    right_layout:add(spacer)
+  end
+  -- clock widget
+  right_layout:add(clockicon)
+  right_layout:add(clockwidget)
+  right_layout:add(spacer)
+  -- layouts widget
   right_layout:add(main_layoutbox[s])
 
   -- Now bring it all together (with the tasklist in the middle)
