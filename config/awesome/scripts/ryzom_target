@@ -1,4 +1,0 @@
-#!/bin/zsh -f 
-
-WIN=`xdotool search --name Ryzom | tail -1`
-xdotool key --window $WIN shift+t

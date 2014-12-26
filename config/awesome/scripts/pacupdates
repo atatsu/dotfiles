@@ -1,3 +1,0 @@
-#!/bin/zsh -f
-
-echo -n "pacwidget:set_text(\"`pacman -Qu | wc -l`\")" | awesome-client
