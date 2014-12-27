@@ -846,9 +846,10 @@ client.connect_signal("manage", function (c, startup)
   -- add a titlebar for every new "normal" or "dialog" client
   if c.type == "normal" or c.type == "dialog" or c.type == "utility" then
     utils.add_titlebar(c)
-    if c.type == "utility" then
-      -- if the client is a "utility" window (like GIMPS's toolboxes) we need
+    if c.type == "utility" or c.type == "dialog" or awful.client.floating.get(c) then
+      -- if the client is a "dialog" or "utility" window (like GIMPS's toolboxes) we need
       -- to skip below so its titlebar isn't toggled off for non-floating layouts
+      -- additionally, skip clients that are spawned as floating (like gcolor2)
       return
     end
   end
