@@ -1,5 +1,5 @@
 -- Awesome configuration, using awesome 3.5.5-1 on Arch Linux
--- Nathan Lundquist <nathan.lundquist@gmail.com>
+-- Nathan Lundquist <!-- <nathan.lundquist@gmail.com> -->
 
 -- {{{ Dependencies
 -- Packages:
@@ -24,80 +24,10 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 -- widgets
 local vicious = require("vicious")
--- }}}
-
--- {{{ Utility functions
-local utils = {
-  get_tag_by_name = function(tag_name, tags)
-    for s = 1, screen.count() do
-      for _, tag in ipairs(tags[s]) do
-        if tag.name == tag_name then
-          return tag
-        end
-      end
-    end
-
-    naughty.notify({
-      preset = naughty.config.presets.normal,
-      title = "Tag not found",
-      text = string.format("Tag with name '%s' not found", tag_name)
-    })
-  end,
-
-  add_titlebar = function(c)
-    -- buttons for the titlebar
-    local buttons = awful.util.table.join(
-      --
-      -- left-click, focus the clicked client, raise it, and move it
-      awful.button({ }, 1, function()
-        client.focus = c
-        c:raise()
-        awful.mouse.client.move(c)
-      end),
-      --
-      -- right-click, focus the clicked client, raise it, and resize it
-      awful.button({ }, 3, function()
-        client.focus = c
-        c:raise()
-        awful.mouse.client.resize(c)
-      end)
-    )
-
-    -- Widgets that are aligned to the left
-    local left_layout = wibox.layout.fixed.horizontal()
-    -- add an icon widget for the application
-    left_layout:add(awful.titlebar.widget.iconwidget(c))
-    left_layout:buttons(buttons)
-
-    -- Widgets that are aligned to the right
-    local right_layout = wibox.layout.fixed.horizontal()
-    -- add a floating button to the titlebar
-    --right_layout:add(awful.titlebar.widget.floatingbutton(c))
-    -- add a maximize button to the titlebar
-    right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-    -- add a sticky button to the titlebar
-    right_layout:add(awful.titlebar.widget.stickybutton(c))
-    -- add an on top button to the titlebar
-    right_layout:add(awful.titlebar.widget.ontopbutton(c))
-    -- add a close button to the titlebar
-    right_layout:add(awful.titlebar.widget.closebutton(c))
-
-    -- The title goes in the middle
-    local middle_layout = wibox.layout.flex.horizontal()
-    local title = awful.titlebar.widget.titlewidget(c)
-    title:set_align("center")
-    middle_layout:add(title)
-    middle_layout:buttons(buttons)
-
-    -- Now bring it all together
-    local layout = wibox.layout.align.horizontal()
-    layout:set_left(left_layout)
-    layout:set_right(right_layout)
-    layout:set_middle(middle_layout)
-
-    awful.titlebar(c):set_widget(layout)
-  end,
-}
+-- custom widgets
+local widgets = require("widgets")
+-- utility functions
+local utils = require("utils")
 -- }}}
 
 -- {{{ Error handling
@@ -133,6 +63,9 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(awful.util.getdir("config") .. "/themes/busybee/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+
+-- initialize custom widgets
+widgets.init(beautiful, " ")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -606,77 +539,6 @@ main_tasklist = {}
 local _clients_popup
 main_tasklist.buttons = buttons.main_tasklist
 
--- {{{ Main wibox widgets
-local spacer = wibox.widget.textbox()
-spacer:set_text(" ")
-
--- {{{ Pacman updates
-local pacicon = wibox.widget.imagebox()
-pacicon:set_image(beautiful.widget_pacman)
-local pacwidget = wibox.widget.textbox()
-pacwidget:set_text(pread("pacman -Qu | wc -l"))
-local pactimer = timer({timeout = 3637})
-pactimer:connect_signal(
-  "timeout",
-  function() pacwidget:set_text(pread("pacman -Qu | wc -l")) end
-)
-pactimer:start()
--- }}}
-
--- {{{ Volume
-local volicon = wibox.widget.imagebox()
-volicon:set_image(beautiful.widget_volume)
-local volwidget = wibox.widget.textbox()
-vicious.register(volwidget, vicious.widgets.volume, "$1", 13, "Master")
--- }}}
-
--- {{{ MPD
-local mpdicon = wibox.widget.imagebox()
-mpdicon:set_image(beautiful.widget_mpd)
-local mpdwidget = wibox.widget.textbox()
-vicious.register(mpdwidget, vicious.widgets.mpd, function(mpdwidget, args)
-  if args["{state}"] == "Stop" then
-    return " - "
-  else
-    return args["{Artist}"] .. ' - ' .. args["{Title}"]
-  end
-end, 11)
--- }}}
-
--- {{{ CPU usage
-local cpuicon = wibox.widget.imagebox()
-cpuicon:set_image(beautiful.widget_cpu)
-local cpuwidget = awful.widget.graph()
-cpuwidget:set_width(40)
-cpuwidget:set_background_color(beautiful.bg_normal)
-cpuwidget:set_color({
-  type = "linear",
-  from = {0, 0},
-  to = {10, 0},
-  stops = {
-    {0, "#ff5656",},
-    {0.5, "#88a175"},
-    {1, "#aecf96"},
-  },
-})
-vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
--- }}}
-
--- {{{ Memory usage
-local memicon = wibox.widget.imagebox()
-memicon:set_image(beautiful.widget_mem)
-local memwidget = wibox.widget.textbox()
-vicious.register(memwidget, vicious.widgets.mem, "$1% ($2MB/$3MB)", 13)
--- }}}
-
--- {{{ Clock and date
-local clockicon = wibox.widget.imagebox()
-clockicon:set_image(beautiful.widget_clock)
-local clockwidget = awful.widget.textclock()
--- }}}
-
--- }}}
-
 -- now actually add the wibox, layoutbox, taglist, tasklist, and promptbox to each screen
 for s = 1, screen.count() do
   -- Create a promptbox for each screen
@@ -694,47 +556,37 @@ for s = 1, screen.count() do
   main_tasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, main_tasklist.buttons)
 
   -- Create the wibox
-  main_wibox[s] = awful.wibox({ position = "top", screen = s })
+  main_wibox[s] = awful.wibox({ position = "top", screen = s, height = 12 })
 
   -- Widgets that are aligned to the left
   local left_layout = wibox.layout.fixed.horizontal()
   left_layout:add(launcher)
-  left_layout:add(spacer)
+  left_layout:add(widgets.spacer)
   left_layout:add(main_taglist[s])
-  left_layout:add(spacer)
+  left_layout:add(widgets.spacer)
   left_layout:add(main_promptbox[s])
 
   -- Widgets that are aligned to the right
   local right_layout = wibox.layout.fixed.horizontal()
   -- pacman widget
-  right_layout:add(pacicon)
-  right_layout:add(pacwidget)
-  right_layout:add(spacer)
+  widgets.add_pacman(right_layout)
+  -- disk usage widget
+  widgets.add_diskusage(right_layout, {"/home", "/games", "/videos", "/var", "/copy"})
   -- volume widget
-  right_layout:add(volicon)
-  right_layout:add(volwidget)
-  right_layout:add(spacer)
+  widgets.add_volume(right_layout)
   -- mpd widget
-  right_layout:add(mpdicon)
-  right_layout:add(mpdwidget)
-  right_layout:add(spacer)
+  widgets.add_mpd(right_layout)
   -- cpu widget
-  right_layout:add(cpuicon)
-  right_layout:add(cpuwidget)
-  right_layout:add(spacer)
+  widgets.add_cpu(right_layout)
   -- memory widget
-  right_layout:add(memicon)
-  right_layout:add(memwidget)
-  right_layout:add(spacer)
+  widgets.add_mem(right_layout)
+  -- clock widget
+  widgets.add_clock(right_layout)
   -- add a systray to the first screen
   if s == 1 then 
     right_layout:add(wibox.widget.systray()) 
-    right_layout:add(spacer)
+    right_layout:add(widgets.spacer)
   end
-  -- clock widget
-  right_layout:add(clockicon)
-  right_layout:add(clockwidget)
-  right_layout:add(spacer)
   -- layouts widget
   right_layout:add(main_layoutbox[s])
 
@@ -782,6 +634,10 @@ awful.rules.rules = {
     rule = { class = "pinentry" },
     properties = { floating = true } 
   },
+  {
+    rule = { class = "Xmessage" },
+    properties = { floating = true },
+  },
   { 
     rule = { class = "gimp" },
     properties = { floating = true } 
@@ -790,6 +646,13 @@ awful.rules.rules = {
     rule = { class = "luakit" },
     properties = {
       tag = utils.get_tag_by_name("web", tags),
+      switchtotag = true
+    }
+  },
+  {
+    rule = { class = "vdpau", instance = "MPlayer" },
+    properties = {
+      tag = utils.get_tag_by_name("vids", tags),
       switchtotag = true
     }
   },
