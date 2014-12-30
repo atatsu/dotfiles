@@ -65,7 +65,7 @@ beautiful.init(awful.util.getdir("config") .. "/themes/busybee/theme.lua")
 --beautiful.init("/usr/share/awesome/themes/default/theme.lua")
 
 -- initialize custom widgets
-widgets.init(beautiful, " ")
+widgets.init()
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
@@ -556,7 +556,11 @@ for s = 1, screen.count() do
   main_taglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, main_taglist.buttons)
 
   -- Create a tasklist widget
-  main_tasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, main_tasklist.buttons)
+  main_tasklist[s] = awful.widget.tasklist(
+    s, 
+    awful.widget.tasklist.filter.minimizedcurrenttags, 
+    main_tasklist.buttons
+  )
 
   -- Create the wibox
   main_wibox[s] = awful.wibox({ position = "top", screen = s, height = 12 })

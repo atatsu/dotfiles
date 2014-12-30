@@ -1,6 +1,7 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
+local beautiful = require("beautiful")
 
 -- function aliases
 local pread = awful.util.pread
@@ -8,7 +9,6 @@ local sexec = awful.util.spawn_with_shell
 local exec = awful.util.spawn
 
 -- initialized after module loaded
-local beautiful
 local spacer_text
 
 local M = {}
@@ -287,9 +287,8 @@ function M.add_diskusage(layout, mounts, width)
 end
 -- }}}
 
-function M.init(_beautiful, _spacer_text)
-  beautiful = _beautiful
-  spacer_text = _spacer_text
+function M.init(_spacer_text)
+  spacer_text = _spacer_text or " "
 
   create_spacer()
 end
