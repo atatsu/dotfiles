@@ -342,7 +342,7 @@ buttons = {
     --
     -- Menubar
     --
-    -- mod + shift + p, show the menubar (the one that shows .desktop entries)
+    -- mod + shift + m, show the menubar (the one that shows .desktop entries)
     awful.key({ modkey, "Shift" }, "m", function() menubar.show() end)
   ),
   -- }}}
@@ -365,8 +365,11 @@ buttons = {
     -- mod + o, move focused client to next screen
     awful.key({ modkey, }, "o", awful.client.movetoscreen),
     --
-    -- mod + t, toggle focused client state of being on top of other windows
-    awful.key({ modkey, }, "t", function (c) c.ontop = not c.ontop end),
+    -- mod + shift + t, toggle focused client state of being on top of other windows
+    awful.key({ modkey, "Shift" }, "t", function (c) c.ontop = not c.ontop end),
+    --
+    -- mod + t, toggle focused client titlebar
+    awful.key({ modkey, }, "t", awful.titlebar.toggle),
     --
     -- mod + shift + n, minimize the focused client
     awful.key({ modkey, "Shift" }, "n", function (c)

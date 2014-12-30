@@ -1,6 +1,6 @@
 ------------------------------------
 --    "BusyBee" awesome theme     --
---  By Nathan Lundquist (Atatsu)  --
+--  By Nathan Lundquist (atatsu)  --
 --       License: GNU GPL v2      -- 
 ------------------------------------
 
@@ -60,7 +60,7 @@ theme.taglist_squares_unsel = theme.confdir .. "taglist/squarep.png"
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 --theme.menu_submenu_icon = nil
---theme.menu_height = 15
+theme.menu_height = 12
 --theme.menu_width  = 100
 
 -- {{{ Titlebar icons
@@ -114,6 +114,12 @@ theme.widget_pacman = theme.confdir .. "widgets/pacman.png"
 theme.widget_volume = theme.confdir .. "widgets/vol.png"
 theme.widget_mpd = theme.confdir .. "widgets/music.png"
 theme.widget_disk = theme.confdir .. "widgets/disk.png"
+theme.widget_disk_2 = theme.confdir .. "widgets/disk_2.png"
+theme.widget_disk_3 = theme.confdir .. "widgets/disk_3.png"
+theme.widget_disk_4 = theme.confdir .. "widgets/disk_4.png"
+theme.widget_disk_5 = theme.confdir .. "widgets/disk_5.png"
+theme.widget_disk_6 = theme.confdir .. "widgets/disk_6.png"
+theme.widget_disk_7 = theme.confdir .. "widgets/disk_7.png"
 -- }}}
 theme.awesome_icon = theme.confdir .. "awesome.png"
 

@@ -154,6 +154,10 @@ end
 -- each mount point along with its size, used, avail, and use%, as 
 -- given with the `df` command. If no `width` is supplied will
 -- try go determine best width based on current theme font size.
+-- Uses `theme.widget_disk` for its icon. If `theme.widget_disk_[2-7]`
+-- are available it will use them next to each listing depending
+-- disk % use for a graphical representation of how much disk space
+-- is being used.
 -- @param layout A layout widget from `wibox.layout.*`
 -- @param mounts An array of mountpoints
 -- @param width Width of the pop-up (optional)
@@ -215,13 +219,37 @@ function M.add_diskusage(layout, mounts, width)
         -- into an items table that can be used for the menu
         for _, row in ipairs(values) do
           local item_row = {}
+          local usage_icon
           for i, v in ipairs(row) do
             local len = column_len[i]
             local diff = column_len[i] - v:len()
             local col = v .. string.rep(" ", diff)
             item_row[#item_row+1] = col
+
+            -- select an icon to use based on use%
+            if not usage_icon then
+              local found, _, use_percent = v:find("^([0-9.]+)%%$")
+              if found then
+                use_percent = tonumber(use_percent)
+                if use_percent < 15 then
+                  usage_icon = beautiful.widget_disk
+                elseif use_percent < 30 then
+                  usage_icon = beautiful.widget_disk_2
+                elseif use_percent < 45 then
+                  usage_icon = beautiful.widget_disk_3
+                elseif use_percent < 60 then
+                  usage_icon = beautiful.widget_disk_4
+                elseif use_percent < 75 then
+                  usage_icon = beautiful.widget_disk_5
+                elseif use_percent < 90 then
+                  usage_icon = beautiful.widget_disk_6
+                else
+                  usage_icon = beautiful.widget_disk_7
+                end
+              end
+            end
           end
-          items[#items+1] = {table.concat(item_row, " "), ""}
+          items[#items+1] = {table.concat(item_row, " "), "", usage_icon}
         end
 
         if not width then
