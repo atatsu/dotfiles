@@ -22,8 +22,8 @@ local colors = {
 local theme = {}
 theme.confdir = awful.util.getdir("config") .. "/themes/busybee/"
 
---theme.font = "glisp 8"
-theme.font = "terminus 8"
+theme.font = "glisp 8"
+--theme.font = "terminus 8"
 
 theme.bg_normal = colors.darkgrey
 theme.bg_focus = colors.midgrey

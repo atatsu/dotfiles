@@ -49,14 +49,16 @@ URxvt.cursorColor: #DCDCCC
 !
 ! Pseudo Transparency
 URxvt*.depth: 32
-URxvt*.background: rgba:0000/0000/0000/0000
+!URxvt*.background: rgba:0000/0000/0000/0000
 !URxvt.shading:     30
 URxvt.transparent: false
 URxvt.buffered: true
 URxvt.reverseVideo: false
 ! 
 !URxvt*.background:       #1c1c1c
+URxvt*.background:       [25]#000000
 URxvt*.foreground:       #c8c6c3
+!URxvt*.foreground:       #ffffff
 ! black + red
 URxvt*.color0:      #000000
 URxvt*.color1:      #a30811
