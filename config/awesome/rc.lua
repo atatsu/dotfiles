@@ -328,10 +328,13 @@ buttons = {
     -- the entered Lua code
     awful.key({ modkey }, "x",
       function ()
-        awful.prompt.run({ prompt = "Run Lua code: " },
-        main_promptbox[mouse.screen].widget,
-        awful.util.eval, nil,
-        awful.util.getdir("cache") .. "/history_eval")
+        awful.prompt.run(
+          { prompt = "Run Lua code: " },
+          main_promptbox[mouse.screen].widget,
+          awful.util.eval, 
+          nil,
+          awful.util.getdir("cache") .. "/history_eval"
+        )
       end
     ),
     --
