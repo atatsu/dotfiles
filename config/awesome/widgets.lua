@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 local vicious = require("vicious")
 local beautiful = require("beautiful")
+local giblets = require("giblets")
 
 -- function aliases
 local pread = awful.util.pread
@@ -175,141 +176,30 @@ end
 -- }}}
 
 -- {{{ Disk usage widget
---- Add a widget showing disk space usage.
--- Adds a widget that when clicked displays a pop-up displaying
--- each mount point along with its size, used, avail, and use%, as 
--- given with the `df` command. If no `width` is supplied will
--- try go determine best width based on current theme font size.
--- Uses `theme.widget_disk` for its icon. If `theme.widget_disk_[2-7]`
--- are available it will use them next to each listing depending
--- disk % use for a graphical representation of how much disk space
--- is being used.
--- @param layout A layout widget from `wibox.layout.*`
--- @param mounts An array of mountpoints
--- @param width Width of the pop-up (optional)
-function M.add_diskusage(layout, mounts, width)
+function M.add_diskusage(layout)
   if not cache.diskusage then
-    -- command to get partition size, used, avail, and use%
-    local cmd_template = "df -h %s | tail -n 1 | awk '{print $2, $3, $4, $5}'"
-    -- set icon
-    local diskicon = wibox.widget.imagebox()
-    diskicon:set_image(beautiful.widget_disk)
-    -- buttons
-    -- left-click, show a pop-up menu of mount points and their max capacity and filled space
-    -- if the menu is already open, close it
-    local _disks_popup
-    local diskbuttons = awful.button(
-      {},
-      1, 
-      function()
-        if _disks_popup then
-          _disks_popup:hide()
-          _disks_popup = nil
-        else
-          -- our table that all the "menu" entries will be stored in
-          local items = {}
-
-          -- table used in determining the max column lengh so that 
-          -- everything can be formatted nicely and have a semblence of columns 
-          -- while being displayed
-          local column_len = {0, 0, 0, 0, 0}
-          
-          -- table to store all the command output values in
-          -- initialized with our column headers
-          local values = {
-            {"Mount point", "Size", "Used", "Avail", "Use%"}
-          }
-          for i, v in ipairs(mounts) do
-            local cmd = string.format(cmd_template, v)
-            local output = pread(cmd)
-            local found, _, size, used, avail, use_percent = output:find(
-              "^([0-9.]+%u*) ([0-9.]+%u*) ([0-9.]+%u*) ([0-9.]+%%)"
-            )
-            if not found then
-              -- error with command
-              values[#values+1] = {v, "?", "?", "?", "?"}
-            else
-              values[#values+1] = {v, size, used, avail, use_percent}
-            end
-          end
-
-          -- now determine what each column's length needs to be
-          for _, row in ipairs(values) do
-            for i, v in ipairs(row) do
-              if v:len() > column_len[i] then
-                column_len[i] = v:len()
-              end
-            end
-          end
-
-          -- now that we have the length each column needs to be format everything
-          -- into an items table that can be used for the menu
-          for _, row in ipairs(values) do
-            local item_row = {}
-            local usage_icon
-            for i, v in ipairs(row) do
-              local len = column_len[i]
-              local diff = column_len[i] - v:len()
-              local col = v .. string.rep(" ", diff)
-              item_row[#item_row+1] = col
-
-              -- select an icon to use based on use%
-              if not usage_icon then
-                local found, _, use_percent = v:find("^([0-9.]+)%%$")
-                if found then
-                  use_percent = tonumber(use_percent)
-                  if use_percent < 15 then
-                    usage_icon = beautiful.widget_disk
-                  elseif use_percent < 30 then
-                    usage_icon = beautiful.widget_disk_2
-                  elseif use_percent < 45 then
-                    usage_icon = beautiful.widget_disk_3
-                  elseif use_percent < 60 then
-                    usage_icon = beautiful.widget_disk_4
-                  elseif use_percent < 75 then
-                    usage_icon = beautiful.widget_disk_5
-                  elseif use_percent < 90 then
-                    usage_icon = beautiful.widget_disk_6
-                  else
-                    usage_icon = beautiful.widget_disk_7
-                  end
-                end
-              end
-            end
-            items[#items+1] = {table.concat(item_row, " "), "", usage_icon}
-          end
-
-          if not width then
-            -- determine how wide our "menu" needs to be based on the longest row
-            local menu_width = 0
-            for _, row in ipairs(items) do
-              local row_text = row[1]
-              if row_text:len() > menu_width then
-                menu_width = row_text:len()
-              end
-            end
-
-            local theme = beautiful.get()
-            local font = theme.font
-            local found, _, size = font:find("^.+ ([0-9]*)$")
-            if not found then
-              width = 250
-            else
-              width = size * menu_width
-            end
-          end
-
-          _disks_popup = awful.menu({
-            items = items,
-            theme = {width = width}
-          })
-          _disks_popup:show()
-        end
-      end
+    local diskusage = giblets.gizmos.diskusage(
+      beautiful.widget_disk,
+      {
+        {mount = "/home", label = "home"},
+        {mount = "/games", label = "games"},
+        {mount = "/videos", label = "vids"},
+        {mount = "/home/atatsu/dev", label = "dev"},
+        {mount = "/copy", label = "copy"},
+        {mount = "/var", label = "var"},
+      },
+      {
+        width = 306,
+        height = 180,
+        --border_width = 1,
+        --border_color = "#ffffff",
+      }
     )
-    diskicon:buttons(diskbuttons)
+    diskusage:tune_progressbars(function(progressbar)
+      progressbar:set_ticks_size({width = 8, height = 6})
+    end)
 
-    cache.diskusage = {diskicon, M.spacer}
+    cache.diskusage = {diskusage, M.spacer}
   end
 
   for _, v in ipairs(cache.diskusage) do

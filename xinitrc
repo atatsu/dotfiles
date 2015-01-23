@@ -34,6 +34,6 @@ xcompmgr -c -t-5 -l-5 -r4.2 -o.55 -f -D5 &
 
 #start awesome
 wm_bin=${1:-awesome}
-eval $(cat ~/.fehbg)
+#eval $(cat ~/.fehbg)
 export LC_ALL=en_US.UTF-8
 exec ssh-agent $wm_bin

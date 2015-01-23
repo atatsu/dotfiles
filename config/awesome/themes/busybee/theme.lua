@@ -26,7 +26,8 @@ theme.font = "glisp 8"
 --theme.font = "terminus 8"
 
 theme.bg_normal = colors.darkgrey
-theme.bg_focus = colors.midgrey
+--theme.bg_focus = colors.midgrey
+theme.bg_focus = colors.darkgrey
 theme.bg_urgent = colors.darkgrey
 theme.bg_minimize = colors.darkgrey
 theme.bg_systray = theme.bg_normal
@@ -88,7 +89,7 @@ theme.titlebar_maximized_button_focus_inactive = theme.confdir .. "titlebar/maxi
 theme.titlebar_maximized_button_normal_inactive = theme.confdir .. "titlebar/maximized_normal_inactive.png"
 -- }}}
 
-theme.wallpaper = theme.confdir .. "background.jpg"
+theme.wallpaper = theme.confdir .. "wallpaper.png"
 
 -- {{{ Layout icons
 theme.layout_fairh = theme.confdir .. "layouts/fairh.png"
@@ -126,5 +127,11 @@ theme.awesome_icon = theme.confdir .. "awesome.png"
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
 theme.icon_theme = nil
+
+-- {{{ Giblets
+theme.giblets = {}
+theme.giblets.diskusage = {}
+theme.giblets.diskusage.window_border_width = 0
+-- }}}
 
 return theme

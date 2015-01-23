@@ -26,6 +26,7 @@ local menubar = require("menubar")
 local vicious = require("vicious")
 -- custom widgets
 local widgets = require("widgets")
+local giblets = require("giblets")
 -- utility functions
 local utils = require("utils")
 -- }}}
@@ -119,6 +120,7 @@ local layouts = {
 -- placeholder for all the main widgets so they can be referenced in the 
 -- keybindings and buttons if need be
 local main_menu, main_promptbox, main_wibox, main_layoutbox, main_tasklist, main_taglist
+local termleaf
 
 -- table for all button bindings so they're all centralized and easy to find/modify
 local buttons
@@ -232,6 +234,9 @@ buttons = {
 
   -- {{{ Global buttons/keybindings
   globalkeys = awful.util.table.join(
+    --
+    -- mod + `, show terminal Leaf
+    awful.key({ modkey }, "`", function() termleaf:toggle() end),
     --
     -- mod + left, go to previous tag
     awful.key({ modkey, }, "p", awful.tag.viewprev),
@@ -484,11 +489,13 @@ local tags = {
     names = {
       "chat",
       "vids",
+      "music",
       "misc",
     },
     layout = {
       layout.left,
-      layout.max,
+      layout.tile,
+      layout.tile,
       layout.tile,
     }
   }
@@ -503,6 +510,10 @@ for s = 1, screen.count() do
     tags[s] = awful.tag({1, 2, 3, 4, 5, 6, 7, 8, 9}, s, layout.tile)
   end
 end
+-- }}}
+
+-- {{{ Util widget things
+termleaf = giblets.utils.leaf("urxvt")
 -- }}}
 
 -- {{{ Menu
@@ -581,7 +592,7 @@ for s = 1, screen.count() do
   -- pacman widget
   widgets.add_pacman(right_layout)
   -- disk usage widget
-  widgets.add_diskusage(right_layout, {"/home", "/games", "/videos", "/var", "/copy"})
+  widgets.add_diskusage(right_layout)
   -- volume widget
   widgets.add_volume(right_layout)
   -- mpd widget
@@ -592,8 +603,9 @@ for s = 1, screen.count() do
   widgets.add_mem(right_layout)
   -- clock widget
   widgets.add_clock(right_layout)
-  -- add a systray to the first screen
-  if s == 1 then 
+  -- add a systray to the first screen if only one screen is available, otherwise
+  -- add it to the second screen
+  if (screen.count() > 1 and s == 2) or (screen.count() == 1) then
     right_layout:add(wibox.widget.systray()) 
     right_layout:add(widgets.spacer)
   end
@@ -660,7 +672,7 @@ awful.rules.rules = {
     }
   },
   {
-    rule = { class = "vdpau", instance = "MPlayer" },
+    rule = { class = "MPlayer", instance = "vdpau" },
     properties = {
       tag = utils.get_tag_by_name("vids", tags),
       switchtotag = true

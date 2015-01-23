@@ -6,6 +6,8 @@ if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
 }
+# for luakit
+export LUA_CPATH="/usr/lib/lua/5.1/?.so;$LUA_CPATH"
 
 # {{{ Set the appropriate paths for lua5.1 and lua5.2
 # }}}
