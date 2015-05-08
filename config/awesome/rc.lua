@@ -481,7 +481,7 @@ local tags = {
       layout.tile,
       layout.floating,
       layout.left,
-      layout.fullscreen,
+      layout.tile,
       layout.tile,
     }
   },
@@ -493,7 +493,7 @@ local tags = {
       "misc",
     },
     layout = {
-      layout.left,
+      layout.tile,
       layout.tile,
       layout.tile,
       layout.tile,
@@ -660,6 +660,10 @@ awful.rules.rules = {
     rule = { class = "Xmessage" },
     properties = { floating = true },
   },
+  {
+    rule = { class = "Pavucontrol" },
+    properties = { floating = true },
+  },
   { 
     rule = { class = "gimp" },
     properties = { floating = true } 
@@ -669,6 +673,20 @@ awful.rules.rules = {
     properties = {
       tag = utils.get_tag_by_name("web", tags),
       switchtotag = true
+    }
+  },
+  {
+    rule = { class = "Chromium" },
+    properties = {
+      tag = utils.get_tag_by_name("web", tags),
+      switchtotag = false
+    }
+  },
+  {
+    rule = { class = "Firefox" },
+    properties = {
+      tag = utils.get_tag_by_name("web", tags),
+      switchtotag = false
     }
   },
   {
