@@ -6,6 +6,9 @@ if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
 }
+if [[ -d ~/.gem ]] {
+    PATH=$PATH:~/.gem/ruby/2.2.0/bin
+}
 # for luakit
 export LUA_CPATH="/usr/lib/lua/5.1/?.so;$LUA_CPATH"
 
@@ -81,7 +84,7 @@ alias brd='git branch -d'
 alias brD='git branch -D'
 alias sw='git checkout'
 alias swc='git checkout -b'
-alias gtree='git log --graph --oneline --all'
+alias gl='git log --graph --oneline --all'
 # }}}
 
 # }}}
