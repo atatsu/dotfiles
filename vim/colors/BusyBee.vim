@@ -32,7 +32,7 @@ hi Cursor 		   guifg=NONE    guibg=#626262 gui=none ctermbg=none
 "hi Cursor 		   guifg=NONE    guibg=#626262 gui=none ctermbg=241
 hi Normal 		   guifg=#e2e2e5 guibg=#202020 gui=none ctermfg=253 ctermbg=none
 "hi Normal 		   guifg=#e2e2e5 guibg=#202020 gui=none ctermfg=253 ctermbg=234
-hi NonText 		   guifg=#808080 guibg=#202020 gui=none ctermfg=244 ctermbg=none
+hi NonText 		   guifg=#404040 guibg=#202020 gui=none ctermfg=237 ctermbg=none
 "hi NonText 		   guifg=#808080 guibg=#202020 gui=none ctermfg=244 ctermbg=235
 hi LineNr 		   guifg=#303030 guibg=#202020 gui=none ctermfg=244 ctermbg=none
 "hi LineNr 		   guifg=#303030 guibg=#202020 gui=none ctermfg=244 ctermbg=232
@@ -43,7 +43,7 @@ hi VertSplit 	   guifg=#444444 guibg=#303030 gui=none ctermfg=238 ctermbg=none
 hi Folded 		   guibg=#384048 guifg=#a0a8b0 gui=none ctermbg=4 ctermfg=248
 hi Title		   guifg=#f6f3e8 guibg=NONE	gui=bold ctermfg=254 cterm=bold
 hi Visual		   guifg=#faf4c6 guibg=#3c414c gui=none ctermfg=254 ctermbg=4
-hi SpecialKey	   guifg=#808080 guibg=#343434 gui=none ctermfg=244 ctermbg=none
+hi SpecialKey	   guifg=#404040 guibg=#343434 gui=none ctermfg=237 ctermbg=none
 "hi SpecialKey	   guifg=#808080 guibg=#343434 gui=none ctermfg=244 ctermbg=236
 
 " Syntax highlighting

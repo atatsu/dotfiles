@@ -107,17 +107,27 @@ let g:pymode_options_max_line_length = 95
 """" BufExplorer
 "map <leader>b :BufExplorer<CR>
 
+"""" Syntastic
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_aggregate_errors = 1
+let g:syntastic_javascript_checkers = ["jshint", "jscs"]
+
 """" Key Mappings
 " bind ctrl+space for omnicompletion
 inoremap <Nul> <C-x><C-o>
 " Code folding toggle
 nmap <CR> za 
+" the following prevents the mapped <CR> from interfering
+" with selection of history items and jumping to errors
+:autocmd CmdwinEnter * nnoremap <CR> <CR>
+:autocmd BufReadPost quickfix nnoremap <CR> <CR>
 " git diff
 nnoremap <silent> <F10> :w<CR>:!git diff %<CR>
 " zsh
-nnoremap <silent> <F3> :w<CR>:!zsh<CR>
+nnoremap <silent> <F3> :!zsh<CR>
 " ranger
-nnoremap <silent> <F4> :w<CR>:!ranger<CR>
+nnoremap <silent> <F4> :!ranger<CR>
 " buffer sizing
 map <silent> <A-h> <C-W><
 map <silent> <A-j> <C-W>-
@@ -128,10 +138,8 @@ map <silent> <C-h> <C-W>h
 map <silent> <C-k> <C-W>k
 map <silent> <C-l> <C-W>l
 map <silent> <C-j> <C-W>j
-
-"""" Trac Servers
-let g:tracServerList = {}
-" let g:tracServerList['(Server Name)'] = 'http://(user):(password)@(trac serverpath)/login/xmlrpc' 
+" reformat file
+map <F7> mzgg=G`z
 
 call pathogen#infect()
 call pathogen#helptags()
