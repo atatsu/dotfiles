@@ -67,3 +67,9 @@
 [submodule "vim/bundle-available/python-mode"]
 	path = vim/bundle-available/python-mode
 	url = git://github.com/klen/python-mode.git
+[submodule "vim/bundle-available/vim-jasmine"]
+	path = vim/bundle-available/vim-jasmine
+	url = https://github.com/glanotte/vim-jasmine.git
+[submodule "vim/bundle-available/javascript-libraries-syntax.vim"]
+	path = vim/bundle-available/javascript-libraries-syntax.vim
+	url = https://github.com/othree/javascript-libraries-syntax.vim.git

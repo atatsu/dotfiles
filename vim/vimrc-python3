@@ -149,5 +149,10 @@ map <silent> <C-j> <C-W>j
 " reformat file
 map <F7> mzgg=G`z
 
+"""" vim-jasmine
+autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
+"""" javascript-libraries-syntax
+let g:used_javascript_libs = 'angularjs'
+
 call pathogen#infect()
 call pathogen#helptags()
