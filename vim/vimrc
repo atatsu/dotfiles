@@ -1,12 +1,16 @@
+scriptencoding utf-8
+set encoding=utf-8
+
+setlocal lcs=tab:»·,trail:·,eol:$
+set list
 set bs=2
 set t_Co=256
 set nocp
-set encoding=utf-8
 
-set softtabstop=4
-set tabstop=4
-set expandtab
-set shiftwidth=4
+set softtabstop=2
+set tabstop=2
+set noexpandtab
+set shiftwidth=2
 set autoindent
 set hidden	    "buffers keep change history
 set scrolloff=3	    "keep 3 lines below and above cursor
@@ -112,6 +116,7 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
+let g:syntastic_quiet_messages = {"level": []}
 
 """" Key Mappings
 " bind ctrl+space for omnicompletion
@@ -122,8 +127,11 @@ nmap <CR> za
 " with selection of history items and jumping to errors
 :autocmd CmdwinEnter * nnoremap <CR> <CR>
 :autocmd BufReadPost quickfix nnoremap <CR> <CR>
-" git diff
-nnoremap <silent> <F10> :w<CR>:!git diff %<CR>
+" show whitespace
+nnoremap <F10> :<C-U>setlocal list! list? <CR>
+"nnoremap <F10> :<C-U>setlocal lcs=tab:»·,trail:·,eol:$ list! list? <CR>
+" remove trailing whitespace
+nnoremap <Leader>rtw :%s/\s\+$//e<CR>
 " zsh
 nnoremap <silent> <F3> :!zsh<CR>
 " ranger
@@ -140,6 +148,11 @@ map <silent> <C-l> <C-W>l
 map <silent> <C-j> <C-W>j
 " reformat file
 map <F7> mzgg=G`z
+
+"""" vim-jasmine
+autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
+"""" javascript-libraries-syntax
+let g:used_javascript_libs = 'angularjs'
 
 call pathogen#infect()
 call pathogen#helptags()
