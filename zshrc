@@ -6,9 +6,12 @@ if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
 }
-if [[ -d ~/.gem ]] {
-    PATH=$PATH:~/.gem/ruby/2.2.0/bin
-}
+
+# add all ruby gem bin folders to path
+for dir in $HOME/.gem/ruby/*; do
+	[[ -d "$dir/bin" ]] && PATH="${dir}/bin:${PATH}"
+done
+
 # for luakit
 export LUA_CPATH="/usr/lib/lua/5.1/?.so;$LUA_CPATH"
 
