@@ -479,7 +479,7 @@ local tags = {
     layout = {
       layout.magnifier,
       layout.tile,
-      layout.floating,
+      layout.tile,
       layout.left,
       layout.tile,
       layout.tile,
@@ -709,8 +709,14 @@ awful.rules.rules = {
         awful.client.floating.set(c, true)
         c:raise()
         awful.titlebar.show(c)
+			-- The trade window (and I'm sure other web windows) spawn and have
+			-- no name before they are fully loaded. Float 'em!
+			elseif c.name == nil or c.name == "" then
+				awful.client.floating.set(c, true)
+				c:raise()
+				awful.titlebar.show(c)
       elseif c.name == "Steam" then
-        awful.tag.setmwfact(0.7, tag)
+        awful.tag.setmwfact(0.75, tag)
         --awful.client.setmaster(c)
         -- I'm not sure if load order affects the `setmaster` and `setslave` calls
         -- but only calling `setmaster` for the main Steam window doesn't seem to be
