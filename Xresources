@@ -29,8 +29,8 @@ URxvt*.override-redirect: false
 ! Extensions
 URxvt*.perl-lib:				 /usr/lib/URxvt/perl/
 URxvt*.perl-ext-common:  default,matcher,searchable-scrollback
-URxvt*.urlLauncher:			 /usr/local/bin/firefox
-URxvt*.matcher.button:	 1
+URxvt*.urlLauncher:			 chromium
+URxvt*.matcher.button:	 2
 ! So we catch even nasty URLs
 URxvt.cutchars:					`()*<>[]{|}
 !
