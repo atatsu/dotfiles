@@ -9,8 +9,9 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
 fi
 
 # {{{ Display settings
-if [[ `xrandr | grep -c "1280x1024"` -gt 1 ]]; then
-    xrandr --output DVI-I-2 --primary --mode 1680x1050 --output DVI-I-3 --auto --right-of DVI-I-2
+if [[ `xrandr | grep -c ' connected'` -eq 3 ]]; then
+		echo 'yes'
+		xrandr --output DVI-I-1 --primary --auto --output DVI-D-0 --auto --right-of DVI-I-1 --output HDMI-0 --auto --left-of DVI-I-1
 else
     xrandr --output DVI-1 --primary --mode 1680x1050
 fi;

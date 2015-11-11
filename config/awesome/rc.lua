@@ -271,10 +271,10 @@ buttons = {
 		awful.key({ modkey, "Shift"		}, "k", function() awful.client.swap.byidx(-1) end),
 		--
 		-- mod + control + j, focus next screen
-		awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_relative(1) end),
+		awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_bydirection("right", mouse.screen) end),
 		--
 		-- mod + control + k, focus prev screen
-		awful.key({ modkey, "Control" }, "k", function() awful.screen.focus_relative(-1) end),
+		awful.key({ modkey, "Control" }, "k", function() awful.screen.focus_bydirection("left", mouse.screen) end),
 		--
 		-- mod + u, jump to the client that received the urgent hint first
 		awful.key({ modkey, }, "u", awful.client.urgent.jumpto),
@@ -368,10 +368,13 @@ buttons = {
 		awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle),
 		-- 
 		-- mod + control + enter, swap focused client with client in master window
-		awful.key({ modkey, "Control" }, "Return", function(c) c:swap(awful.client.getmaster()) end),
+		awful.key({ modkey, "Control" }, "Return", function(c) awful.client.setmaster(c) end),
 		--
 		-- mod + o, move focused client to next screen
-		awful.key({ modkey, }, "o", awful.client.movetoscreen),
+		awful.key({ modkey, }, "o", function (c) awful.client.movetoscreen(c, utils.next_screen()) end),
+		--
+		-- mod + shift + o, move focused client to previous screen
+		awful.key({ modkey, "Shift"}, "o", function (c) awful.client.movetoscreen(c, utils.prev_screen()) end),
 		--
 		-- mod + shift + t, toggle focused client state of being on top of other windows
 		awful.key({ modkey, "Shift" }, "t", function (c) c.ontop = not c.ontop end),
@@ -485,8 +488,8 @@ local tags = {
 	},
 	{
 		names = {
-			"chat",
-			"music",
+			"dev-alt",
+			"vids",
 			"misc",
 		},
 		layout = {
@@ -497,23 +500,26 @@ local tags = {
 	},
 	{
 		names = {
-			"dev",
-			"vids",
+			"chat",
+			"music",
+			"misc",
 		},
 		layout = {
 			layout.tile,
 			layout.tile,
+			layout.tile,
 		}
-	}
+	},
 }
 
-for s = 1, screen.count() do
-	if tags[s] then
-		tags[s] = awful.tag(tags[s].names, s, tags[s].layout)
+for scr = 1, screen.count() do
+	local scr_offset = utils.screen_override(scr)
+	if tags[scr] then
+		tags[scr] = awful.tag(tags[scr].names, scr_offset, tags[scr].layout)
 	else
 		-- if additional monitors get hooked up and haven't been accounted
 		-- for, just use the stock tag setup on them
-		tags[s] = awful.tag({1, 2, 3, 4, 5, 6, 7, 8, 9}, s, layout.tile)
+		tags[scr] = awful.tag({1, 2, 3, 4, 5, 6, 7, 8, 9}, s, layout.tile)
 	end
 end
 -- }}}
@@ -563,35 +569,36 @@ local _clients_popup
 main_tasklist.buttons = buttons.main_tasklist
 
 -- now actually add the wibox, layoutbox, taglist, tasklist, and promptbox to each screen
-for s = 1, screen.count() do
+for scr = 1, screen.count() do
+	local scr_offset = utils.screen_override(scr)
 	-- Create a promptbox for each screen
-	main_promptbox[s] = awful.widget.prompt()
+	main_promptbox[scr] = awful.widget.prompt()
 
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
-	main_layoutbox[s] = awful.widget.layoutbox(s)
-	main_layoutbox[s]:buttons(buttons.main_layoutbox)
+	main_layoutbox[scr] = awful.widget.layoutbox(scr_offset)
+	main_layoutbox[scr]:buttons(buttons.main_layoutbox)
 
 	-- Create a taglist widget
-	main_taglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, main_taglist.buttons)
+	main_taglist[scr] = awful.widget.taglist(scr_offset, awful.widget.taglist.filter.all, main_taglist.buttons)
 
 	-- Create a tasklist widget
-	main_tasklist[s] = awful.widget.tasklist(
-		s, 
+	main_tasklist[scr] = awful.widget.tasklist(
+		scr_offset, 
 		awful.widget.tasklist.filter.minimizedcurrenttags, 
 		main_tasklist.buttons
 	)
 
 	-- Create the wibox
-	main_wibox[s] = awful.wibox({ position = "top", screen = s, height = 12 })
+	main_wibox[scr] = awful.wibox({ position = "top", screen = scr_offset, height = 12 })
 
 	-- Widgets that are aligned to the left
 	local left_layout = wibox.layout.fixed.horizontal()
 	left_layout:add(launcher)
 	left_layout:add(widgets.spacer)
-	left_layout:add(main_taglist[s])
+	left_layout:add(main_taglist[scr])
 	left_layout:add(widgets.spacer)
-	left_layout:add(main_promptbox[s])
+	left_layout:add(main_promptbox[scr])
 
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
@@ -611,20 +618,20 @@ for s = 1, screen.count() do
 	widgets.add_clock(right_layout)
 	-- add a systray to the first screen if only one screen is available, otherwise
 	-- add it to the second screen
-	if (screen.count() > 1 and s == 2) or (screen.count() == 1) then
+	if (screen.count() > 1 and scr == 2) or (screen.count() == 1) then
 		right_layout:add(wibox.widget.systray()) 
 		right_layout:add(widgets.spacer)
 	end
 	-- layouts widget
-	right_layout:add(main_layoutbox[s])
+	right_layout:add(main_layoutbox[scr])
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
 	layout:set_left(left_layout)
-	layout:set_middle(main_tasklist[s])
+	layout:set_middle(main_tasklist[scr])
 	layout:set_right(right_layout)
 
-	main_wibox[s]:set_widget(layout)
+	main_wibox[scr]:set_widget(layout)
 end
 -- }}}
 
@@ -796,7 +803,8 @@ end)
 -- layout changes to a floating layout, the clients need their titlebars shown. 
 -- If the layout changes to a non-floating layout, the clients need their
 -- titlebars hidden.
-for s = 1, screen.count() do
+for scr = 1, screen.count() do
+	local s = utils.screen_override(scr)
 	local screen_tags = awful.tag.gettags(s)
 	for _, tag in ipairs(screen_tags) do
 		tag:connect_signal("property::layout", function(t)
