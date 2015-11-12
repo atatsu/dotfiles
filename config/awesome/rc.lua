@@ -572,33 +572,33 @@ main_tasklist.buttons = buttons.main_tasklist
 for scr = 1, screen.count() do
 	local scr_offset = utils.screen_override(scr)
 	-- Create a promptbox for each screen
-	main_promptbox[scr] = awful.widget.prompt()
+	main_promptbox[scr_offset] = awful.widget.prompt()
 
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
-	main_layoutbox[scr] = awful.widget.layoutbox(scr_offset)
-	main_layoutbox[scr]:buttons(buttons.main_layoutbox)
+	main_layoutbox[scr_offset] = awful.widget.layoutbox(scr_offset)
+	main_layoutbox[scr_offset]:buttons(buttons.main_layoutbox)
 
 	-- Create a taglist widget
-	main_taglist[scr] = awful.widget.taglist(scr_offset, awful.widget.taglist.filter.all, main_taglist.buttons)
+	main_taglist[scr_offset] = awful.widget.taglist(scr_offset, awful.widget.taglist.filter.all, main_taglist.buttons)
 
 	-- Create a tasklist widget
-	main_tasklist[scr] = awful.widget.tasklist(
+	main_tasklist[scr_offset] = awful.widget.tasklist(
 		scr_offset, 
 		awful.widget.tasklist.filter.minimizedcurrenttags, 
 		main_tasklist.buttons
 	)
 
 	-- Create the wibox
-	main_wibox[scr] = awful.wibox({ position = "top", screen = scr_offset, height = 12 })
+	main_wibox[scr_offset] = awful.wibox({ position = "top", screen = scr_offset, height = 12 })
 
 	-- Widgets that are aligned to the left
 	local left_layout = wibox.layout.fixed.horizontal()
 	left_layout:add(launcher)
 	left_layout:add(widgets.spacer)
-	left_layout:add(main_taglist[scr])
+	left_layout:add(main_taglist[scr_offset])
 	left_layout:add(widgets.spacer)
-	left_layout:add(main_promptbox[scr])
+	left_layout:add(main_promptbox[scr_offset])
 
 	-- Widgets that are aligned to the right
 	local right_layout = wibox.layout.fixed.horizontal()
@@ -623,15 +623,15 @@ for scr = 1, screen.count() do
 		right_layout:add(widgets.spacer)
 	end
 	-- layouts widget
-	right_layout:add(main_layoutbox[scr])
+	right_layout:add(main_layoutbox[scr_offset])
 
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
 	layout:set_left(left_layout)
-	layout:set_middle(main_tasklist[scr])
+	layout:set_middle(main_tasklist[scr_offset])
 	layout:set_right(right_layout)
 
-	main_wibox[scr]:set_widget(layout)
+	main_wibox[scr_offset]:set_widget(layout)
 end
 -- }}}
 
