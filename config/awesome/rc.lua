@@ -272,6 +272,7 @@ buttons = {
 		--
 		-- mod + control + j, focus next screen
 		awful.key({ modkey, "Control" }, "j", function() 
+			--awful.screen.focus_relative(utils.next_screen_relative())
 			awful.screen.focus_relative(utils.next_screen_relative())
 		end),
 		--
@@ -375,10 +376,14 @@ buttons = {
 		awful.key({ modkey, "Control" }, "Return", function(c) awful.client.setmaster(c) end),
 		--
 		-- mod + o, move focused client to next screen
-		awful.key({ modkey, }, "o", function (c) awful.client.movetoscreen(c, utils.next_screen()) end),
+		awful.key({ modkey, }, "o", function (c) 
+			awful.client.movetoscreen(c, utils.next_screen()) 
+		end),
 		--
 		-- mod + shift + o, move focused client to previous screen
-		awful.key({ modkey, "Shift"}, "o", function (c) awful.client.movetoscreen(c, utils.prev_screen()) end),
+		awful.key({ modkey, "Shift"}, "o", function (c) 
+			awful.client.movetoscreen(c, utils.prev_screen()) 
+		end),
 		--
 		-- mod + shift + t, toggle focused client state of being on top of other windows
 		awful.key({ modkey, "Shift" }, "t", function (c) c.ontop = not c.ontop end),
