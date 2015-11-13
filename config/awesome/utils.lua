@@ -86,7 +86,7 @@ end
 
 function M.next_screen()
 	local cur_scr = screen_overrides[mouse.screen]
-	local next_scr = cur_scr + 1
+	local next_scr = screen_overrides[cur_scr + 1]
 	if next_scr > screen.count() then
 		next_scr = 1
 	end
@@ -102,6 +102,56 @@ function M.prev_screen()
 	end
 
 	return screen_overrides[prev_scr] or prev_scr
+end
+
+function M.next_screen_relative()
+	local cur_scr_awesome = mouse.screen -- 2
+	local cur_scr_override = screen_overrides[mouse.screen] -- 3
+
+	local intended_next = cur_scr_override + 1
+	if intended_next > screen.count() then
+		-- need to go to the first screen
+		intended_next = 1
+	end
+
+	local jumps = 1
+	for i = 1, screen.count() do
+		intended_awesome = cur_scr_awesome + i
+		if intended_awesome > screen.count() then
+			intended_awesome = intended_awesome - screen.count()
+		end
+
+		if screen_overrides[intended_awesome] == intended_next then
+			return jumps
+		end
+
+		jumps = jumps + 1
+	end
+end
+
+function M.prev_screen_relative()
+	local cur_scr_awesome = mouse.screen
+	local cur_scr_override = screen_overrides[mouse.screen]
+
+	local intended_prev = cur_scr_override - 1
+	if intended_prev < 1 then
+		-- need to go to last screen
+		intended_prev = screen.count()
+	end
+
+	local jumps = 1
+	for i = 1, screen.count() do
+		intended_awesome = cur_scr_awesome + i
+		if intended_awesome > screen.count() then
+			intended_awesome = intended_awesome - screen.count()
+		end
+
+		if screen_overrides[intended_awesome] == intended_prev then
+			return jumps
+		end
+
+		jumps = jumps + 1
+	end
 end
 
 return M

@@ -271,10 +271,14 @@ buttons = {
 		awful.key({ modkey, "Shift"		}, "k", function() awful.client.swap.byidx(-1) end),
 		--
 		-- mod + control + j, focus next screen
-		awful.key({ modkey, "Control" }, "j", function() awful.screen.focus_bydirection("right", mouse.screen) end),
+		awful.key({ modkey, "Control" }, "j", function() 
+			awful.screen.focus_relative(utils.next_screen_relative())
+		end),
 		--
 		-- mod + control + k, focus prev screen
-		awful.key({ modkey, "Control" }, "k", function() awful.screen.focus_bydirection("left", mouse.screen) end),
+		awful.key({ modkey, "Control" }, "k", function() 
+			awful.screen.focus_relative(utils.prev_screen_relative())
+		end),
 		--
 		-- mod + u, jump to the client that received the urgent hint first
 		awful.key({ modkey, }, "u", awful.client.urgent.jumpto),
