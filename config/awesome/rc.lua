@@ -616,7 +616,7 @@ for scr = 1, screen.count() do
 	-- pacman widget
 	widgets.add_pacman(right_layout)
 	-- disk usage widget
-	widgets.add_diskusage(right_layout)
+	--widgets.add_diskusage(right_layout)
 	-- volume widget
 	widgets.add_volume(right_layout)
 	-- mpd widget
