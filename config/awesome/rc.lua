@@ -22,8 +22,6 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
--- widgets
-local vicious = require("vicious")
 -- custom widgets
 local widgets = require("widgets")
 local giblets = require("giblets")
@@ -62,8 +60,8 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init(awful.util.getdir("config") .. "/themes/busybee/theme.lua")
---beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+--beautiful.init(awful.util.getdir("config") .. "/themes/busybee/theme.lua")
+beautiful.init(awful.util.getdir("config") .. "/themes/stark/theme.lua")
 
 -- initialize custom widgets
 widgets.init()
@@ -490,7 +488,7 @@ local tags = {
 		layout = {
 			layout.magnifier,
 			layout.tile,
-			layout.tile,
+			layout.floating,
 			layout.left,
 			layout.tile,
 		}
@@ -567,6 +565,8 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 main_wibox = {}
 main_promptbox = {}
 main_layoutbox = {}
+footer_wibox = {}
+hdds = {}
 
 -- Create a Tag for each screen
 main_taglist = {}
@@ -598,9 +598,11 @@ for scr = 1, screen.count() do
 		main_tasklist.buttons
 	)
 
-	-- Create the wibox
+	-- Create the wibox(s)
 	main_wibox[scr_offset] = awful.wibox({ position = "top", screen = scr_offset, height = 12 })
+	footer_wibox[scr_offset] = awful.wibox({ position = "bottom", screen = scr_offset, height = 12})
 
+	-- {{{ Main Wibox widgets
 	-- Widgets that are aligned to the left
 	local left_layout = wibox.layout.fixed.horizontal()
 	left_layout:add(launcher)
@@ -641,6 +643,18 @@ for scr = 1, screen.count() do
 	layout:set_right(right_layout)
 
 	main_wibox[scr_offset]:set_widget(layout)
+	-- }}}
+
+	-- {{{ Footer Wibox widgets
+	if scr_offset == 1 or scr_offset == 2 then
+		hdds[scr_offset] = {}
+		local footer_right = wibox.layout.fixed.horizontal()
+		local footer_layout = wibox.layout.align.horizontal()
+		widgets.add_hdds(footer_right, hdds[scr_offset])
+		footer_layout:set_right(footer_right)
+		footer_wibox[scr]:set_widget(footer_layout)
+	end
+	-- }}}
 end
 -- }}}
 

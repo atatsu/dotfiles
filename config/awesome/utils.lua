@@ -85,6 +85,10 @@ function M.screen_override(s)
 end
 
 function M.next_screen()
+	if #screen_overrides < 1 then
+		return mouse.screen + 1
+	end
+
 	local cur_scr = screen_overrides[mouse.screen]
 	local next_scr = screen_overrides[cur_scr + 1]
 	if not next_scr then
@@ -95,6 +99,10 @@ function M.next_screen()
 end
 
 function M.prev_screen()
+	if #screen_overrides < 1 then
+		return mouse.screen - 1
+	end
+
 	local cur_scr = screen_overrides[mouse.screen]
 	local prev_scr = screen_overrides[cur_scr - 1]
 	if not prev_scr then
@@ -105,8 +113,12 @@ function M.prev_screen()
 end
 
 function M.next_screen_relative()
-	local cur_scr_awesome = mouse.screen -- 2
-	local cur_scr_override = screen_overrides[mouse.screen] -- 3
+	if #screen_overrides < 1 then
+		return 1
+	end
+
+	local cur_scr_awesome = mouse.screen
+	local cur_scr_override = screen_overrides[mouse.screen]
 
 	local intended_next = cur_scr_override + 1
 	if intended_next > screen.count() then
@@ -130,6 +142,10 @@ function M.next_screen_relative()
 end
 
 function M.prev_screen_relative()
+	if #screen_overrides < 1 then
+		return -1
+	end
+
 	local cur_scr_awesome = mouse.screen
 	local cur_scr_override = screen_overrides[mouse.screen]
 
