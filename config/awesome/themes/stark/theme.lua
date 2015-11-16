@@ -141,8 +141,8 @@ theme.giblets.widgets.progressbar = {
 	width = 100,
 	height = 10,
 	ticks_align = "bottom",
-	border_color = colors.white,
-	background_color = colors.midgrey,
+	border_color = colors.lightgrey,
+	background_color = colors.darkgrey,
 	foreground_color = colors.lightgrey,
 }
 -- }}}

@@ -589,7 +589,7 @@ for scr = 1, screen.count() do
 	main_layoutbox[scr_offset]:buttons(buttons.main_layoutbox)
 
 	-- Create a taglist widget
-	main_taglist[scr_offset] = awful.widget.taglist(scr_offset, awful.widget.taglist.filter.all, main_taglist.buttons)
+	main_taglist[scr_offset] = awful.widget.taglist(scr, awful.widget.taglist.filter.all, main_taglist.buttons)
 
 	-- Create a tasklist widget
 	main_tasklist[scr_offset] = awful.widget.tasklist(
@@ -599,8 +599,7 @@ for scr = 1, screen.count() do
 	)
 
 	-- Create the wibox(s)
-	main_wibox[scr_offset] = awful.wibox({ position = "top", screen = scr_offset, height = 12 })
-	footer_wibox[scr_offset] = awful.wibox({ position = "bottom", screen = scr_offset, height = 12})
+	main_wibox[scr_offset] = awful.wibox({ position = "top", screen = scr, height = 12 })
 
 	-- {{{ Main Wibox widgets
 	-- Widgets that are aligned to the left
@@ -646,15 +645,18 @@ for scr = 1, screen.count() do
 	-- }}}
 
 	-- {{{ Footer Wibox widgets
-	if scr_offset == 1 or scr_offset == 2 then
+	if screen.count() > 1 and (scr_offset == 1 or scr_offset == 2) or screen.count() == 1 then
+		footer_wibox[scr_offset] = awful.wibox({ position = "bottom", screen = scr, height = 12})
+
 		hdds[scr_offset] = {}
 		local footer_right = wibox.layout.fixed.horizontal()
 		local footer_layout = wibox.layout.align.horizontal()
 		widgets.add_hdds(footer_right, hdds[scr_offset])
 		footer_layout:set_right(footer_right)
-		footer_wibox[scr]:set_widget(footer_layout)
+		footer_wibox[scr_offset]:set_widget(footer_layout)
 	end
 	-- }}}
+
 end
 -- }}}
 
