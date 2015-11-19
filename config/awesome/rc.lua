@@ -348,7 +348,15 @@ buttons = {
 		--
 		-- mod + d, run dmenu
 		awful.key({ modkey }, "d", function()
-			sexec("dmenu_run -b -nf '#ffffff' -nb '#000000' -sf '#afd700' -sb '#3e3e3e'")
+			sexec(table.concat({
+				"dmenu_run -b",
+				"-nf", "'" .. beautiful.colors.white .. "'",
+				"-nb", "'" .. beautiful.colors.darkgrey .. "'",
+				"-sf", "'" .. beautiful.colors.orange .. "'",
+				"-sb", "'" .. beautiful.colors.darkgrey .. "'",
+				"-fn xft:terminus:style=bold:pixelsize=12",
+				"-p ▶"
+			}, " "))
 		end),
 		--
 		-- Menubar
@@ -628,7 +636,7 @@ for scr = 1, screen.count() do
 	widgets.add_clock(right_layout)
 	-- add a systray to the first screen if only one screen is available, otherwise
 	-- add it to the second screen
-	if (screen.count() > 1 and scr == 2) or (screen.count() == 1) then
+	if (screen.count() > 1 and scr_offset == 2) or (screen.count() == 1) then
 		right_layout:add(wibox.widget.systray()) 
 		right_layout:add(widgets.spacer)
 	end

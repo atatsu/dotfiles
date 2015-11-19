@@ -147,4 +147,6 @@ theme.giblets.widgets.progressbar = {
 }
 -- }}}
 
+theme.colors = colors
+
 return theme
