@@ -646,7 +646,7 @@ for scr = 1, screen.count() do
 	-- Now bring it all together (with the tasklist in the middle)
 	local layout = wibox.layout.align.horizontal()
 	layout:set_left(left_layout)
-	layout:set_middle(main_tasklist[scr_offset])
+	layout:set_middle(main_tasklist[scr])
 	layout:set_right(right_layout)
 
 	main_wibox[scr_offset]:set_widget(layout)
@@ -763,11 +763,11 @@ awful.rules.rules = {
 				awful.titlebar.show(c)
 			elseif c.name == "Steam" then
 				awful.tag.setmwfact(0.75, tag)
-				--awful.client.setmaster(c)
+				awful.client.setmaster(c)
 				-- I'm not sure if load order affects the `setmaster` and `setslave` calls
 				-- but only calling `setmaster` for the main Steam window doesn't seem to be
 				-- working. Calling `swap` seems to do the trick, though.
-				c:swap(awful.client.getmaster())
+				--c:swap(awful.client.getmaster())
 			else
 				awful.client.setslave(c)
 			end

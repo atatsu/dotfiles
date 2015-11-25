@@ -220,7 +220,6 @@ local hdds = {
 	{mount = "/var", label = "var"},
 	{mount = "/copy", label = "copy"},
 }
-local hdd_timers = {}
 
 function M.add_hdds(layout, storage)
 
@@ -264,6 +263,7 @@ function M.add_hdds(layout, storage)
 	local tm = timer({timeout = 269})
 	tm:connect_signal("timeout", update)
 	update()
+	tm:start()
 end
 -- }}}
 
