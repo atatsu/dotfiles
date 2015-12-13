@@ -508,9 +508,9 @@ local tags = {
 			"misc",
 		},
 		layout = {
-			layout.tile,
-			layout.tile,
-			layout.tile,
+			layout.bottom,
+			layout.bottom,
+			layout.bottom,
 		}
 	},
 	{
@@ -593,15 +593,15 @@ for scr = 1, screen.count() do
 
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
-	main_layoutbox[scr_offset] = awful.widget.layoutbox(scr_offset)
+	main_layoutbox[scr_offset] = awful.widget.layoutbox(scr)
 	main_layoutbox[scr_offset]:buttons(buttons.main_layoutbox)
 
 	-- Create a taglist widget
 	main_taglist[scr_offset] = awful.widget.taglist(scr, awful.widget.taglist.filter.all, main_taglist.buttons)
 
 	-- Create a tasklist widget
-	main_tasklist[scr_offset] = awful.widget.tasklist(
-		scr_offset, 
+	main_tasklist[scr] = awful.widget.tasklist(
+		scr, 
 		awful.widget.tasklist.filter.minimizedcurrenttags, 
 		main_tasklist.buttons
 	)
@@ -767,7 +767,7 @@ awful.rules.rules = {
 				-- I'm not sure if load order affects the `setmaster` and `setslave` calls
 				-- but only calling `setmaster` for the main Steam window doesn't seem to be
 				-- working. Calling `swap` seems to do the trick, though.
-				--c:swap(awful.client.getmaster())
+				c:swap(awful.client.getmaster())
 			else
 				awful.client.setslave(c)
 			end
