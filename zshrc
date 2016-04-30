@@ -90,6 +90,10 @@ alias swc='git checkout -b'
 alias gl='git log --graph --oneline --all'
 # }}}
 
+# {{{ npm
+alias npm-exec='PATH=$(npm bin):$PATH'
+# }}}
+
 # }}}
 
 # {{{ virtualenv
