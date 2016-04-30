@@ -508,9 +508,9 @@ local tags = {
 			"misc",
 		},
 		layout = {
-			layout.bottom,
-			layout.bottom,
-			layout.bottom,
+			layout.top,
+			layout.top,
+			layout.top,
 		}
 	},
 	{
@@ -771,6 +771,13 @@ awful.rules.rules = {
 			else
 				awful.client.setslave(c)
 			end
+		end,
+	},
+	{
+		rule = { name = "Default - Wine desktop" },
+		callback = function(c)
+			awful.titlebar.hide(c)
+			c.fullscreen = true
 		end,
 	},
 }
