@@ -127,6 +127,10 @@ bindkey "\eOd" emacs-backward-word
 bindkey "\e\e[C" forward-word
 bindkey "\e\e[D" backward-word
 bindkey "^H" backward-delete-word
+bindkey -v
+bindkey "^R" history-incremental-search-backward
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
 # }}}
 
 # }}}
