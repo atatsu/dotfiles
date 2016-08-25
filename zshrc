@@ -6,6 +6,9 @@ if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
 }
+if [[ -d /usr/local/progress-dlc ]] {
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/progress-dlc/odbc
+}
 
 # add all ruby gem bin folders to path
 for dir in $HOME/.gem/ruby/*; do
@@ -56,6 +59,7 @@ alias -s gif=feh
 alias ls='ls -F --color=always'
 alias ll='ls -lh'
 alias la='ls -a'
+alias lst="tree -I 'virtualenv|node_modules|bower_components|__pycache__'"
 alias ping='ping -c 4'
 alias mem='free -m'
 alias dh='dirs -v'
@@ -113,7 +117,34 @@ if [[ -x `which luarocks-5.1` ]] {
 }
 # }}}
 
+# {{{ tmux playing nicely with ssh-agent
+if [[ -z "$TMUX" ]] {
+	# not in a tmux session
+
+	if [[ -z "$SSH_AUTH_SOCK" ]] {
+		# ssh auth variable is missing
+		export SSH_AUTH_SOCK="$HOME/.ssh/.auth_socket"
+	}
+	if [[ ! -S "$SSH_AUTH_SOCK" ]] {
+		# socket is available so create the new auth session
+		eval `ssh-agent -a $SSH_AUTH_SOCK` > /dev/null 2>&1
+		echo $SSH_AGENT_PID > $HOME/.ssh/.auth_pid
+	}
+
+	if [[ -z $SSH_AGENT_PID ]] {
+		# agent isn't defined so recreate it from pid file
+		export SSH_AGENT_PID=`cat $HOME/.ssh/.auth_pid`
+	}
+} else {
+	# we are in a tmux session
+	if [[ -z "$SSH_AUTH_SOCK" ]] {
+		export SSH_AUTH_SOCK="$HOME/.ssh/.auth_socket"
+	}
+}
+# }}}
+
 # {{{ Keybindings
+bindkey -v
 bindkey "\e[1~" beginning-of-line
 bindkey "\e[4~" end-of-line
 bindkey "\e[5~" beginning-of-history
@@ -127,7 +158,6 @@ bindkey "\eOd" emacs-backward-word
 bindkey "\e\e[C" forward-word
 bindkey "\e\e[D" backward-word
 bindkey "^H" backward-delete-word
-bindkey -v
 bindkey "^R" history-incremental-search-backward
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
