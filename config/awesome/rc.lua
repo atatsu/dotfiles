@@ -552,9 +552,14 @@ local awesome_menu = {
 	{"quit", awesome.quit}
 }
 
+local syela_menu = {
+	{"tmnt", "chromium https://www.youtube.com/results?search_query=teenage+mutant+ninja+turtles&page=&utm_source=opensearch"}
+}
+
 main_menu = awful.menu({
 	items = {
 		{"awesome", awesome_menu, beautiful.awesome_icon},
+		{"syela", syela_menu},
 		{"terminal", terminal}
 	}
 })
