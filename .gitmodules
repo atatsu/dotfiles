@@ -73,3 +73,24 @@
 [submodule "vim/bundle-available/javascript-libraries-syntax.vim"]
 	path = vim/bundle-available/javascript-libraries-syntax.vim
 	url = https://github.com/othree/javascript-libraries-syntax.vim.git
+[submodule "vim/bundle-available/tlib_vim"]
+	path = vim/bundle-available/tlib_vim
+	url = https://github.com/tomtom/tlib_vim.git
+[submodule "vim/bundle-available/tsuquyomi"]
+	path = vim/bundle-available/tsuquyomi
+	url = https://github.com/Quramy/tsuquyomi.git
+[submodule "vim/bundle-available/typescript-vim"]
+	path = vim/bundle-available/typescript-vim
+	url = https://github.com/leafgarland/typescript-vim.git
+[submodule "vim/bundle-available/vim-addon-mw-utils"]
+	path = vim/bundle-available/vim-addon-mw-utils
+	url = https://github.com/vim-scripts/vim-addon-mw-utils.git
+[submodule "vim/bundle-available/vim-airline"]
+	path = vim/bundle-available/vim-airline
+	url = https://github.com/vim-airline/vim-airline.git
+[submodule "vim/bundle-available/vim-snipmate"]
+	path = vim/bundle-available/vim-snipmate
+	url = https://github.com/garbas/vim-snipmate.git
+[submodule "vim/bundle-available/vimproc.vim"]
+	path = vim/bundle-available/vimproc.vim
+	url = https://github.com/Shougo/vimproc.vim.git
