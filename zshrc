@@ -74,6 +74,7 @@ alias cdd='source cd.sh'
 alias vimhelp='vim -c "call pathogen#helptags()|q"'
 alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
 alias vim='~/bin/launch-vim'
+alias nvvim='set_venv_nvim'
 # }}}
 
 # {{{ SSH
@@ -101,6 +102,13 @@ alias npm-exec='PATH=$(npm bin):$PATH'
 # }}}
 
 # {{{ virtualenv
+set_venv_nvim () {
+	if [[ (-e virtualenv/bin/activate) ]] {
+		local cwd=`pwd`
+		VIRTUAL_ENV_PY="$cwd/virtualenv/bin/python" nvim $@
+	}
+}
+
 virt () {
     if [[ (-e virtualenv/bin/activate) ]] {
         local activate=virtualenv/bin/activate
@@ -331,3 +339,5 @@ $PR_GREEN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT$PR_NO_COLOUR '
 # Prompt init
 setprompt
 # }}}
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
