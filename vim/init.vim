@@ -107,8 +107,8 @@ let Tlist_Sort_Type = 'name'
 "map P :TlistToggle<CR>
 map <leader>t :TlistToggle<CR>
 
-"""" Command-T
-map <leader>c :CommandT<CR>
+"""" fzf
+map <leader>c :FZF<CR>
 
 """" TaskList
 "map T :TaskList<CR>
@@ -191,7 +191,9 @@ Plug 'vim-airline/vim-airline'
 Plug 'fholgado/minibufexpl.vim'
 Plug 'davidhalter/jedi-vim'
 Plug 'jlanzarotta/bufexplorer'
+Plug 'vim-scripts/taglist.vim', { 'on': 'TlistToggle' }
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+" cli fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " TODO: don't forget to learn this one
 Plug 'mattn/emmet-vim'
