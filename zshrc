@@ -25,7 +25,7 @@ export HISTSIZE=10000
 export SAVEHIST=10000
 export LESSHISTFILE="-"
 export PAGER="less"
-export VISUAL="nvim"
+export VISUAL="nvvim"
 export EDITOR=$VISUAL
 export BROWSER="luakit"
 export XTERM="xterm"
@@ -106,6 +106,8 @@ set_venv_nvim () {
 	if [[ (-e virtualenv/bin/activate) ]] {
 		local cwd=`pwd`
 		VIRTUAL_ENV_PY="$cwd/virtualenv/bin/python" nvim $@
+	} else {
+		nvim $@
 	}
 }
 
