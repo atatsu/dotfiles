@@ -48,6 +48,8 @@ set cursorline
 if has('nvim')
 	nmap <BS> <C-w>h
 endif
+let g:python2_host_prog='/usr/bin/python2'
+"let g:python3_host_prog='/usr/bin/python'
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 "let g:loaded_python_provider = 1
 tnoremap <C-h> <C-\><C-n><C-w>h
@@ -124,6 +126,9 @@ map <leader>r :RopeRename<CR>
 
 """" Pymode
 let g:pymode_options_max_line_length = 95
+let g:pymode_virtualenv = 1
+let g:pymode_virtualenv_path = './virtualenv'
+let g:pymode_rope = 0
 
 """" BufExplorer
 "map <leader>b :BufExplorer<CR>
@@ -167,5 +172,29 @@ autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=
 """" javascript-libraries-syntax
 let g:used_javascript_libs = 'angularjs'
 
-call pathogen#infect()
-call pathogen#helptags()
+"""" Virtualenv
+if !empty($VIRTUAL_ENV_PY)
+	let g:python3_host_prog=$VIRTUAL_ENV_PY
+endif
+
+call plug#begin('~/.vim/plugged')
+" git wrapper
+Plug 'tpope/vim-fugitive'
+" syntax checking
+Plug 'scrooloose/syntastic'
+" tab completion
+Plug 'ervandew/supertab'
+Plug 'klen/python-mode'
+Plug 'othree/javascript-libraries-syntax.vim'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline'
+Plug 'fholgado/minibufexpl.vim'
+Plug 'davidhalter/jedi-vim'
+Plug 'jlanzarotta/bufexplorer'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" TODO: don't forget to learn this one
+Plug 'mattn/emmet-vim'
+" TODO: https://github.com/sjl/gundo.vim
+" -- visualize vim undo tree
+call plug#end()
