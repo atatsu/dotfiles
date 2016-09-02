@@ -29,6 +29,8 @@ export VISUAL="nvvim"
 export EDITOR=$VISUAL
 export BROWSER="luakit"
 export XTERM="xterm"
+export FZF_DEFAULT_COMMAND='ag -g ""'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 #export PACMAN=pacman-color
 eval `dircolors -b`
 #source ~/.ssh_hosts
