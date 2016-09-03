@@ -15,6 +15,8 @@ set shiftwidth=2
 set autoindent
 set hidden	    "buffers keep change history
 set scrolloff=3	    "keep 3 lines below and above cursor
+set splitbelow  "new splits will be focused on bottom
+set splitright  "new vsplits will be focused on right
 
 if &term =~ 'screen'
     " Disable Background Color Erase (BCE) so that color schemes
@@ -43,6 +45,8 @@ set foldlevel=100
 set nowrap
 set hlsearch
 set cursorline
+highlight Pmenu ctermbg=235 cterm=NONE
+highlight PmenuSel ctermbg=130 ctermfg=232 cterm=bold
 
 """" nvim
 if has('nvim')
@@ -172,12 +176,19 @@ autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=
 """" javascript-libraries-syntax
 let g:used_javascript_libs = 'angularjs'
 
+""" deoplete
+let g:deoplete#enable_at_startup = 1
+
 """" Virtualenv
 if !empty($VIRTUAL_ENV_PY)
 	let g:python3_host_prog=$VIRTUAL_ENV_PY
 endif
 
 call plug#begin('~/.vim/plugged')
+" asynchronous keyword completion
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" deoplete and jedi
+Plug 'zchee/deoplete-jedi'
 " git wrapper
 Plug 'tpope/vim-fugitive'
 " syntax checking
