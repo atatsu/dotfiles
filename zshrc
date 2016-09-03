@@ -25,7 +25,7 @@ export HISTSIZE=10000
 export SAVEHIST=10000
 export LESSHISTFILE="-"
 export PAGER="less"
-export VISUAL="nvvim"
+export VISUAL="nvim"
 export EDITOR=$VISUAL
 export BROWSER="luakit"
 export XTERM="xterm"
@@ -107,7 +107,8 @@ alias npm-exec='PATH=$(npm bin):$PATH'
 set_venv_nvim () {
 	if [[ (-e virtualenv/bin/activate) ]] {
 		local cwd=`pwd`
-		VIRTUAL_ENV_PY="$cwd/virtualenv/bin/python" nvim $@
+		#VIRTUAL_ENV_PY="$cwd/virtualenv/bin/python" nvim $@
+		source "$cwd/virtualenv/bin/activate" && nvim $@ && deactivate
 	} else {
 		nvim $@
 	}
