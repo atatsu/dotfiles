@@ -185,6 +185,10 @@ if !empty($VIRTUAL_ENV_PY)
 endif
 
 call plug#begin('~/.vim/plugged')
+"automatically closes quotes, parens, brackets, etc.
+Plug 'Raimondi/delimitMate'
+" automatically closes html tags (and positions cursor center of tags
+Plug 'vim-scripts/HTML-AutoCloseTag'
 " asynchronous keyword completion
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " deoplete and jedi
@@ -203,6 +207,8 @@ Plug 'fholgado/minibufexpl.vim'
 Plug 'davidhalter/jedi-vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'vim-scripts/taglist.vim', { 'on': 'TlistToggle' }
+" plugin for intensely orgasmic commenting
+Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 " cli fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
