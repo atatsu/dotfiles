@@ -35,7 +35,7 @@ filetype plugin indent on
 
 " Display
 set number
-:syntax on
+syntax on
 set background=dark
 colorscheme BusyBee
 hi clear SpellBad
@@ -60,11 +60,11 @@ tnoremap <C-h> <C-\><C-n><C-w>h
 tnoremap <C-j> <C-\><C-n><C-w>j
 tnoremap <C-k> <C-\><C-n><C-w>k
 tnoremap <C-l> <C-\><C-n><C-w>l
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " zsh
 nnoremap <silent> <F3> :terminal zsh<CR>
 " ranger
 nnoremap <silent> <F4> :terminal ranger<CR>
-let g:airline_powerline_fonts = 1
 
 " Autocomplete features in the status bar
 set wildmenu
@@ -82,17 +82,14 @@ set showmode
 "autocmd FileType python set ft=python.django
 autocmd FileType html set ft=htmldjango.html
 
-"""" Powerline
-"set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
-
 """" PySmell
 "autocmd FileType python setlocal omnifunc=pysmell#Complete
 
 """" MiniBufExplorer
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplMapWindowNavArrows = 1
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplModSelTarget = 1 
+"let g:miniBufExplMapWindowNavVim = 1
+"let g:miniBufExplMapWindowNavArrows = 1
+"let g:miniBufExplMapCTabSwitchBufs = 1
+"let g:miniBufExplModSelTarget = 1 
 
 """" SuperTab
 let g:SuperTabDefaultCompletionType = 'context'
@@ -101,15 +98,8 @@ let g:SuperTabDefaultCompletionType = 'context'
 """" completion menu tweaks
 set completeopt=longest,menuone
 
-"""" TagList
-let Tlist_WinWidth = 50
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_GainFocus_On_ToggleOpen = 1
-let Tlist_File_Fold_Auto_Close = 1
-let Tlist_Close_On_Select = 1
-let Tlist_Sort_Type = 'name'
-"map P :TlistToggle<CR>
-map <leader>t :TlistToggle<CR>
+"""" Tagbar
+map <leader>t :TagbarToggle<CR>
 
 """" fzf
 map <leader>c :FZF<CR>
@@ -130,12 +120,20 @@ map <leader>r :RopeRename<CR>
 
 """" Pymode
 let g:pymode_options_max_line_length = 95
-let g:pymode_virtualenv = 1
-let g:pymode_virtualenv_path = './virtualenv'
+"let g:pymode_virtualenv = 1
+"let g:pymode_virtualenv_path = './virtualenv'
 let g:pymode_rope = 0
 
 """" BufExplorer
 "map <leader>b :BufExplorer<CR>
+
+"""" Buffergator
+map <leader>be :BuffergatorToggle<CR>
+map <leader>bn :BuffergatorMruCycleNext<CR>
+map <leader>bp :BuffergatorMruCyclePrev<CR>
+let g:buffergator_viewport_split_policy = "L"
+let g:buffergator_split_size = 60
+let g:buffergator_show_full_directory_path = 0
 
 """" Syntastic
 let g:syntastic_check_on_open = 1
@@ -143,6 +141,22 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
 let g:syntastic_quiet_messages = {"level": []}
+
+"""" vim-jasmine
+autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
+"""" javascript-libraries-syntax
+let g:used_javascript_libs = 'angularjs'
+
+"""" deoplete
+let g:deoplete#enable_at_startup = 1
+
+"""" GoldenView
+let g:goldenview__enable_default_mapping=0
+nmap <silent> <leader>l <Plug>GoldenViewSplit
+
+"""" airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
 
 """" Key Mappings
 " bind ctrl+space for omnicompletion
@@ -171,21 +185,13 @@ map <silent> <C-j> <C-w>j
 " reformat file
 map <F7> mzgg=G`z
 
-"""" vim-jasmine
-autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
-"""" javascript-libraries-syntax
-let g:used_javascript_libs = 'angularjs'
-
-""" deoplete
-let g:deoplete#enable_at_startup = 1
-
 """" Virtualenv
 if !empty($VIRTUAL_ENV_PY)
 	let g:python3_host_prog=$VIRTUAL_ENV_PY
 endif
 
 call plug#begin('~/.vim/plugged')
-"automatically closes quotes, parens, brackets, etc.
+" automatically closes quotes, parens, brackets, etc.
 Plug 'Raimondi/delimitMate'
 " automatically closes html tags (and positions cursor center of tags
 Plug 'vim-scripts/HTML-AutoCloseTag'
@@ -202,18 +208,26 @@ Plug 'ervandew/supertab'
 Plug 'klen/python-mode'
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'fholgado/minibufexpl.vim'
 Plug 'davidhalter/jedi-vim'
-Plug 'jlanzarotta/bufexplorer'
-Plug 'vim-scripts/taglist.vim', { 'on': 'TlistToggle' }
+Plug 'jeetsukumaran/vim-buffergator'
+Plug 'majutsushi/tagbar'
 " plugin for intensely orgasmic commenting
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+" nerdtree git status
+Plug 'Xuyuanp/nerdtree-git-plugin'
 " cli fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " TODO: don't forget to learn this one
 Plug 'mattn/emmet-vim'
+Plug 'vim-airline/vim-airline'
 " TODO: https://github.com/sjl/gundo.vim
 " -- visualize vim undo tree
+
+" At once time active but replacements are being tried out or dropping
+" entirely
+"Plug 'jlanzarotta/bufexplorer'
+"Plug 'fholgado/minibufexpl.vim'
+" always have a nice view for split windows
+"Plug 'zhaocai/GoldenView.Vim'
 call plug#end()
