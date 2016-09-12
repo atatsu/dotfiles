@@ -128,9 +128,9 @@ let g:pymode_rope = 0
 "map <leader>b :BufExplorer<CR>
 
 """" Buffergator
-map <leader>be :BuffergatorToggle<CR>
-map <leader>bn :BuffergatorMruCycleNext<CR>
-map <leader>bp :BuffergatorMruCyclePrev<CR>
+"map <leader>be :BuffergatorToggle<CR>
+"map <leader>bn :BuffergatorMruCycleNext<CR>
+"map <leader>bp :BuffergatorMruCyclePrev<CR>
 let g:buffergator_viewport_split_policy = "L"
 let g:buffergator_split_size = 60
 let g:buffergator_show_full_directory_path = 0
@@ -173,10 +173,10 @@ nnoremap <F10> :<C-U>setlocal list! list? <CR>
 " remove trailing whitespace
 nnoremap <Leader>rtw :%s/\s\+$//e<CR>
 " buffer sizing
-map <silent> <A-h> <C-w><
+map <silent> <A-h> <C-w>>
 map <silent> <A-j> <C-w>-
 map <silent> <A-k> <C-w>+
-map <silent> <A-l> <C-w>>
+map <silent> <A-l> <C-w><
 " buffer navigation
 map <silent> <C-h> <C-w>h
 map <silent> <C-k> <C-w>k
