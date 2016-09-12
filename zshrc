@@ -27,7 +27,7 @@ export LESSHISTFILE="-"
 export PAGER="less"
 export VISUAL="nvim"
 export EDITOR=$VISUAL
-export BROWSER="luakit"
+export BROWSER="qutebrowser"
 export XTERM="xterm"
 export FZF_DEFAULT_COMMAND='ag -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -76,7 +76,7 @@ alias cdd='source cd.sh'
 alias vimhelp='vim -c "call pathogen#helptags()|q"'
 alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
 alias vim='~/bin/launch-vim'
-alias nvvim='set_venv_nvim'
+alias pynvim='set_venv_nvim'
 # }}}
 
 # {{{ SSH
@@ -346,3 +346,4 @@ setprompt
 # }}}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
