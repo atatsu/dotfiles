@@ -772,7 +772,13 @@ awful.rules.rules = {
 				-- I'm not sure if load order affects the `setmaster` and `setslave` calls
 				-- but only calling `setmaster` for the main Steam window doesn't seem to be
 				-- working. Calling `swap` seems to do the trick, though.
-				c:swap(awful.client.getmaster())
+				--
+				-- For some reason the call to `awful.client.getmaster()` in this case returns
+				-- nil... no fuckin' clue why. But check for it.
+				local master = awful.client.getmaster()
+				if master ~= nil then
+					c:swap(master)
+				end
 			else
 				awful.client.setslave(c)
 			end
