@@ -193,6 +193,10 @@ if !empty($VIRTUAL_ENV_PY)
 endif
 
 call plug#begin('~/.vim/plugged')
+" TypeScript syntax files
+Plug 'leafgarland/typescript-vim'
+" works as a client for a TSServer
+Plug 'Quramy/tsuquyomi'
 " automatically closes quotes, parens, brackets, etc.
 Plug 'Raimondi/delimitMate'
 " automatically closes html tags (and positions cursor center of tags
