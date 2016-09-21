@@ -195,6 +195,8 @@ endif
 call plug#begin('~/.vim/plugged')
 " TypeScript syntax files
 Plug 'leafgarland/typescript-vim'
+" needed by *tsuquyomi*
+Plug 'Shougo/vimproc.vim'
 " works as a client for a TSServer
 Plug 'Quramy/tsuquyomi'
 " automatically closes quotes, parens, brackets, etc.
