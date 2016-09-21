@@ -99,7 +99,7 @@ let g:SuperTabDefaultCompletionType = 'context'
 set completeopt=longest,menuone
 
 """" Tagbar
-map <leader>t :TagbarToggle<CR>
+map <leader>tb :TagbarToggle<CR>
 
 """" fzf
 map <leader>c :FZF<CR>
@@ -128,7 +128,7 @@ let g:pymode_rope = 0
 "map <leader>b :BufExplorer<CR>
 
 """" Buffergator
-"map <leader>be :BuffergatorToggle<CR>
+map <leader>bg :BuffergatorToggle<CR>
 "map <leader>bn :BuffergatorMruCycleNext<CR>
 "map <leader>bp :BuffergatorMruCyclePrev<CR>
 let g:buffergator_viewport_split_policy = "L"
@@ -184,6 +184,8 @@ map <silent> <C-l> <C-w>l
 map <silent> <C-j> <C-w>j
 " reformat file
 map <F7> mzgg=G`z
+" display a list of buffers prompting for the number to switch to
+nnoremap <F5> :buffers<CR>:buffer<Space>
 
 """" Virtualenv
 if !empty($VIRTUAL_ENV_PY)
