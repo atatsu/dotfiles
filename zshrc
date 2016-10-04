@@ -11,9 +11,11 @@ if [[ -d /usr/local/progress-dlc ]] {
 }
 
 # add all ruby gem bin folders to path
-for dir in $HOME/.gem/ruby/*; do
-	[[ -d "$dir/bin" ]] && PATH="${dir}/bin:${PATH}"
-done
+if [[ -d $HOME/.gem/ruby ]] {
+	for dir in $HOME/.gem/ruby/*; do
+		[[ -d "$dir/bin" ]] && PATH="${dir}/bin:${PATH}"
+	done
+}
 
 # for luakit
 export LUA_CPATH="/usr/lib/lua/5.1/?.so;$LUA_CPATH"
@@ -347,3 +349,6 @@ setprompt
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
+
+export NVM_DIR="/home/ubuntu/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
