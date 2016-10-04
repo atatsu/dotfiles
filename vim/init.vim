@@ -63,6 +63,8 @@ tnoremap <C-l> <C-\><C-n><C-w>l
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " zsh
 nnoremap <silent> <F3> :terminal zsh<CR>
+" zsh - but split the window first
+nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
 " ranger
 nnoremap <silent> <F4> :terminal ranger<CR>
 
@@ -142,6 +144,10 @@ let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
 let g:syntastic_quiet_messages = {"level": []}
 
+"""" vim-javascript 
+let g:javascript_plugin_jsdoc = 1
+let g:javascript_plugin_ngdoc = 1
+
 """" vim-jasmine
 autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
 """" javascript-libraries-syntax
@@ -193,6 +199,8 @@ if !empty($VIRTUAL_ENV_PY)
 endif
 
 call plug#begin('~/.vim/plugged')
+" vastly improved javascript indentation and syntax support
+Plug 'pangloss/vim-javascript'
 " TypeScript syntax files
 Plug 'leafgarland/typescript-vim'
 " needed by *tsuquyomi*
