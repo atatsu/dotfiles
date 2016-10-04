@@ -201,6 +201,12 @@ endif
 call plug#begin('~/.vim/plugged')
 " vastly improved javascript indentation and syntax support
 Plug 'pangloss/vim-javascript'
+" TypeScript syntax files
+Plug 'leafgarland/typescript-vim'
+" needed by *tsuquyomi*
+Plug 'Shougo/vimproc.vim'
+" works as a client for a TSServer
+Plug 'Quramy/tsuquyomi'
 " automatically closes quotes, parens, brackets, etc.
 Plug 'Raimondi/delimitMate'
 " automatically closes html tags (and positions cursor center of tags
