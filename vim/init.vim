@@ -125,6 +125,7 @@ let g:pymode_options_max_line_length = 95
 "let g:pymode_virtualenv = 1
 "let g:pymode_virtualenv_path = './virtualenv'
 let g:pymode_rope = 0
+let g:pymode_lint_checkers = ['pep8', 'pylint', 'pyflakes']
 
 """" BufExplorer
 "map <leader>b :BufExplorer<CR>
@@ -143,6 +144,7 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
 let g:syntastic_quiet_messages = {"level": []}
+let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
 
 """" vim-javascript 
 let g:javascript_plugin_jsdoc = 1
@@ -221,7 +223,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'scrooloose/syntastic'
 " tab completion
 Plug 'ervandew/supertab'
-Plug 'klen/python-mode'
+Plug 'klen/python-mode', { 'branch': 'develop' }
 Plug 'othree/javascript-libraries-syntax.vim'
 Plug 'tpope/vim-surround'
 Plug 'davidhalter/jedi-vim'
