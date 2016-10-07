@@ -77,6 +77,7 @@ alias vimhelp='vim -c "call pathogen#helptags()|q"'
 alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
 alias vim='~/bin/launch-vim'
 alias pynvim='set_venv_nvim'
+alias nvim='ssh_add_if_empty && /usr/bin/nvim'
 # }}}
 
 # {{{ SSH
@@ -101,6 +102,14 @@ alias gl='git log --graph --oneline --all'
 alias npm-exec='PATH=$(npm bin):$PATH'
 # }}}
 
+# }}}
+
+# {{{ if no keys in agent invoke `ssh-add`
+ssh_add_if_empty () {
+	if [[ `ssh-add -l` = "The agent has no identities." ]] {
+		ssh-add
+	}
+}
 # }}}
 
 # {{{ virtualenv
