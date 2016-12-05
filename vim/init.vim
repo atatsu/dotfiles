@@ -1,6 +1,10 @@
 scriptencoding utf-8
 set encoding=utf-8
 
+"source .vimrc from any directory vim is run from
+set exrc
+set secure
+
 setlocal lcs=tab:»·,trail:·,eol:$
 "set termguicolors
 set list
@@ -126,6 +130,7 @@ let g:pymode_options_max_line_length = 95
 "let g:pymode_virtualenv_path = './virtualenv'
 let g:pymode_rope = 0
 let g:pymode_lint_checkers = ['pep8', 'pylint', 'pyflakes']
+let g:pymode_lint_options_pep8 = {'max_line_length': g:pymode_options_max_line_length}
 
 """" BufExplorer
 "map <leader>b :BufExplorer<CR>
@@ -166,6 +171,13 @@ nmap <silent> <leader>l <Plug>GoldenViewSplit
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 
+"""" YCM
+let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
+
+"""" vCooler
+let g:vcoolor_lowercase = 1
+let g:vcoolor_custom_picker = 'yad --color --center --init-color '
+
 """" Key Mappings
 " bind ctrl+space for omnicompletion
 inoremap <Nul> <C-x><C-o>
@@ -201,6 +213,13 @@ if !empty($VIRTUAL_ENV_PY)
 endif
 
 call plug#begin('~/.vim/plugged')
+" preview colors (hex)
+Plug 'ap/vim-css-color'
+" color picker
+Plug 'KabbAmine/vCoolor.vim'
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+" additional c++ syntax highlighting
+Plug 'octol/vim-cpp-enhanced-highlight'
 " vastly improved javascript indentation and syntax support
 Plug 'pangloss/vim-javascript'
 " TypeScript syntax files
