@@ -11,6 +11,8 @@ set list
 set bs=2
 set t_Co=256
 set nocp
+set guifont=Inconsolata\ for\ Powerline:h15
+let g:Powerline_symbols = 'fancy'
 
 set softtabstop=2
 set tabstop=2
@@ -150,6 +152,7 @@ let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
 let g:syntastic_quiet_messages = {"level": []}
 let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
+let g:syntastic_html_checkers = []
 
 """" vim-javascript 
 let g:javascript_plugin_jsdoc = 1
