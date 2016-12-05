@@ -703,6 +703,14 @@ awful.rules.rules = {
 			buttons = buttons.clientbuttons 
 		} 
 	},
+	{
+		rule = { class = "Yad" },
+		properties = { floating = true }
+	},
+	{
+		rule = { class = "Gcolor3" },
+		properties = { floating = true }
+	},
 	{ 
 		rule = { class = "pinentry" },
 		properties = { floating = true } 
