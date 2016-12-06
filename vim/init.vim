@@ -1,3 +1,7 @@
+if has('unix')
+	let s:uname = substitute(system('uname -s'), '\n', '', '')
+endif 
+
 scriptencoding utf-8
 set encoding=utf-8
 
@@ -179,7 +183,9 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
 
 """" vCooler
 let g:vcoolor_lowercase = 1
-let g:vcoolor_custom_picker = 'yad --color --center --init-color '
+if s:uname != 'Darwin'
+	let g:vcoolor_custom_picker = 'yad --color --center --init-color '
+endif
 
 """" Key Mappings
 " bind ctrl+space for omnicompletion
