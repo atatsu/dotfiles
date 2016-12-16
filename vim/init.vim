@@ -65,6 +65,10 @@ tnoremap <C-j> <C-\><C-n><C-w>j
 tnoremap <C-k> <C-\><C-n><C-w>k
 tnoremap <C-l> <C-\><C-n><C-w>l
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+" automatically enter insert mode
+autocmd BufWinEnter,WinEnter term://* startinsert
+" exclude from buffer list
+autocmd TermOpen * set nobuflisted
 " zsh
 nnoremap <silent> <F3> :terminal zsh<CR>
 " zsh - but split the window first
@@ -86,7 +90,7 @@ set showmode
 
 """" Djagno snippets
 "autocmd FileType python set ft=python.django
-autocmd FileType html set ft=htmldjango.html
+"autocmd FileType html set ft=htmldjango.html
 
 """" PySmell
 "autocmd FileType python setlocal omnifunc=pysmell#Complete
@@ -178,6 +182,11 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
 let g:vcoolor_lowercase = 1
 let g:vcoolor_custom_picker = 'yad --color --center --init-color '
 
+"""" vim-bufkill
+cabbrev bd :BD!
+" when in terminal Ctrl-d calls :BD! rather than doing a normal shell exit
+tnoremap <C-d> <C-\><C-n>:BD!<CR>
+
 """" Key Mappings
 " bind ctrl+space for omnicompletion
 inoremap <Nul> <C-x><C-o>
@@ -206,6 +215,8 @@ map <silent> <C-j> <C-w>j
 map <F7> mzgg=G`z
 " display a list of buffers prompting for the number to switch to
 nnoremap <F5> :buffers<CR>:buffer<Space>
+" refresh syntax highlighting
+autocmd BufEnter,InsertLeave * :syntax sync fromstart
 
 """" Virtualenv
 if !empty($VIRTUAL_ENV_PY)
@@ -213,6 +224,8 @@ if !empty($VIRTUAL_ENV_PY)
 endif
 
 call plug#begin('~/.vim/plugged')
+" preserves splits when closing buffers
+Plug 'qpkorr/vim-bufkill'
 " preview colors (hex)
 Plug 'ap/vim-css-color'
 " color picker
