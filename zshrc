@@ -358,3 +358,4 @@ setprompt
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
+eval $(thefuck --alias)
