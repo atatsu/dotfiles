@@ -1,3 +1,7 @@
+if has('unix')
+	let s:uname = substitute(system('uname -s'), '\n', '', '')
+endif 
+
 scriptencoding utf-8
 set encoding=utf-8
 
@@ -11,6 +15,8 @@ set list
 set bs=2
 set t_Co=256
 set nocp
+set guifont=Inconsolata\ for\ Powerline:h15
+let g:Powerline_symbols = 'fancy'
 
 set softtabstop=2
 set tabstop=2
@@ -154,6 +160,7 @@ let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
 let g:syntastic_quiet_messages = {"level": []}
 let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
+let g:syntastic_html_checkers = []
 
 """" vim-javascript 
 let g:javascript_plugin_jsdoc = 1
@@ -180,7 +187,9 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
 
 """" vCooler
 let g:vcoolor_lowercase = 1
-let g:vcoolor_custom_picker = 'yad --color --center --init-color '
+if s:uname != 'Darwin'
+	let g:vcoolor_custom_picker = 'yad --color --center --init-color '
+endif
 
 """" vim-bufkill
 cabbrev bd :BD!

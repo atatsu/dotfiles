@@ -34,7 +34,11 @@ export XTERM="xterm"
 export FZF_DEFAULT_COMMAND='ag -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 #export PACMAN=pacman-color
-eval `dircolors -b`
+if whence dircolors >/dev/null; then
+	eval `dircolors -b`
+else
+	export CLICOLOR=1
+fi
 #source ~/.ssh_hosts
 # }}}
 
@@ -60,7 +64,8 @@ alias -s gif=feh
 # }}}
 
 # {{{ Main
-alias ls='ls -F --color=always'
+#alias ls='ls -F --color=always'
+alias ls='ls -F' # fuckin OSX
 alias ll='ls -lh'
 alias la='ls -a'
 alias lst="tree -I 'virtualenv|node_modules|bower_components|__pycache__'"
@@ -79,7 +84,7 @@ alias vimhelp='vim -c "call pathogen#helptags()|q"'
 alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
 alias vim='~/bin/launch-vim'
 alias pynvim='set_venv_nvim'
-alias nvim='ssh_add_if_empty && /usr/bin/nvim'
+alias nvim='ssh_add_if_empty && `which -a nvim | tail -n 1`'
 # }}}
 
 # {{{ SSH
@@ -357,5 +362,11 @@ setprompt
 # }}}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# nix 
 [ -f /usr/share/nvm/init-nvm.sh ] && source /usr/share/nvm/init-nvm.sh
+# mac
+export NVM_DIR="${HOME}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
 eval $(thefuck --alias)
