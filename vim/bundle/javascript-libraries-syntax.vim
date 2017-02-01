@@ -1,1 +1,0 @@
-../bundle-available/javascript-libraries-syntax.vim

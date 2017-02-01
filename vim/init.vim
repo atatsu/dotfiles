@@ -46,8 +46,6 @@ filetype plugin indent on
 " Display
 set number
 syntax on
-set background=dark
-colorscheme BusyBee
 hi clear SpellBad
 hi SpellBad cterm=underline,bold ctermfg=magenta
 set foldmethod=indent
@@ -61,26 +59,26 @@ highlight PmenuSel ctermbg=130 ctermfg=232 cterm=bold
 """" nvim
 if has('nvim')
 	nmap <BS> <C-w>h
+	let g:python2_host_prog='/usr/bin/python2'
+	"let g:python3_host_prog='/usr/bin/python'
+	let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+	"let g:loaded_python_provider = 1
+	tnoremap <C-h> <C-\><C-n><C-w>h
+	tnoremap <C-j> <C-\><C-n><C-w>j
+	tnoremap <C-k> <C-\><C-n><C-w>k
+	tnoremap <C-l> <C-\><C-n><C-w>l
+	let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+	" automatically enter insert mode
+	autocmd BufWinEnter,WinEnter term://* startinsert
+	" exclude from buffer list
+	autocmd TermOpen * set nobuflisted
+	" zsh
+	nnoremap <silent> <F3> :terminal zsh<CR>
+	" zsh - but split the window first
+	nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
+	" ranger
+	nnoremap <silent> <F4> :terminal ranger<CR>
 endif
-let g:python2_host_prog='/usr/bin/python2'
-"let g:python3_host_prog='/usr/bin/python'
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
-"let g:loaded_python_provider = 1
-tnoremap <C-h> <C-\><C-n><C-w>h
-tnoremap <C-j> <C-\><C-n><C-w>j
-tnoremap <C-k> <C-\><C-n><C-w>k
-tnoremap <C-l> <C-\><C-n><C-w>l
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-" automatically enter insert mode
-autocmd BufWinEnter,WinEnter term://* startinsert
-" exclude from buffer list
-autocmd TermOpen * set nobuflisted
-" zsh
-nnoremap <silent> <F3> :terminal zsh<CR>
-" zsh - but split the window first
-nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
-" ranger
-nnoremap <silent> <F4> :terminal ranger<CR>
 
 " Autocomplete features in the status bar
 set wildmenu
@@ -130,6 +128,9 @@ let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
 map <leader>N :NERDTreeToggle<CR>
 "map ob :NERDTreeFromBookmark 
 
+"""" NERDCommenter
+let g:NERDDefaultAlign = 'left'
+
 """" Rope
 map <leader>j :RopeGotoDefinition<CR>
 map <leader>r :RopeRename<CR>
@@ -159,7 +160,8 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_aggregate_errors = 1
 let g:syntastic_javascript_checkers = ["jshint", "jscs"]
 let g:syntastic_quiet_messages = {"level": []}
-let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
+"let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
+let g:syntastic_python_checkers = []
 let g:syntastic_html_checkers = []
 
 """" vim-javascript 
@@ -195,6 +197,9 @@ endif
 cabbrev bd :BD!
 " when in terminal Ctrl-d calls :BD! rather than doing a normal shell exit
 tnoremap <C-d> <C-\><C-n>:BD!<CR>
+
+"""" vim-cpp-enhanced-highlight
+let g:cpp_class_scope_highlight = 1
 
 """" Key Mappings
 " bind ctrl+space for omnicompletion
@@ -232,7 +237,12 @@ if !empty($VIRTUAL_ENV_PY)
 	let g:python3_host_prog=$VIRTUAL_ENV_PY
 endif
 
+"""" Plugin overrides
+autocmd FileType python call overrides#pymode()
+
 call plug#begin('~/.vim/plugged')
+" shows git diff in the gutter
+Plug 'airblade/vim-gitgutter'
 " preserves splits when closing buffers
 Plug 'qpkorr/vim-bufkill'
 " preview colors (hex)
@@ -280,6 +290,11 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " TODO: don't forget to learn this one
 Plug 'mattn/emmet-vim'
 Plug 'vim-airline/vim-airline'
+
+" Themes
+Plug 'sheerun/vim-wombat-scheme'
+Plug 'morhetz/gruvbox'
+Plug 'dracula/vim'
 " TODO: https://github.com/sjl/gundo.vim
 " -- visualize vim undo tree
 
@@ -290,3 +305,6 @@ Plug 'vim-airline/vim-airline'
 " always have a nice view for split windows
 "Plug 'zhaocai/GoldenView.Vim'
 call plug#end()
+
+set background=dark
+colorscheme dracula

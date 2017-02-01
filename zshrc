@@ -64,8 +64,11 @@ alias -s gif=feh
 # }}}
 
 # {{{ Main
-#alias ls='ls -F --color=always'
-alias ls='ls -F' # fuckin OSX
+if whence dircolors >/dev/null; then
+	alias ls='ls -F --color=always'
+else
+	alias ls='ls -F'
+fi
 alias ll='ls -lh'
 alias la='ls -a'
 alias lst="tree -I 'virtualenv|node_modules|bower_components|__pycache__'"
@@ -220,6 +223,12 @@ zstyle ":completion:*:cd:*" ignore-parents parent pwd
 zstyle ":completion:*" list-colors ""
 #  * type a directory's name to cd to it
 #compctl -/ cd
+# }}}
+
+# {{{ fzf overrides
+_fzf_compgen_path() {
+	ag -g "" "$1"
+}
 # }}}
 
 # {{{ Prompt Settings
