@@ -63,6 +63,7 @@ if has('nvim')
 	"let g:python3_host_prog='/usr/bin/python'
 	let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 	"let g:loaded_python_provider = 1
+" allows navigating out of the terminal
 	tnoremap <C-h> <C-\><C-n><C-w>h
 	tnoremap <C-j> <C-\><C-n><C-w>j
 	tnoremap <C-k> <C-\><C-n><C-w>k
@@ -70,7 +71,7 @@ if has('nvim')
 	let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 	" automatically enter insert mode
 	autocmd BufWinEnter,WinEnter term://* startinsert
-	" exclude from buffer list
+	" exclude terminal from buffer list
 	autocmd TermOpen * set nobuflisted
 	" zsh
 	nnoremap <silent> <F3> :terminal zsh<CR>
@@ -216,10 +217,19 @@ nnoremap <F10> :<C-U>setlocal list! list? <CR>
 " remove trailing whitespace
 nnoremap <Leader>rtw :%s/\s\+$//e<CR>
 " buffer sizing
-map <silent> <A-h> <C-w>>
-map <silent> <A-j> <C-w>-
-map <silent> <A-k> <C-w>+
-map <silent> <A-l> <C-w><
+if s:uname != 'Darwin'
+	map <silent> <A-h> <C-w>>
+	map <silent> <A-j> <C-w>-
+	map <silent> <A-k> <C-w>+
+	map <silent> <A-l> <C-w><
+else 
+	" yay mac, same keys as non-mac bindings but mac alt+X 
+	" produces an actual character we need to bind to
+	map <silent> ˙ <C-w>>
+	map <silent> ∆ <C-w>-
+	map <silent> ˚ <C-w>+
+	map <silent> ¬ <C-w><
+endif 
 " buffer navigation
 map <silent> <C-h> <C-w>h
 map <silent> <C-k> <C-w>k
