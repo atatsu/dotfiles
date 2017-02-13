@@ -1,172 +1,166 @@
-local naughty = require("naughty")
 local awful = require("awful")
-local wibox = require("wibox")
-local screen_overrides = {}
-
-if awful.util.checkfile(awful.util.getdir("config") .. "screenoverrides.lua") then
-	screen_overrides = require("screenoverrides")
-end
+local gears = require("gears")
+local naughty = require("naughty")
 
 local M = {}
 
-function M.get_tag_by_name(tag_name, tags)
-	for s = 1, screen.count() do
-		for _, tag in ipairs(tags[s]) do
-			if tag.name == tag_name then
-				return tag
+--[[
+          
+--]]
+local friendly = {
+	--["chat"] = "",
+	["chat"] = "",
+	["steam"] = "",
+	["web"] = "",
+	["dev"] = "",
+	["games"] = "",
+	["music"] = "",
+	["devalt"] = "",
+	["misc"] = "",
+}
+
+M.friendly_tag_names = friendly
+
+M.tags = {}
+
+-- xrandr info is used to determine screen order remember!
+M.tags[1] = { friendly.dev, friendly.games, friendly.misc }
+M.tags[2] = { friendly.chat, friendly.music, friendly.misc }
+M.tags[3] = { friendly.devalt, friendly.misc }
+
+M.left_screen = (function () 
+	if screen:count() > 1 then
+		for s in screen do
+			if s.index == 2 then
+				return s
 			end
 		end
 	end
 
-	naughty.notify({
-		preset = naughty.config.presets.normal,
-		title = "Tag not found",
-		text = string.format("Tag with name '%s' not found", tag_name)
-	})
+	return screen.primary
+end)()
+
+M.right_screen = (function () 
+	if screen:count() > 1 then
+		for s in screen do
+			if s.index == 3 then
+				return s
+			end
+		end
+	end
+
+	return screen.primary
+end)()
+
+function M.web_rule_callback (c)
+	local web_tag = awful.tag.find_by_name(M.left_screen, friendly.web)
+
+	if not web_tag then
+		web_tag = awful.tag.add(
+			friendly.web,
+			{
+				screen = M.left_screen,
+				layout = awful.layout.suit.magnifier,
+				volatile = true
+			}
+		)
+
+		web_tag.master_width_factor = 0.85
+
+		naughty.notify({
+			preset = naughty.config.presets.normal,
+			title = "created new tag",
+			text = web_tag.name .. "  (web) [" .. tostring(M.left_screen.index) .. "]"
+		})
+	end
+
+	awful.rules.execute(c, { tag = web_tag })
+	web_tag:view_only()
+	awful.screen.focus(M.left_screen.index)
+	-- web comes first!
+	web_tag.index = 1
 end
 
-function M.add_titlebar(c)
-	-- buttons for the titlebar
-	local buttons = awful.util.table.join(
-		--
-		-- left-click, focus the clicked client, raise it, and move it
-		awful.button({ }, 1, function()
-			client.focus = c
-			c:raise()
-			awful.mouse.client.move(c)
-		end),
-		--
-		-- right-click, focus the clicked client, raise it, and resize it
-		awful.button({ }, 3, function()
-			client.focus = c
-			c:raise()
-			awful.mouse.client.resize(c)
+function M.steam_rule_callback (c)
+	-- first check if the tag already exists
+	local steam_tag = awful.tag.find_by_name(screen.primary, friendly.steam)
+
+	if not steam_tag then
+		steam_tag = awful.tag.add(
+			friendly.steam,
+			{
+				screen = screen.primary,
+				layout = awful.layout.suit.tile.left,
+				volatile = true
+			}
+		)
+		steam_tag.master_width_factor = 0.75
+
+		-- We don't want our nicely created steam tag to be after that 
+		-- dreadful 'misc' tag... so swap if necessary.
+		
+		misc_tag = awful.tag.find_by_name(screen.primary, friendly.misc)
+		if steam_tag.index == #screen.primary.tags and misc_tag then
+			steam_tag:swap(misc_tag)
+		end
+
+		naughty.notify({ 
+			preset = naughty.config.presets.normal,
+			title = "created new tag",
+			text = steam_tag.name .. "  (steam) [" .. tostring(screen.primary.index) .. "]"
+		})
+	end
+
+	-- The 'Friends' window and main library window spawn at the same time
+	-- which seems to fuck up the rule application. Consequently the Friends
+	-- window is properly placed on the new tag but the library window just kinda
+	-- pops up wherever the fuck it feels like. Below we're delaying the rule
+	-- execution for the main library window so that it can be placed properly
+	if c.name == "Steam" and not c.floating then
+		c.hidden = true
+		gears.timer.weak_start_new(0.5, function () 
+			awful.rules.execute(c, { tag = steam_tag })
+			c.hidden = false
+			awful.client.setmaster(c)
+			--steam_tag:view_only()
 		end)
-	)
+		return
+	-- Fun fact! The Chat window intially opens with the name 'Untitled'!
+	-- So delay it's resolution as well! I'm sure other windows have
+	-- similar douchy behavior so I'll have to deal with them at some point.
+	elseif c.name == "Untitled" then
+		c.hidden = true
+		gears.timer.weak_start_new(0.5, function ()
+			awful.rules.execute(c, { tag = steam_tag })
 
-	-- Widgets that are aligned to the left
-	local left_layout = wibox.layout.fixed.horizontal()
-	-- add an icon widget for the application
-	left_layout:add(awful.titlebar.widget.iconwidget(c))
-	left_layout:buttons(buttons)
+			if c.name:find("Chat") ~= nil then
+				-- Yay! We have the chat window!
+				c.hidden = false
+				awful.client.setslave(c)
+				return
+			end
 
-	-- Widgets that are aligned to the right
-	local right_layout = wibox.layout.fixed.horizontal()
-	-- add a floating button to the titlebar
-	--right_layout:add(awful.titlebar.widget.floatingbutton(c))
-	-- add a maximize button to the titlebar
-	right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-	-- add a sticky button to the titlebar
-	right_layout:add(awful.titlebar.widget.stickybutton(c))
-	-- add an on top button to the titlebar
-	right_layout:add(awful.titlebar.widget.ontopbutton(c))
-	-- add a close button to the titlebar
-	right_layout:add(awful.titlebar.widget.closebutton(c))
-
-	-- The title goes in the middle
-	local middle_layout = wibox.layout.flex.horizontal()
-	local title = awful.titlebar.widget.titlewidget(c)
-	title:set_align("center")
-	middle_layout:add(title)
-	middle_layout:buttons(buttons)
-
-	-- Now bring it all together
-	local layout = wibox.layout.align.horizontal()
-	layout:set_left(left_layout)
-	layout:set_right(right_layout)
-	layout:set_middle(middle_layout)
-
-	awful.titlebar(c):set_widget(layout)
-end
-
-function M.screen_override(s)
-	local override = screen_overrides[s]
-	return override or s
-end
-
-function M.next_screen()
-	if #screen_overrides < 1 then
-		return mouse.screen + 1
+			-- If it ain't chat just assume it's some other fuckin' thing we want
+			-- floating anyway.
+			c.hidden = false
+			c.floating = true
+			c:raise()
+		end)
+		return
 	end
 
-	local cur_scr = screen_overrides[mouse.screen]
-	local next_scr = screen_overrides[cur_scr + 1]
-	if not next_scr then
-		next_scr = screen_overrides[1]
-	end
+	awful.rules.execute(c, { tag = steam_tag })
 
-	return next_scr
-end
-
-function M.prev_screen()
-	if #screen_overrides < 1 then
-		return mouse.screen - 1
-	end
-
-	local cur_scr = screen_overrides[mouse.screen]
-	local prev_scr = screen_overrides[cur_scr - 1]
-	if not prev_scr then
-		prev_scr = screen_overrides[screen.count()]
-	end
-
-	return prev_scr
-end
-
-function M.next_screen_relative()
-	if #screen_overrides < 1 then
-		return 1
-	end
-
-	local cur_scr_awesome = mouse.screen
-	local cur_scr_override = screen_overrides[mouse.screen]
-
-	local intended_next = cur_scr_override + 1
-	if intended_next > screen.count() then
-		-- need to go to the first screen
-		intended_next = 1
-	end
-
-	local jumps = 1
-	for i = 1, screen.count() do
-		intended_awesome = cur_scr_awesome + i
-		if intended_awesome > screen.count() then
-			intended_awesome = intended_awesome - screen.count()
-		end
-
-		if screen_overrides[intended_awesome] == intended_next then
-			return jumps
-		end
-
-		jumps = jumps + 1
-	end
-end
-
-function M.prev_screen_relative()
-	if #screen_overrides < 1 then
-		return -1
-	end
-
-	local cur_scr_awesome = mouse.screen
-	local cur_scr_override = screen_overrides[mouse.screen]
-
-	local intended_prev = cur_scr_override - 1
-	if intended_prev < 1 then
-		-- need to go to last screen
-		intended_prev = screen.count()
-	end
-
-	local jumps = 1
-	for i = 1, screen.count() do
-		intended_awesome = cur_scr_awesome + i
-		if intended_awesome > screen.count() then
-			intended_awesome = intended_awesome - screen.count()
-		end
-
-		if screen_overrides[intended_awesome] == intended_prev then
-			return jumps
-		end
-
-		jumps = jumps + 1
+	if c.name:find("News") ~= nil then
+		c.floating = true
+	--[[
+	else
+		naughty.notify({ 
+			preset = naughty.config.presets.normal,
+			title = "unknown name",
+			text = c.name
+		})
+	--]]
 	end
 end
 

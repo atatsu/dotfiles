@@ -20,10 +20,16 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 -- Customizations
 local widgets = require("widgetsnew")
+local utils = require("utils")
 
-local tag_names = {}
-function tag_names.by_friendly (friendly)
-	local symbol = tag_names.friendly_names[friendly]
+local screen_util = {
+	left_screen = screen.primary,
+	right_screen = screen.primary
+}
+
+local tag_util = {}
+function tag_util.by_friendly (friendly)
+	local symbol = tag_util._friendly_names[friendly]
 	if symbol ~= nil then
 		return symbol
 	end
@@ -32,12 +38,14 @@ function tag_names.by_friendly (friendly)
 end
 
 (function ()
-if awful.util.checkfile(awful.util.getdir("config") .. "tags.lua") then
-	local tags = require("tags")
-	tag_names.friendly_names = tags.friendly_names
-	for i, v in ipairs(tags) do
-		tag_names[i] = v
+if awful.util.checkfile(awful.util.getdir("config") .. "utils.lua") then
+	tag_util._friendly_names = utils.friendly_tag_names
+	for i, v in ipairs(utils.tags) do
+		tag_util[i] = v
 	end
+
+	screen_util.left_screen = utils.left_screen
+	screen_util.right_screen = utils.right_screen
 end
 end)()
 
@@ -69,6 +77,7 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(awful.util.get_themes_dir() .. "zenburn/theme.lua")
+--beautiful.init(awful.util.getdir("config") .. "/themes/gruvbox/theme.lua")
 
 terminal = "termite"
 editor = os.getenv("EDITOR") or "nano"
@@ -243,8 +252,8 @@ awful.screen.connect_for_each_screen(function(s)
 	set_wallpaper(s)
 
 	-- Each screen has its own tag table.
-	if tag_names[s.index] ~= nil then
-		awful.tag(tag_names[s.index], s, preferred_layout)
+	if tag_util[s.index] ~= nil then
+		awful.tag(tag_util[s.index], s, preferred_layout)
 	else
 		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, preferred_layout)
 	end
@@ -626,89 +635,30 @@ awful.rules.rules = {
 			properties = { titlebars_enabled = true }
 		},
 
-		-- Steam, create new tag and send steam to it
+		{
+			rule_any = {
+				class = {
+					"qutebrowser",
+					"Chromium"
+				},
+				instance = {
+					"qutebrowser",
+					"chromium"
+				}
+			},
+			callback = utils.web_rule_callback
+		},
+
+		-- {{{ Steam
+		-- create new tag and send steam to it
 		{
 			rule = {
 				class = "Steam",
 				instance = "Steam"
 			},
-			callback = function (c)
-				-- first check if the tag already exists
-				local steam_tag = awful.tag.find_by_name(screen.primary, tag_names.by_friendly("steam"))
-
-				if not steam_tag then
-					steam_tag = awful.tag.add(
-						tag_names.by_friendly("steam"),
-						{
-							screen = screen.primary,
-							layout = awful.layout.suit.tile.left,
-							volatile = true
-						}
-					)
-					naughty.notify({ 
-						preset = naughty.config.presets.normal,
-						title = "created new tag",
-						text = steam_tag.name .. "  (steam)"
-					})
-				end
-
-				-- The 'Friends' window and main library window spawn at the same time
-				-- which seems to fuck up the rule application. Consequently the Friends
-				-- window is properly placed on the new tag but the library window just kinda
-				-- pops up wherever the fuck it feels like. Below we're delaying the rule
-				-- execution for the main library window so that it can be placed properly
-				if c.name == "Steam" and not c.floating then
-					c.hidden = true
-					gears.timer.weak_start_new(0.1, function () 
-						awful.rules.execute(c, { tag = steam_tag })
-						c.hidden = false
-						awful.client.setmaster(c)
-						-- now make the main tag window larger
-						--awful.tag.incgap(5, steam_tag)
-						awful.tag.incmwfact(0.25, steam_tag)
-						steam_tag:view_only()
-					end)
-					return
-				-- Fun fact! The Chat window intially opens with the name 'Untitled'!
-				-- So delay it's resolution as well! I'm sure other windows have
-				-- similar douchy behavior so I'll have to deal with them at some point.
-				elseif c.name == "Untitled" then
-					c.hidden = true
-					gears.timer.weak_start_new(0.1, function ()
-						awful.rules.execute(c, { tag = steam_tag })
-
-						if c.name:find("Chat") ~= nil then
-							-- Yay! We have the chat window!
-							c.hidden = false
-							awful.client.setslave(c)
-							return
-						end
-
-						-- If it ain't chat just assume it's some other fuckin' thing we want
-						-- floating anyway.
-						c.hidden = false
-						c.floating = true
-						c:raise()
-					end)
-					return
-				end
-
-				awful.rules.execute(c, { tag = steam_tag })
-
-				if c.name:find("News") ~= nil then
-					c.floating = true
-				--[[
-				else
-					naughty.notify({ 
-						preset = naughty.config.presets.normal,
-						title = "unknown name",
-						text = c.name
-					})
-				--]]
-				end
-
-			end
+			callback = utils.steam_rule_callback
 		},
+		-- }}}
 
 		-- Set Firefox to always map on the tag named "2" on screen 1.
 		-- { rule = { class = "Firefox" },
@@ -735,6 +685,20 @@ client.connect_signal("manage", function (c)
 		awful.titlebar.hide(c)
 	end
 
+	-- No clients should be shown in the tasklist
+	c.skip_taskbar = true
+
+end)
+
+client.connect_signal("property::minimized", function (c)
+	-- We want minimized clients to show up in the taskbar...
+	-- else how the fuck are we supposed to know there's a 
+	-- fuckin' minimized client
+	if c.minimized then
+		c.skip_taskbar = false
+	else
+		c.skip_taskbar = true
+	end
 end)
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
