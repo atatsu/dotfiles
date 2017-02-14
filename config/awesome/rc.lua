@@ -635,6 +635,23 @@ awful.rules.rules = {
 			properties = { titlebars_enabled = true }
 		},
 
+		-- {{{ weechat and mumble
+		{
+			rule_any = {
+				class = {
+					"weechat",
+					"Mumble",
+				},
+				instance = {
+					"weechat",
+					"mumble",
+				}
+			},
+			callback = utils.chat_rule_callback
+		},
+		-- }}}
+
+		-- {{{ qutebrowser and chromium
 		{
 			rule_any = {
 				class = {
@@ -648,6 +665,7 @@ awful.rules.rules = {
 			},
 			callback = utils.web_rule_callback
 		},
+		-- }}}
 
 		-- {{{ Steam
 		-- create new tag and send steam to it
@@ -659,6 +677,16 @@ awful.rules.rules = {
 			callback = utils.steam_rule_callback
 		},
 		-- }}}
+		--
+		-- {{{ xmessage
+		{
+			rule = {
+				class = "Xmessage",
+				instance = "xmessage",
+			},
+			properties = { floating = true }
+		},
+		--}}}
 
 		-- Set Firefox to always map on the tag named "2" on screen 1.
 		-- { rule = { class = "Firefox" },
