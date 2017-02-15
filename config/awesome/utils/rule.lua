@@ -10,161 +10,42 @@ local M = {}
 local left_screen = screenutils.get_by_index(3)
 local right_screen = screenutils.get_by_index(2)
 
-function M.chat_rule_callback (c)
-	local chat_tag = awful.tag.find_by_name(left_screen, iconutils.chat)
-
-	if not chat_tag then
-		chat_tag = awful.tag.add(
-			iconutils.chat,
-			{
-				screen = left_screen,
-				layout = awful.layout.suit.tile,
-				volatile = true
-			}
-		)
-
-		chat_tag.master_width_factor = 0.8
-
-		-- check if we have a web tag, and if so don't cut in line!
-		local web_tag = awful.tag.find_by_name(left_screen, iconutils.web)	
-		chat_tag.index = web_tag and web_tag.index + 1 or 1
-
-		naughty.notify({
-			preset = naughty.config.presets.normal,
-			title = "created new tag",
-			text = chat_tag.name .. "  (chat) [ s = " .. tostring(left_screen.index) .. " ]"
-		})
+function M.dynamic_tag (s, tag_name, callback, props, order)
+	s = s or screen.primary
+	tag_name = tag_name or 'dynamic tag'
+	props = props or {}
+	props.screen = s
+	props.layout = props.layout or awful.layout.suit.tile
+	if props.volatile == nil then
+		props.volatile = true
 	end
 
-	awful.rules.execute(c, { tag = chat_tag })
+	return function (c)
+		local tag = awful.tag.find_by_name(s, tag_name)
 
-	-- ignore the mumble connection dialog
-	if c.floating then
-		return
-	end
+		if not tag then
+			tag = awful.tag.add(tag_name, props)
 
-	-- now figure out whether it's mumble or weechat and set 
-	-- the proper one as master/slave while ignoring the mumble
-	-- connection dialog
-	if c.name:lower():find("mumble") ~= nil then
-		awful.client.setslave(c)
-		return
-	end
-
-	-- weechat
-	awful.client.setmaster(c)
-end
-
-function M.web_rule_callback (c)
-	local web_tag = awful.tag.find_by_name(left_screen, iconutils.web)
-
-	if not web_tag then
-		web_tag = awful.tag.add(
-			iconutils.web,
-			{
-				screen = left_screen,
-				layout = awful.layout.suit.magnifier,
-				volatile = true
-			}
-		)
-
-		web_tag.master_width_factor = 0.85
-
-		naughty.notify({
-			preset = naughty.config.presets.normal,
-			title = "created new tag",
-			text = web_tag.name .. "  (web) [ s = " .. tostring(left_screen.index) .. " ]"
-		})
-
-		-- web comes first!
-		web_tag.index = 1
-	end
-
-	awful.rules.execute(c, { tag = web_tag })
-	web_tag:view_only()
-	awful.screen.focus(left_screen.index)
-end
-
-function M.steam_rule_callback (c)
-	-- first check if the tag already exists
-	local steam_tag = awful.tag.find_by_name(screen.primary, iconutils.steam)
-
-	if not steam_tag then
-		steam_tag = awful.tag.add(
-			iconutils.steam,
-			{
-				screen = screen.primary,
-				layout = awful.layout.suit.tile.left,
-				volatile = true
-			}
-		)
-		steam_tag.master_width_factor = 0.75
-
-		-- We don't want our nicely created steam tag to be after that 
-		-- dreadful 'misc' tag... so swap if necessary.
-		
-		local misc_tag = awful.tag.find_by_name(screen.primary, iconutils.misc)
-		if steam_tag.index == #screen.primary.tags and misc_tag then
-			steam_tag:swap(misc_tag)
-		end
-
-		naughty.notify({ 
-			preset = naughty.config.presets.normal,
-			title = "created new tag",
-			text = steam_tag.name .. "  (steam) [ s = " .. tostring(screen.primary.index) .. " ]"
-		})
-	end
-
-	-- The 'Friends' window and main library window spawn at the same time
-	-- which seems to fuck up the rule application. Consequently the Friends
-	-- window is properly placed on the new tag but the library window just kinda
-	-- pops up wherever the fuck it feels like. Below we're delaying the rule
-	-- execution for the main library window so that it can be placed properly
-	if c.name == "Steam" and not c.floating then
-		c.hidden = true
-		gears.timer.weak_start_new(0.5, function () 
-			awful.rules.execute(c, { tag = steam_tag })
-			c.hidden = false
-			awful.client.setmaster(c)
-			--steam_tag:view_only()
-		end)
-		return
-	-- Fun fact! The Chat window intially opens with the name 'Untitled'!
-	-- So delay it's resolution as well! I'm sure other windows have
-	-- similar douchy behavior so I'll have to deal with them at some point.
-	elseif c.name == "Untitled" then
-		c.hidden = true
-		gears.timer.weak_start_new(0.5, function ()
-			awful.rules.execute(c, { tag = steam_tag })
-
-			if c.name:find("Chat") ~= nil then
-				-- Yay! We have the chat window!
-				c.hidden = false
-				awful.client.setslave(c)
-				return
+			if order and order.after then
+				local after_tag = awful.tag.find_by_name(s, order.after)
+				tag.index = after_tag and after_tag.index + 1 or order.fallback
+			elseif order and order.before then
+				local before_tag = awful.tag.find_by_name(s, order.before)
+				tag.index = before_tag and before_tag.index or order.fallback
 			end
 
-			-- If it ain't chat just assume it's some other fuckin' thing we want
-			-- floating anyway.
-			c.hidden = false
-			c.floating = true
-			c:raise()
-		end)
-		return
-	end
+			naughty.notify({
+				preset = naughty.config.presets.normal,
+				title = "created new tag",
+				text = tag.name .. " [ s " .. tostring(s.index) .. " ]"
+			})
 
-	awful.rules.execute(c, { tag = steam_tag })
+		end
 
-	if c.name:find("News") ~= nil then
-		c.floating = true
-	--[[
-	else
-		naughty.notify({ 
-			preset = naughty.config.presets.normal,
-			title = "unknown name",
-			text = c.name
-		})
-	--]]
+		awful.rules.execute(c, { tag = tag })
+
+		callback(c, tag, s)
+
 	end
 end
 
