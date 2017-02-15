@@ -18,36 +18,12 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
--- Customizations
-local widgets = require("widgetsnew")
-local utils = require("utils")
+-- homebrew modules
+local screenutils = require("utils").screen
+local tagutils = require("utils").tag
+local ruleutils = require("utils").rule
+local widgetutils = require("utils").widget
 
-local screen_util = {
-	left_screen = screen.primary,
-	right_screen = screen.primary
-}
-
-local tag_util = {}
-function tag_util.by_friendly (friendly)
-	local symbol = tag_util._friendly_names[friendly]
-	if symbol ~= nil then
-		return symbol
-	end
-
-	return friendly
-end
-
-(function ()
-if awful.util.checkfile(awful.util.getdir("config") .. "utils.lua") then
-	tag_util._friendly_names = utils.friendly_tag_names
-	for i, v in ipairs(utils.tags) do
-		tag_util[i] = v
-	end
-
-	screen_util.left_screen = utils.left_screen
-	screen_util.right_screen = utils.right_screen
-end
-end)()
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -252,8 +228,8 @@ awful.screen.connect_for_each_screen(function(s)
 	set_wallpaper(s)
 
 	-- Each screen has its own tag table.
-	if tag_util[s.index] ~= nil then
-		awful.tag(tag_util[s.index], s, preferred_layout)
+	if tagutils.tags_for_screen[s.index] ~= nil then
+		awful.tag(tagutils.tags_for_screen[s.index], s, preferred_layout)
 	else
 		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, preferred_layout)
 	end
@@ -290,10 +266,10 @@ awful.screen.connect_for_each_screen(function(s)
 		s.mytasklist, -- Middle widget
 		{-- Right widgets
 			layout = wibox.layout.fixed.horizontal,
-			widgets.pacman(),
+			widgetutils.pacman(),
 			mykeyboardlayout,
 			wibox.widget.systray(),
-			widgets.clock(),
+			widgetutils.clock(),
 			s.mylayoutbox,
 		},
 	}
@@ -647,7 +623,7 @@ awful.rules.rules = {
 					"mumble",
 				}
 			},
-			callback = utils.chat_rule_callback
+			callback = ruleutils.chat_rule_callback
 		},
 		-- }}}
 
@@ -663,7 +639,7 @@ awful.rules.rules = {
 					"chromium"
 				}
 			},
-			callback = utils.web_rule_callback
+			callback = ruleutils.web_rule_callback
 		},
 		-- }}}
 
@@ -674,7 +650,7 @@ awful.rules.rules = {
 				class = "Steam",
 				instance = "Steam"
 			},
-			callback = utils.steam_rule_callback
+			callback = ruleutils.steam_rule_callback
 		},
 		-- }}}
 		--
