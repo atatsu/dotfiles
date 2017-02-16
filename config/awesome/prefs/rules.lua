@@ -4,14 +4,17 @@ local gears = require("gears")
 
 local utils = require("utils")
 
+local stash = require("prefs.stash")
+local keys = require("prefs.keys")
+
 local ruleutils = utils.rule
 local screenutils = utils.screen
 local iconutils = utils.icon
 
-local stash = require("prefs.stash")
+local clientkeys = keys.client
+
 
 local M = {}
-print(#stash)
 
 -- {{{ Shit that should be floated and placed nicely in the screen center
 M.float_center = {
@@ -164,7 +167,7 @@ M.all = {
 		border_color = beautiful.border_normal,
 		focus = awful.client.focus.filter,
 		raise = true,
-		keys = stash.clientkeys,
+		keys = clientkeys,
 		buttons = stash.clientbuttons,
 		screen = awful.screen.preferred,
 		placement = awful.placement.no_overlap+awful.placement.no_offscreen
