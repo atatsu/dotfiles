@@ -11,6 +11,7 @@ local iconutils = utils.icon
 local stash = require("prefs.stash")
 
 local M = {}
+print(#stash)
 
 -- {{{ Shit that should be floated and placed nicely in the screen center
 M.float_center = {
@@ -22,12 +23,10 @@ M.float_center = {
 			"xmessage"
 		},
 		name = {
-			"xmessage"
 		},
 	},
 	properties = { floating = true },
 	callback = function (c)
-		print('hi')
 		local f = (awful.placement.centered)
 		f(c)
 	end
@@ -169,7 +168,7 @@ M.all = {
 		buttons = stash.clientbuttons,
 		screen = awful.screen.preferred,
 		placement = awful.placement.no_overlap+awful.placement.no_offscreen
-	}
+	},
 }
 -- }}}
 
