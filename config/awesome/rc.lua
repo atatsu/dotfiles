@@ -59,12 +59,9 @@ do
 end
 -- }}}
 
--- {{{ Variable definitions
+-- {{{ Set all the shit up
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(awful.util.get_themes_dir() .. "zenburn/theme.lua")
---beautiful.init(awful.util.getdir("config") .. "/themes/gruvbox/theme.lua")
-
--- {{{ Set all the shit up
 -- Key bindings
 prefs.keys.setup_global()
 -- Rules
@@ -90,7 +87,6 @@ awful.layout.layouts = {
 		-- awful.layout.suit.corner.sw,
 		-- awful.layout.suit.corner.se,
 }
--- }}}
 
 -- {{{ Helper functions
 local function client_menu_toggle_fn()
@@ -116,8 +112,8 @@ myawesomemenu = {
 		{ "netflix", "google-chrome-stable https://www.netflix.com/Kids" },
 	}},
 	{ "hotkeys", function() return false, hotkeys_popup.show_help end},
-	{ "manual", prefs.const.terminal .. " -e man awesome" },
-	{ "edit config", prefs.const.editor_cmd .. " " .. awesome.conffile },
+	{ "manual", prefs.config.terminal .. " -e man awesome" },
+	{ "edit config", prefs.config.editor_cmd .. " " .. awesome.conffile },
 	{ "restart", awesome.restart },
 	{ "quit", function() awesome.quit() end}
 }
@@ -125,7 +121,7 @@ myawesomemenu = {
 mymainmenu = awful.menu(
 	{ items = { 
 		{ "awesome", myawesomemenu, beautiful.awesome_icon },
-		{ "open terminal", prefs.const.terminal },
+		{ "open terminal", prefs.config.terminal },
 	}}
 )
 
@@ -134,7 +130,7 @@ mylauncher = awful.widget.launcher(
 )
 
 -- Menubar configuration
---menubar.utils.terminal = prefs.const.terminal -- Set the terminal for applications that require it
+--menubar.utils.terminal = prefs.config.terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- Keyboard map indicator and switcher
@@ -149,7 +145,7 @@ local taglist_buttons = awful.util.table.join(
 	--
 	-- mod + left-click
 	awful.button(
-		{ prefs.const.modkey }, 
+		{ prefs.config.modkey }, 
 		1, 
 		function(t)
 			if client.focus then
@@ -163,7 +159,7 @@ local taglist_buttons = awful.util.table.join(
 	--
 	-- mod + right-click
 	awful.button(
-		{ prefs.const.modkey }, 
+		{ prefs.config.modkey }, 
 		3, 
 		function(t)
 			if client.focus then
@@ -228,9 +224,9 @@ awful.screen.connect_for_each_screen(function(s)
 
 	-- Each screen has its own tag table.
 	if tagutils.tags_for_screen[s.index] ~= nil then
-		awful.tag(tagutils.tags_for_screen[s.index], s, prefs.const.preferred_layout)
+		awful.tag(tagutils.tags_for_screen[s.index], s, prefs.config.preferred_layout)
 	else
-		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, prefs.const.preferred_layout)
+		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, prefs.config.preferred_layout)
 	end
 
 	-- Create a promptbox for each screen

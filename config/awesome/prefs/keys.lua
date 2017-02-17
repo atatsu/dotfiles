@@ -2,9 +2,9 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
-local const = require("prefs.const")
+local config = require("prefs.config")
 
-local modkey = const.modkey
+local modkey = config.modkey
 local sexec = awful.spawn.with_shell
 
 local global
@@ -48,7 +48,7 @@ global = (function ()
 		),
 
 		-- Standard program
-		awful.key({ modkey, }, "Return", function () awful.spawn(const.terminal) end, { description = "open a terminal", group = "launcher" }),
+		awful.key({ modkey, }, "Return", function () awful.spawn(config.terminal) end, { description = "open a terminal", group = "launcher" }),
 		awful.key({ modkey, "Control" }, "r", awesome.restart, { description = "reload awesome", group = "awesome" }),
 		awful.key({ modkey, "Shift" }, "q", awesome.quit, { description = "quit awesome", group = "awesome" }),
 		awful.key({ modkey, }, "l", function () awful.tag.incmwfact( 0.05) end, { description = "increase master width factor", group = "layout" }),

@@ -1,5 +1,5 @@
 local M = {
-	const = require("prefs.const"),
+	config = require("prefs.config"),
 	rules = require("prefs.rules"),
 	signals = require("prefs.signals"),
 	keys = require("prefs.keys"),

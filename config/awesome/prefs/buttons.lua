@@ -1,8 +1,8 @@
 local awful = require("awful")
 
-local const = require("prefs.const")
+local config = require("prefs.config")
 
-local modkey = const.modkey
+local modkey = config.modkey
 
 local M = {}
 
