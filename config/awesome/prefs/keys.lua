@@ -2,13 +2,23 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
-local stash = require("prefs.stash")
+local const = require("prefs.const")
 
+local modkey = const.modkey
 local sexec = awful.spawn.with_shell
 
-local M = {}
+local global
+local global_setup = false
 
-M.global = (function ()
+local M = {
+	setup_global = function ()
+		if global_setup then return end
+		global_setup = true
+		root.keys(global)
+	end
+}
+
+global = (function ()
 	local keys = awful.util.table.join(
 		awful.key({ modkey, }, "s", hotkeys_popup.show_help, { description="show help", group="awesome" }),
 		awful.key({ modkey, }, "p", awful.tag.viewprev, { description = "view previous", group = "tag" }),
@@ -38,7 +48,7 @@ M.global = (function ()
 		),
 
 		-- Standard program
-		awful.key({ modkey, }, "Return", function () awful.spawn(stash.terminal) end, { description = "open a terminal", group = "launcher" }),
+		awful.key({ modkey, }, "Return", function () awful.spawn(const.terminal) end, { description = "open a terminal", group = "launcher" }),
 		awful.key({ modkey, "Control" }, "r", awesome.restart, { description = "reload awesome", group = "awesome" }),
 		awful.key({ modkey, "Shift" }, "q", awesome.quit, { description = "quit awesome", group = "awesome" }),
 		awful.key({ modkey, }, "l", function () awful.tag.incmwfact( 0.05) end, { description = "increase master width factor", group = "layout" }),

@@ -4,17 +4,35 @@ local gears = require("gears")
 
 local utils = require("utils")
 
-local stash = require("prefs.stash")
 local keys = require("prefs.keys")
+local buttons = require("prefs.buttons")
 
 local ruleutils = utils.rule
 local screenutils = utils.screen
 local iconutils = utils.icon
 
 local clientkeys = keys.client
+local clientbuttons = buttons.client
 
+local rules_setup = false
 
-local M = {}
+local M
+M = {
+	setup = function ()
+		if rules_setup then return end
+		rules_setup = true
+
+		local r = {}
+		print(M)
+		for k, v in pairs(M) do
+			if k ~= "setup" then
+				r[#r+1] = v
+			end
+		end
+
+		awful.rules.rules = r
+	end
+}
 
 -- {{{ Shit that should be floated and placed nicely in the screen center
 M.float_center = {
@@ -168,7 +186,7 @@ M.all = {
 		focus = awful.client.focus.filter,
 		raise = true,
 		keys = clientkeys,
-		buttons = stash.clientbuttons,
+		buttons = clientbuttons,
 		screen = awful.screen.preferred,
 		placement = awful.placement.no_overlap+awful.placement.no_offscreen
 	},

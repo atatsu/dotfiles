@@ -19,37 +19,43 @@ local naughty = require("naughty")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 -- homebrew modules
-local screenutils = require("utils").screen
 local tagutils = require("utils").tag
 local widgetutils = require("utils").widget
-local iconutils = require("utils").icon
 
--- Modularized components
+-- Modularized settings
 local prefs = require("prefs")
+
+-- Function aliases
+local exec = awful.spawn
+local sexec = awful.spawn.with_shell
 
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
-		naughty.notify({ preset = naughty.config.presets.critical,
-										 title = "Oops, there were errors during startup!",
-										 text = awesome.startup_errors })
+	naughty.notify({ 
+		preset = naughty.config.presets.critical,
+		title = "Oops, there were errors during startup!",
+		text = awesome.startup_errors 
+	})
 end
 
 -- Handle runtime errors after startup
 do
-		local in_error = false
-		awesome.connect_signal("debug::error", function (err)
-				-- Make sure we don't go into an endless error loop
-				if in_error then return end
-				in_error = true
+	local in_error = false
+	awesome.connect_signal("debug::error", function (err)
+		-- Make sure we don't go into an endless error loop
+		if in_error then return end
+		in_error = true
 
-				naughty.notify({ preset = naughty.config.presets.critical,
-												 title = "Oops, an error happened!",
-												 text = tostring(err) })
-				in_error = false
-		end)
+		naughty.notify({ 
+			preset = naughty.config.presets.critical,
+			title = "Oops, an error happened!",
+			text = tostring(err) 
+		})
+		in_error = false
+	end)
 end
 -- }}}
 
@@ -58,23 +64,12 @@ end
 beautiful.init(awful.util.get_themes_dir() .. "zenburn/theme.lua")
 --beautiful.init(awful.util.getdir("config") .. "/themes/gruvbox/theme.lua")
 
-terminal = "termite"
-prefs.stash.terminal = terminal
-editor = os.getenv("EDITOR") or "nano"
-editor_cmd = terminal .. " -e " .. editor
-
--- Default modkey.
--- Usually, Mod4 is the key with a logo between Control and Alt.
--- If you do not like this or do not have such a key,
--- I suggest you to remap Mod4 to another key using xmodmap or other tools.
--- However, you can use another modifier like Mod1, but it may interact with others.
-modkey = "Mod4"
-
--- Function aliases
-local exec = awful.spawn
-local sexec = awful.spawn.with_shell
-
-local preferred_layout = awful.layout.suit.corner.nw
+-- {{{ Set all the shit up
+-- Key bindings
+prefs.keys.setup_global()
+-- Rules
+prefs.rules.setup()
+-- }}}
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
@@ -121,8 +116,8 @@ myawesomemenu = {
 		{ "netflix", "google-chrome-stable https://www.netflix.com/Kids" },
 	}},
 	{ "hotkeys", function() return false, hotkeys_popup.show_help end},
-	{ "manual", terminal .. " -e man awesome" },
-	{ "edit config", editor_cmd .. " " .. awesome.conffile },
+	{ "manual", prefs.const.terminal .. " -e man awesome" },
+	{ "edit config", prefs.const.editor_cmd .. " " .. awesome.conffile },
 	{ "restart", awesome.restart },
 	{ "quit", function() awesome.quit() end}
 }
@@ -130,7 +125,7 @@ myawesomemenu = {
 mymainmenu = awful.menu(
 	{ items = { 
 		{ "awesome", myawesomemenu, beautiful.awesome_icon },
-		{ "open terminal", terminal },
+		{ "open terminal", prefs.const.terminal },
 	}}
 )
 
@@ -139,7 +134,7 @@ mylauncher = awful.widget.launcher(
 )
 
 -- Menubar configuration
---menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+--menubar.utils.terminal = prefs.const.terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- Keyboard map indicator and switcher
@@ -154,7 +149,7 @@ local taglist_buttons = awful.util.table.join(
 	--
 	-- mod + left-click
 	awful.button(
-		{ modkey }, 
+		{ prefs.const.modkey }, 
 		1, 
 		function(t)
 			if client.focus then
@@ -168,7 +163,7 @@ local taglist_buttons = awful.util.table.join(
 	--
 	-- mod + right-click
 	awful.button(
-		{ modkey }, 
+		{ prefs.const.modkey }, 
 		3, 
 		function(t)
 			if client.focus then
@@ -233,9 +228,9 @@ awful.screen.connect_for_each_screen(function(s)
 
 	-- Each screen has its own tag table.
 	if tagutils.tags_for_screen[s.index] ~= nil then
-		awful.tag(tagutils.tags_for_screen[s.index], s, preferred_layout)
+		awful.tag(tagutils.tags_for_screen[s.index], s, prefs.const.preferred_layout)
 	else
-		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, preferred_layout)
+		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, prefs.const.preferred_layout)
 	end
 
 	-- Create a promptbox for each screen
@@ -278,35 +273,6 @@ awful.screen.connect_for_each_screen(function(s)
 		},
 	}
 end)
--- }}}
-
--- {{{ Mouse bindings
-root.buttons(awful.util.table.join(
-		awful.button({ }, 3, function () mymainmenu:toggle() end),
-		awful.button({ }, 4, awful.tag.viewnext),
-		awful.button({ }, 5, awful.tag.viewprev)
-))
--- }}}
-
--- {{{ Key bindings
-clientbuttons = awful.util.table.join(
-		awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
-		awful.button({ modkey }, 1, awful.mouse.client.move),
-		awful.button({ modkey }, 3, awful.mouse.client.resize))
-prefs.stash.clientbuttons = clientbuttons
-
--- Set keys
-root.keys(prefs.keys().global)
--- }}}
-
--- {{{ Rules
-awful.rules.rules = (function ()
-	local r = {}
-	for k, v in pairs(prefs.rules()) do
-		r[#r+1] = v
-	end
-	return r
-end)()
 -- }}}
 
 -- {{{ Signals

@@ -1,12 +1,9 @@
 local M = {
-	stash = require("prefs.stash"),
-	rules = function () 
-		return require("prefs.rules")
-	end,
+	const = require("prefs.const"),
+	rules = require("prefs.rules"),
 	signals = require("prefs.signals"),
-	keys = function ()
-		return require("prefs.keys")
-	end, 
+	keys = require("prefs.keys"),
+	buttons = require("prefs.buttons")
 }
 
 return M
