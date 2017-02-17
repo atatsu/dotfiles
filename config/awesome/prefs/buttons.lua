@@ -3,23 +3,25 @@ local awful = require("awful")
 local utils = require("utils")
 
 local config = require("prefs.config")
+local utils = require("utils")
+local widgets = require("prefs.widgets")
 
 local modkey = config.modkey
 
-local global
-local global_setup = false
+local is_setup = false
 
-local M = {
-	setup_global = function ()
-		if global_setup then return end
-		global_setup = true
-		root.buttons(global)
+local M
+M = {
+	init = function ()
+		if is_setup then return end
+		is_setup = true
+
+		root.buttons(M.global)
 	end
 }
 
-global = awful.util.table.join(
-	-- TODO: mymainmenu
-	--awful.button({ }, 3, function () mymainmenu:toggle() end),
+M.global = awful.util.table.join(
+	awful.button({ }, 3, function () widgets.mainmenu:toggle() end),
 	awful.button({ }, 4, awful.tag.viewnext),
 	awful.button({ }, 5, awful.tag.viewprev)
 )
@@ -82,6 +84,13 @@ M.taglist = awful.util.table.join(
 	),
 	awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen) end),
 	awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
+)
+
+M.layout = awful.util.table.join(
+	awful.button({ }, 1, function () awful.layout.inc( 1) end),
+	awful.button({ }, 3, function () awful.layout.inc(-1) end),
+	awful.button({ }, 4, function () awful.layout.inc( 1) end),
+	awful.button({ }, 5, function () awful.layout.inc(-1) end)
 )
 
 return M

@@ -6,5 +6,4 @@ local M = {
 	tag = require("utils.tag"),
 	widget = require("utils.widget"),
 }
-
 return M

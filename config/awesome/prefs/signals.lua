@@ -2,7 +2,32 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 
-local M = {}
+local helperutils = require("utils").helper
+
+local is_setup = false
+
+local classes = { 
+	["client"] = client, 
+	["tag"] = tag, 
+	["screen"] = screen,
+}
+
+local M
+M = {
+	init = function ()
+		if is_setup then return end
+		is_setup = true
+
+		for class_name, class in pairs(classes) do
+			local section = M[class_name] or {}
+			for signal_name, callbacks in pairs(section) do
+				for _, callback in ipairs(callbacks) do
+					class.connect_signal(signal_name, callback)
+				end
+			end
+		end
+	end
+}
 
 M.client = {
 	manage = {
@@ -10,7 +35,6 @@ M.client = {
 			-- Set the windows at the slave,
 			-- i.e. put it at the end of others instead of setting it master.
 			-- if not awesome.startup then awful.client.setslave(c) end
-
 			if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
 					-- Prevent clients from being unreachable after screen count changes.
 					awful.placement.no_offscreen(c)
@@ -26,10 +50,10 @@ M.client = {
 		end
 	},
 	["property::minimized"] = {
+		-- We want minimized clients to show up in the taskbar...
+		-- else how the fuck are we supposed to know there's a 
+		-- fuckin' minimized client
 		function (c)
-			-- We want minimized clients to show up in the taskbar...
-			-- else how the fuck are we supposed to know there's a 
-			-- fuckin' minimized client
 			if c.minimized then
 				c.skip_taskbar = false
 			else
@@ -100,8 +124,8 @@ M.client = {
 
 M.tag = {
 	["property::layout"] = {
+		-- hide titlebars for clients if layout isn't floating
 		function (t)
-			-- hide titlebars for clients if layout isn't floating
 			local floating = t.layout == awful.layout.suit.floating
 			for _, c in ipairs(t:clients()) do
 				if floating then
@@ -112,6 +136,13 @@ M.tag = {
 			end
 		end
 	},
+}
+
+M.screen = {
+	["property::geometry"] = {
+		-- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
+		helperutils.set_wallpaper,
+	}
 }
 
 return M

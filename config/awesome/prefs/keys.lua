@@ -7,18 +7,19 @@ local config = require("prefs.config")
 local modkey = config.modkey
 local sexec = awful.spawn.with_shell
 
-local global
-local global_setup = false
+local is_setup = false
 
-local M = {
-	setup_global = function ()
-		if global_setup then return end
-		global_setup = true
-		root.keys(global)
+local M
+M = {
+	init = function ()
+		if is_setup then return end
+		is_setup = true
+
+		root.keys(M.global)
 	end
 }
 
-global = (function ()
+M.global = (function ()
 	local keys = awful.util.table.join(
 		awful.key({ modkey, }, "s", hotkeys_popup.show_help, { description="show help", group="awesome" }),
 		awful.key({ modkey, }, "p", awful.tag.viewprev, { description = "view previous", group = "tag" }),

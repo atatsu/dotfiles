@@ -14,18 +14,17 @@ local iconutils = utils.icon
 local clientkeys = keys.client
 local clientbuttons = buttons.client
 
-local rules_setup = false
+local is_setup = false
 
 local M
 M = {
-	setup = function ()
-		if rules_setup then return end
-		rules_setup = true
+	init = function ()
+		if is_setup then return end
+		is_setup = true
 
 		local r = {}
-		print(M)
 		for k, v in pairs(M) do
-			if k ~= "setup" then
+			if k ~= "init" then
 				r[#r+1] = v
 			end
 		end
