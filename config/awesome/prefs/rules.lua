@@ -128,7 +128,8 @@ M.web = {
 		screenutils.get_by_index(3),
 		iconutils.web,
 		function (c, tag, s)
-			mouse.coords({ x = c.x, y = c.y})
+			tag:view_only()
+			--mouse.coords({ x = c.x, y = c.y})
 		end,
 		{ index = 1, master_width_factor = 0.75, layout = awful.layout.suit.magnifier }
 	)

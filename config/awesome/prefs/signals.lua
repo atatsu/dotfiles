@@ -1,5 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
+local gears = require("gears")
 local wibox = require("wibox")
 
 local helperutils = require("utils").helper
@@ -32,6 +33,15 @@ M = {
 M.client = {
 	manage = {
 		function (c)
+			-- Unhighlight the window after a delay, 'cause who needs that shit
+			c:connect_signal("focus", function (c)
+				gears.timer.weak_start_new(1, function () 
+					-- client may have been closed before timer expired so check
+					if not c then return end
+					c.border_color = beautiful.border_normal
+				end)
+			end)
+
 			-- Set the windows at the slave,
 			-- i.e. put it at the end of others instead of setting it master.
 			-- if not awesome.startup then awful.client.setslave(c) end

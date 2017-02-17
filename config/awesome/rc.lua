@@ -83,11 +83,6 @@ awful.layout.layouts = {
 		-- awful.layout.suit.corner.se,
 }
 
--- {{{ Menu
--- Create a launcher widget and a main menu
--- Keyboard map indicator and switcher
-mykeyboardlayout = awful.widget.keyboardlayout()
-
 -- {{{ Wibar
 
 -- Create a wibox for each screen and add it
@@ -131,7 +126,7 @@ awful.screen.connect_for_each_screen(function(s)
 		{-- Right widgets
 			layout = wibox.layout.fixed.horizontal,
 			widgetutils.pacman(),
-			mykeyboardlayout,
+			prefs.widgets.keyboard_layout,
 			wibox.widget.systray(),
 			widgetutils.clock(),
 			s.mylayoutbox,

@@ -37,6 +37,8 @@ M.mainmenu_launcher = awful.widget.launcher({
 	menu = M.mainmenu 
 })
 
+M.keyboard_layout = awful.widget.keyboardlayout()
+
 --menubar.utils.terminal = .config.terminal -- Set the terminal for applications that require it
 
 return M
