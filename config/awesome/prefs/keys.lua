@@ -1,7 +1,9 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
+local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
+local widgets = require("prefs.widgets")
 local config = require("prefs.config")
 
 local modkey = config.modkey
@@ -21,14 +23,26 @@ M = {
 
 M.global = (function ()
 	local keys = awful.util.table.join(
+		awful.key(
+			{ modkey, }, 
+			"b", 
+			function () 
+				local c = client.focus
+				client.focus.border_color = beautiful.border_focus
+				gears.timer.weak_start_new(config.focus_highlight_fade, function ()
+					if not c then return end
+					c.border_color = beautiful.border_normal
+				end)
+			end,
+			{ description="highlight focused client", group="screen" }
+		),
 		awful.key({ modkey, }, "s", hotkeys_popup.show_help, { description="show help", group="awesome" }),
 		awful.key({ modkey, }, "p", awful.tag.viewprev, { description = "view previous", group = "tag" }),
 		awful.key({ modkey, }, "n", awful.tag.viewnext, { description = "view next", group = "tag" }),
 		awful.key({ modkey, }, "Escape", awful.tag.history.restore, { description = "go back", group = "tag" }),
 		awful.key({ modkey, }, "j", function () awful.client.focus.byidx( 1) end, { description = "focus next by index", group = "client" }),
 		awful.key({ modkey, }, "k", function () awful.client.focus.byidx(-1) end, { description = "focus previous by index", group = "client" }),
-		-- TODO: mymainmenu
-		--awful.key({ modkey, }, "w", function () mymainmenu:show() end, { description = "show main menu", group = "awesome" }),
+		awful.key({ modkey, }, "w", function () widgets.mainmenu:show() end, { description = "show main menu", group = "awesome" }),
 
 		-- Layout manipulation
 		awful.key({ modkey, "Shift" }, "j", function () awful.client.swap.byidx(	1) end, { description = "swap with next client by index", group = "client" }),

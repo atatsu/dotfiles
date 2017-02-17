@@ -10,6 +10,7 @@ local M = {
 	preferred_layout = awful.layout.suit.corner.nw,
 	terminal = terminal,
 	theme = awful.util.get_themes_dir() .. "zenburn/theme.lua",
+	focus_highlight_fade = 1,
 	--theme = awful.util.getdir("config") .. "/themes/gruvbox/theme.lua",
 }
 

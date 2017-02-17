@@ -8,16 +8,10 @@
 -- Standard awesome library
 local awful = require("awful")
 local beautiful = require("beautiful")
-local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 local naughty = require("naughty")
 local wibox = require("wibox")
 require("awful.autofocus")
-
--- Function aliases
-local exec = awful.spawn
-local sexec = awful.spawn.with_shell
-
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
