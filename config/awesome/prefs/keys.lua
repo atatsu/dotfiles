@@ -3,6 +3,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
+local helperutils = require("utils.helper")
 local widgets = require("prefs.widgets")
 local config = require("prefs.config")
 
@@ -43,6 +44,7 @@ M.global = (function ()
 		awful.key({ modkey, }, "j", function () awful.client.focus.byidx( 1) end, { description = "focus next by index", group = "client" }),
 		awful.key({ modkey, }, "k", function () awful.client.focus.byidx(-1) end, { description = "focus previous by index", group = "client" }),
 		awful.key({ modkey, }, "w", function () widgets.mainmenu:show() end, { description = "show main menu", group = "awesome" }),
+		awful.key({ modkey, "Shift" }, "w", helperutils.client_menu_toggle(), { description = "show a menu of all clients", group = "awesome" }),
 
 		-- Layout manipulation
 		awful.key({ modkey, "Shift" }, "j", function () awful.client.swap.byidx(	1) end, { description = "swap with next client by index", group = "client" }),

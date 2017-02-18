@@ -1,0 +1,20 @@
+#!/usr/bin/zsh -f
+
+if [[ `screen -ls | grep '[[:digit:]]\+\.music-playlist'` ]] {
+	echo 'music playlist screen found, detaching and launching new window'
+	termite -e 'screen -rd music-playlist' --name ncmpcpp-playlist --class ncmpcpp &
+} else {
+	echo 'music playlist screen not found, starting new session'
+	termite -e 'screen -S music-playlist ncmpcpp -s playlist' --name ncmpcpp-playlist --class ncmpcpp &
+}
+
+# slight delay between spawns to reduce likely hood of the rules getting fucked
+sleep 0.3
+
+if [[ `screen -ls | grep '[[:digit:]]\+\.music-visualizer'` ]] {
+	echo 'music visualizer screen found, detaching and launching new window'
+	termite -e 'screen -rd music-visualizer' --name ncmpcpp-visualizer --class ncmpcpp &
+} else {
+	echo 'music visualizer screen not found, starting new session'
+	termite -e 'screen -S music-visualizer ncmpcpp -s visualizer' --name ncmpcpp-visualizer --class ncmpcpp &
+}

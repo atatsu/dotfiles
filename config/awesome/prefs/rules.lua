@@ -128,10 +128,50 @@ M.web = {
 		screenutils.get_by_index(3),
 		iconutils.web,
 		function (c, tag, s)
-			tag:view_only()
-			--mouse.coords({ x = c.x, y = c.y})
+			mouse.coords({ x = c.x, y = c.y})
 		end,
 		{ index = 1, master_width_factor = 0.75, layout = awful.layout.suit.magnifier }
+	)
+}
+-- }}}
+
+-- {{{ Send ncmpcpp to a newly created, volatile tag
+M.music = {
+	rule_any = {
+		class = {
+			"ncmpcpp",
+		},
+		instance = {
+			"ncmpcpp-visualizer",
+			"ncmpcpp-playlist",
+		},
+		name = {
+			"album-art",
+		}
+	},
+	callback = ruleutils.dynamic_tag(
+		screenutils.get_by_index(3),
+		iconutils.music,
+		function (c, tag, s)
+			print(c.name)
+			if c.instance == "ncmpcpp-visualizer" then
+				awful.client.setslave(c)
+				return
+			elseif c.name:lower() == "album-art" then
+				-- feh
+				awful.client.setslave(c)
+				awful.client.setwfact(0.2, c)
+
+				-- we don't want spawning feh windows to steal the focus
+				c.focusable = false
+				return
+			end
+
+			-- ncmpcpp-playlist
+			awful.client.setmaster(c)
+		end,
+		{ gap = 5, master_width_factor = 0.7, layout = awful.layout.suit.tile.bottom },
+		{ before = iconutils.misc }
 	)
 }
 -- }}}

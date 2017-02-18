@@ -1,0 +1,9 @@
+#!/usr/bin/zsh -f
+
+if [[ `screen -ls | grep '[[:digit:]]\+\.chat'` ]] {
+	echo 'chat screen found, detaching and launching new window'
+	termite -e 'screen -rd chat' --name weechat --class weechat &
+} else {
+	echo 'chat screen not found, starting new session'
+	termite -e 'screen -S chat weechat' --name weechat --class weechat &
+}

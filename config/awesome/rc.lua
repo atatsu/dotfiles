@@ -51,7 +51,6 @@ beautiful.init(awful.util.get_themes_dir() .. "zenburn/theme.lua")
 local prefs = require("prefs")
 -- homebrew modules
 local helperutils = require("utils").helper
-local tagutils = require("utils").tag
 local widgetutils = require("utils").widget
 
 prefs.init()
@@ -86,8 +85,8 @@ awful.screen.connect_for_each_screen(function(s)
 	helperutils.set_wallpaper(s)
 
 	-- Each screen has its own tag table.
-	if tagutils.tags_for_screen[s.index] ~= nil then
-		awful.tag(tagutils.tags_for_screen[s.index], s, prefs.config.preferred_layout)
+	if prefs.config.tags_for_screen[s.index] ~= nil then
+		awful.tag(prefs.config.tags_for_screen[s.index], s, prefs.config.preferred_layout)
 	else
 		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, prefs.config.preferred_layout)
 	end
