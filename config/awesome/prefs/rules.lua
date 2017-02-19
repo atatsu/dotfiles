@@ -152,18 +152,19 @@ M.music = {
 	callback = ruleutils.dynamic_tag(
 		screenutils.get_by_index(3),
 		iconutils.music,
-		function (c, tag, s)
+		function (c, t, s)
 			print(c.name)
 			if c.instance == "ncmpcpp-visualizer" then
 				awful.client.setslave(c)
 				return
 			elseif c.name:lower() == "album-art" then
 				-- feh
-				awful.client.setslave(c)
-				awful.client.setwfact(0.2, c)
-
 				-- we don't want spawning feh windows to steal the focus
 				c.focusable = false
+
+				awful.client.setslave(c)
+				awful.client.setwfact(0.2, c)
+				t:view_only()
 				return
 			end
 

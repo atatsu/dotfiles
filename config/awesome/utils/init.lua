@@ -5,5 +5,6 @@ local M = {
 	screen = require("utils.screen"),
 	tag = require("utils.tag"),
 	widget = require("utils.widget"),
+	leaf = require("utils.leaf"),
 }
 return M

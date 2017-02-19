@@ -4,6 +4,7 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 --local menubar = require("menubar")
 
 local config = require("prefs.config")
+local utils = require("utils")
 
 local is_setup = false
 
@@ -36,6 +37,8 @@ M.mainmenu_launcher = awful.widget.launcher({
 	image = beautiful.awesome_icon, 
 	menu = M.mainmenu 
 })
+
+M.termleaf = utils.leaf("termite")
 
 M.keyboard_layout = awful.widget.keyboardlayout()
 

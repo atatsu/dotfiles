@@ -65,6 +65,7 @@ M.global = (function ()
 		),
 
 		-- Standard program
+		awful.key({ modkey, }, "`", function () widgets.termleaf:toggle() end),
 		awful.key({ modkey, }, "Return", function () awful.spawn(config.terminal) end, { description = "open a terminal", group = "launcher" }),
 		awful.key({ modkey, "Control" }, "r", awesome.restart, { description = "reload awesome", group = "awesome" }),
 		awful.key({ modkey, "Shift" }, "q", awesome.quit, { description = "quit awesome", group = "awesome" }),
@@ -202,8 +203,8 @@ M.client = awful.util.table.join(
 	awful.key({ modkey, "Shift" }, "c", function (c) c:kill() end, { description = "close", group = "client" }),
 	awful.key({ modkey, "Control" }, "space", awful.client.floating.toggle, { description = "toggle floating", group = "client" }),
 	awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end, { description = "move to master", group = "client" }),
-	awful.key({ modkey, "Shift" }, "o", function (c) c:move_to_screen() end, { description = "move to next screen", group = "client" }),
-	awful.key({ modkey, }, "o", function (c) c:move_to_screen(c.screen.index-1) end, { description = "move to previous screen", group = "client" }),
+	awful.key({ modkey, }, "o", function (c) c:move_to_screen() end, { description = "move to next screen", group = "client" }),
+	awful.key({ modkey, "Shift" }, "o", function (c) c:move_to_screen(c.screen.index-1) end, { description = "move to previous screen", group = "client" }),
 	awful.key({ modkey, }, "t", awful.titlebar.toggle, { description = "toggle titlebar", group = "client" }),
 	awful.key({ modkey, "Shift" }, "t", function (c) c.ontop = not c.ontop end, { description = "toggle keep on top", group = "client" }),
 	awful.key({ modkey, "Shift" }, "n", function (c) c.minimized = true end , { description = "minimize", group = "client" }),
