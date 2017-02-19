@@ -4,11 +4,18 @@ local gears = require("gears")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 local helperutils = require("utils.helper")
+local screenutils = require("utils.screen")
 local widgets = require("prefs.widgets")
 local config = require("prefs.config")
 
 local modkey = config.modkey
 local sexec = awful.spawn.with_shell
+
+local capi = {
+	awesome = awesome,
+	client = client,
+	screen = screen,
+}
 
 local is_setup = false
 
@@ -28,14 +35,36 @@ M.global = (function ()
 			{ modkey, }, 
 			"b", 
 			function () 
-				local c = client.focus
-				client.focus.border_color = beautiful.border_focus
+				local c = capi.client.focus
+				capi.client.focus.border_color = beautiful.border_focus
 				gears.timer.weak_start_new(config.focus_highlight_fade, function ()
 					if not c then return end
 					c.border_color = beautiful.border_normal
 				end)
 			end,
 			{ description="highlight focused client", group="screen" }
+		),
+		awful.key(
+			{ modkey, }, 
+			"Right", 
+			function () 
+				local screen = awful.screen.focused()
+				local index = screen.index + 1 <= capi.screen:count() and screen.index + 1 or 1
+				local swap_with = screenutils.get_by_index(index)
+				screen:swap(swap_with)
+			end, 
+			{ description = "swap with next screen by index", group = "screen" }
+		),
+		awful.key(
+			{ modkey, }, 
+			"k",
+			function ()
+				local screen = awful.screen.focused()
+				local index = screen.index - 1 >= 1 and screen.index - 1 or capi.screen:count()
+				local swap_with = screenutils.get_by_index(index)
+				screen:swap(swap_with)
+			end, 
+			{ description = "swap with previous screen by index", group = "screen" }
 		),
 		awful.key({ modkey, }, "s", hotkeys_popup.show_help, { description="show help", group="awesome" }),
 		awful.key({ modkey, }, "p", awful.tag.viewprev, { description = "view previous", group = "tag" }),
@@ -57,8 +86,8 @@ M.global = (function ()
 			"Tab",
 			function ()
 				awful.client.focus.history.previous()
-				if client.focus then
-					client.focus:raise()
+				if capi.client.focus then
+					capi.client.focus:raise()
 				end
 			end,
 			{ description = "go back", group = "client" }
@@ -67,8 +96,8 @@ M.global = (function ()
 		-- Standard program
 		awful.key({ modkey, }, "`", function () widgets.termleaf:toggle() end),
 		awful.key({ modkey, }, "Return", function () awful.spawn(config.terminal) end, { description = "open a terminal", group = "launcher" }),
-		awful.key({ modkey, "Control" }, "r", awesome.restart, { description = "reload awesome", group = "awesome" }),
-		awful.key({ modkey, "Shift" }, "q", awesome.quit, { description = "quit awesome", group = "awesome" }),
+		awful.key({ modkey, "Control" }, "r", capi.awesome.restart, { description = "reload awesome", group = "awesome" }),
+		awful.key({ modkey, "Shift" }, "q", capi.awesome.quit, { description = "quit awesome", group = "awesome" }),
 		awful.key({ modkey, }, "l", function () awful.tag.incmwfact( 0.05) end, { description = "increase master width factor", group = "layout" }),
 		awful.key({ modkey, }, "h", function () awful.tag.incmwfact(-0.05) end, { description = "decrease master width factor", group = "layout" }),
 		awful.key({ modkey, "Shift" }, "h", function () awful.tag.incnmaster( 1, nil, true) end, { description = "increase the number of master clients", group = "layout" }),
@@ -84,7 +113,7 @@ M.global = (function ()
 				local c = awful.client.restore()
 				-- Focus restored client
 				if c then
-					client.focus = c
+					capi.client.focus = c
 					c:raise()
 				end
 			end,
@@ -136,7 +165,7 @@ M.global = (function ()
 				"#" .. i + 9,
 				function ()
 					local screen = awful.screen.focused()
-					local tag = screen.tags[i]
+					local tag = capi.screen.tags[i]
 					if tag then
 						tag:view_only()
 					end
@@ -149,7 +178,7 @@ M.global = (function ()
 				"#" .. i + 9,
 				function ()
 					local screen = awful.screen.focused()
-					local tag = screen.tags[i]
+					local tag = capi.screen.tags[i]
 					if tag then
 						awful.tag.viewtoggle(tag)
 					end
@@ -161,10 +190,10 @@ M.global = (function ()
 				{ modkey, "Shift" }, 
 				"#" .. i + 9,
 				function ()
-					if client.focus then
-						local tag = client.focus.screen.tags[i]
+					if capi.client.focus then
+						local tag = capi.client.focus.screen.tags[i]
 						if tag then
-							client.focus:move_to_tag(tag)
+							capi.client.focus:move_to_tag(tag)
 						end
 				 end
 				end,
@@ -175,10 +204,10 @@ M.global = (function ()
 				{ modkey, "Control", "Shift" }, 
 				"#" .. i + 9,
 				function ()
-					if client.focus then
-						local tag = client.focus.screen.tags[i]
+					if capi.client.focus then
+						local tag = capi.client.focus.screen.tags[i]
 						if tag then
-							client.focus:toggle_tag(tag)
+							capi.client.focus:toggle_tag(tag)
 						end
 					end
 				end,

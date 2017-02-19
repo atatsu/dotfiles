@@ -7,7 +7,6 @@
 --
 -- Standard awesome library
 local awful = require("awful")
-local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 local naughty = require("naughty")
 local wibox = require("wibox")
@@ -43,11 +42,6 @@ end
 -- }}}
 
 -- {{{ Set all the shit up
--- Themes define colours, icons, font and wallpapers.
-beautiful.init(awful.util.get_themes_dir() .. "zenburn/theme.lua")
-
--- Most `prefs` rely on `beautiful` and as such can't be imported until
--- after initialization
 local prefs = require("prefs")
 -- homebrew modules
 local helperutils = require("utils").helper

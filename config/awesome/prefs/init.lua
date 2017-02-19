@@ -1,4 +1,7 @@
+local beautiful = require("beautiful")
 local naughty = require("naughty")
+
+local config = require("prefs.config")
 
 local M = { }
 
@@ -31,6 +34,7 @@ setmetatable(M, {
 })
 
 function M.init ()
+	beautiful.init(config.theme)
 	-- Even with the above shit still calling `init()` on stuff
 	-- that needs it. Because you don't have to worry! If `init()`
 	-- has already been called nothing will happen. If called new

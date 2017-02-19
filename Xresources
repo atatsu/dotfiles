@@ -1,5 +1,34 @@
-! anrxcs X application resource database
+! neon
+! special
+*.foreground:   #f8f8f8
+*.background:   #171717
+*.cursorColor:  #f8f8f8
+! black
+*.color0:       #171717
+*.color8:       #38252c
+! red
+*.color1:       #d81765
+*.color9:       #ff0000
+! green
+*.color2:       #97d01a
+*.color10:      #76b639
+! yellow
+*.color3:       #ffa800
+*.color11:      #e1a126
+! blue
+*.color4:       #16b1fb
+*.color12:      #289cd5
+! magenta
+*.color5:       #ff2491
+*.color13:      #ff2491
+! cyan
+*.color6:       #0fdcb6
+*.color14:      #0a9b81
+! white
+*.color7:       #ebebeb
+*.color15:      #f8f8f8
 
+! anrxcs X application resource database
 
 !{{{ XFT
 Xft.dpi:			 96
@@ -195,16 +224,16 @@ xdiary*foreground: #F0DFAF
 
 
 !{{{ XMESSAGE
-Xmessage*font:									-xos4-terminus-*-*-*-*-*-*-*-*-*-*-iso8859-2
-Xmessage*background:						#3F3F3F
-Xmessage*foreground:						#F0DFAF
-Xmessage*form.*.shapeStyle:			rectangle
-Xmessage*Scrollbar.width:				1
-Xmessage*Scrollbar.borderWidth: 0
-!Xmessage.form.message.Scroll:	WhenNeeded
-Xmessage*Buttons:								Quit
-Xmessage*defaultButton:					Quit
-!Xmessage*geometry:							+20+20
+!Xmessage*font:									-xos4-terminus-*-*-*-*-*-*-*-*-*-*-iso8859-2
+!Xmessage*background:						#3F3F3F
+!Xmessage*foreground:						#F0DFAF
+!Xmessage*form.*.shapeStyle:			rectangle
+!Xmessage*Scrollbar.width:				1
+!Xmessage*Scrollbar.borderWidth: 0
+!!Xmessage.form.message.Scroll:	WhenNeeded
+!Xmessage*Buttons:								Quit
+!Xmessage*defaultButton:					Quit
+!!Xmessage*geometry:							+20+20
 !}}}
 
 
