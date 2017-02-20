@@ -115,8 +115,8 @@ awful.screen.connect_for_each_screen(function(s)
 			widgetutils.pacman(),
 			widgetutils.volume(),
 			prefs.widgets.keyboard_layout,
-			wibox.widget.systray(),
 			widgetutils.clock(),
+			widgetutils.systray(),
 			s.mylayoutbox,
 		},
 	}

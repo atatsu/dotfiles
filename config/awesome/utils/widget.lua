@@ -222,5 +222,19 @@ function M.pacman ()
 	return cache.pacman
 end
 
+function M.systray ()
+	if cache.systray then
+		return cache.systray
+	end
+
+	local systray = wibox.widget.systray()
+	cache.systray = wibox.widget{
+		layout = wibox.layout.fixed.horizontal,
+		systray,
+		M.spacer()
+	}
+
+	return cache.systray
+end
 
 return M
