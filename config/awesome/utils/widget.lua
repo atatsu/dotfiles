@@ -15,6 +15,11 @@ local M = {}
 
 local spacer_text
 
+function markup_color (text, color)
+	color = color or beautiful.fg_color
+	return "<span foreground=\"" .. color .. "\">" .. text .. "</span>"
+end
+
 function M.spacer (text)
 	if not cache.spacer then
 		cache.spacer = wibox.widget{
@@ -60,7 +65,7 @@ function M.volume (device_name)
 	)
 
 	local icon = wibox.widget{
-		markup = iconutils.volume .. " ",
+		markup = markup_color(iconutils.volume .. " ", beautiful.widget_icon_color),
 		align = "center",
 		valign = "center",
 		widget = wibox.widget.textbox,
@@ -95,15 +100,6 @@ function M.volume (device_name)
 		sexec("amixer set " .. device_name .. " " .. slider.value .. "% &>/dev/null")
 	end)
 
-	slider:connect_signal("mouse::enter", function ()
-		timer:stop()
-	end)
-
-	slider:connect_signal("mouse::leave", function ()
-		timer:start()
-		slider.visible = false
-	end)
-
 	local function update_status ()
 		easy_async(script_cmd, function (stdout, stderr, exitreason, exitcode)
 			if exitcode > 0 then
@@ -123,7 +119,7 @@ function M.volume (device_name)
 	timer:connect_signal("timeout", update_status)
 	timer:start()
 
-	cache.volume = wibox.widget{
+	local widget = wibox.widget{
 		layout = wibox.layout.fixed.horizontal,
 		icon,
 		status,
@@ -131,14 +127,24 @@ function M.volume (device_name)
 		M.spacer()
 	}
 
+	widget:connect_signal("mouse::enter", function ()
+		timer:stop()
+	end)
+
+	widget:connect_signal("mouse::leave", function ()
+		timer:start()
+		slider.visible = false
+	end)
+
+	cache.volume = widget
+
 	return cache.volume
 end
 
 function M.clock () 
 	if not cache.clock then
 		local icon = wibox.widget{
-			markup = iconutils.clock .. " ",
-			--markup = " ",
+			markup = markup_color(iconutils.clock .. " ", beautiful.widget_icon_color),
 			align = "center",
 			valign = "center",
 			widget = wibox.widget.textbox
@@ -166,8 +172,7 @@ function M.pacman ()
 		)
 
 		local icon = wibox.widget{
-			markup = iconutils.tux .. " ",
-			--markup = " ",
+			markup = markup_color(iconutils.tux .. " ", beautiful.widget_icon_color),
 			align = "center",
 			valign = "center",
 			widget = wibox.widget.textbox

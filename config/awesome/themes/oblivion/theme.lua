@@ -1,14 +1,16 @@
 local awful = require("awful")
+local gears = require("gears")
 local xresources = require("beautiful.xresources")
-local xrdb = xresources.get_current_theme()
-local dpi = xresources.apply_dpi
-local shape = require("gears.shape")
 
 local theme = dofile("/usr/share/awesome/themes/xresources/theme.lua")
 local theme_assets = dofile(awful.util.getdir("config") .. "utils/assets.lua")
 
 local theme_dir = awful.util.getdir("config") .. "themes/oblivion"
 
+local dpi = xresources.apply_dpi
+local xrdb = xresources.get_current_theme()
+
+--[[
 local colors = {
 	foreground = "#f8f8f8",
 	background = "#171717",
@@ -37,6 +39,8 @@ local colors = {
 	color7 = "#ebebeb",
 	color15 = "#f8f8f8",
 }
+--]]
+
 -- {{{ Styles
 theme.font = "glisp 8"
 
@@ -78,7 +82,7 @@ theme.tooltip_border_color = xrdb.color8
 -- taglist_shape_border_[color|width_empty|color_empty|width_focus|color_focus|width|urgent|color_urgent]
 theme.taglist_fg_focus = xrdb.color0
 theme.taglist_bg_focus = xrdb.color3
-theme.taglist_shape_focus = shape.circle
+theme.taglist_shape_focus = gears.shape.circle
 --theme.taglist_shape_focus = theme_assets.taglist_shape(17, 20)
 -- }}}
 
@@ -110,8 +114,13 @@ theme.menu_height = dpi(15)
 theme.menu_width  = dpi(100)
 -- }}}
 
+-- {{{ Widgets
+theme.widget_icon_color = xrdb.color3
+-- }}}
+
+local background_color = theme_assets.lighten_up(theme.bg_normal, 5)
 theme.wallpaper = function (s)
-	return theme_assets.share.wallpaper("#222222", xrdb.color8, xrdb.color7)
+	return theme_assets.share.wallpaper(background_color, xrdb.color8, xrdb.color7)
 end
 
 return theme

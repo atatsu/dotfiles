@@ -1,5 +1,9 @@
 #!/usr/bin/zsh -f
 
+if [[ ! `ps aux | grep mpd | grep -v grep` ]] {
+	mpd
+}
+
 if [[ `screen -ls | grep '[[:digit:]]\+\.music-playlist'` ]] {
 	echo 'music playlist screen found, detaching and launching new window'
 	termite -e 'screen -rd music-playlist' --name ncmpcpp-playlist --class ncmpcpp &

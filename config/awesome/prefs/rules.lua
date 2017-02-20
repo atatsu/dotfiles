@@ -72,7 +72,7 @@ M.steam = {
 			-- execution for the main library window so that it can be placed properly
 			if c.name == "Steam" and not c.floating then
 				c.hidden = true
-				gears.timer.weak_start_new(0.5, function () 
+				gears.timer.weak_start_new(1, function () 
 					awful.rules.execute(c, { tag = tag })
 					c.hidden = false
 					awful.client.setmaster(c)
@@ -84,7 +84,7 @@ M.steam = {
 			-- similar douchy behavior so I'll have to deal with them at some point.
 			elseif c.name == "Untitled" then
 				c.hidden = true
-				gears.timer.weak_start_new(0.5, function ()
+				gears.timer.weak_start_new(1, function ()
 					awful.rules.execute(c, { tag = tag })
 
 					if c.name:find("Chat") ~= nil then

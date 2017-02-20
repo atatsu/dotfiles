@@ -43,11 +43,11 @@ end
 
 -- {{{ Set all the shit up
 local prefs = require("prefs")
+prefs.init()
 -- homebrew modules
 local helperutils = require("utils").helper
 local widgetutils = require("utils").widget
 
-prefs.init()
 -- }}}
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
