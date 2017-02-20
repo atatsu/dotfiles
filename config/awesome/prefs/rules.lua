@@ -153,7 +153,6 @@ M.music = {
 		screenutils.get_by_index(3),
 		iconutils.music,
 		function (c, t, s)
-			print(c.name)
 			if c.instance == "ncmpcpp-visualizer" then
 				awful.client.setslave(c)
 				return

@@ -125,7 +125,6 @@ local hi = (function ()
 	for _, button in ipairs(buttons) do
 		for _, state in ipairs(states) do
 			local setting = "titlebar_" .. button .. "_button_" .. state
-			print(setting)
 			theme[setting] = iconfuncs[state](button)
 		end
 	end
