@@ -33,6 +33,26 @@ function M.spacer (text)
 	return cache.spacer
 end
 
+function M.color_text (text, color, opts)
+	opts = opts or {}
+	return wibox.widget{
+		markup = markup_color(text, color),
+		align = "center",
+		valign = "center",
+		opacity = opts.opacity,
+		widget = wibox.widget.textbox
+	}
+end
+
+function M.color_text_surface (text, color, opts)
+	opts = opts or {}
+	w = opts.width or 15
+	h = opts.height or 15
+	local widget = M.color_text(text, color, opts)
+	local surface = gears.surface.widget_to_surface(widget, w, h)
+	return surface
+end
+
 --- Volume display with revealable slider to adjust levels.
 -- Theme variables:
 --	volume_slider_color
@@ -64,12 +84,7 @@ function M.volume (device_name)
 		awful.button({ }, 3, function () exec("pavucontrol") end)
 	)
 
-	local icon = wibox.widget{
-		markup = markup_color(iconutils.volume .. " ", beautiful.widget_icon_color),
-		align = "center",
-		valign = "center",
-		widget = wibox.widget.textbox,
-	}
+	local icon = M.color_text(iconutils.volume .. " ", beautiful.widget_icon_color)
 	icon:buttons(buttons)
 
 	local status = wibox.widget{
@@ -143,12 +158,7 @@ end
 
 function M.clock () 
 	if not cache.clock then
-		local icon = wibox.widget{
-			markup = markup_color(iconutils.clock .. " ", beautiful.widget_icon_color),
-			align = "center",
-			valign = "center",
-			widget = wibox.widget.textbox
-		}
+		local icon = M.color_text(iconutils.clock .. " ", beautiful.widget_icon_color)
 
 		local textclock = wibox.widget.textclock()
 
@@ -171,12 +181,7 @@ function M.pacman ()
 			function () sexec("pacman -Qu | xmessage -file - -nearmouse") end
 		)
 
-		local icon = wibox.widget{
-			markup = markup_color(iconutils.tux .. " ", beautiful.widget_icon_color),
-			align = "center",
-			valign = "center",
-			widget = wibox.widget.textbox
-		}
+		local icon = M.color_text(iconutils.tux .. " ", beautiful.widget_icon_color)
 		icon:buttons(buttons)
 
 		local status = wibox.widget{

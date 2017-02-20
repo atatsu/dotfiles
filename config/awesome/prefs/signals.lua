@@ -43,12 +43,28 @@ M.client = {
 			end
 
 			-- if the layout isn't a floating one hide the titlebar
-			if awful.layout.get(c.screen) ~= awful.layout.suit.floating then
+			-- but only of the client didn't spawn floating (dialogs)
+			if awful.layout.get(c.screen) ~= awful.layout.suit.floating and not c.floating then
 				awful.titlebar.hide(c)
 			end
 
 			-- No clients should be shown in the tasklist
 			c.skip_taskbar = true
+		end
+	},
+	unmanage = {
+		-- check if the client has a timer attached to it (from the 'focus' signal) and if so
+		-- stop it
+		function (c)
+			if not c._timer then
+				return
+			end
+
+			if not c._timer.started then
+				return
+			end
+
+			c._timer:stop()
 		end
 	},
 	["property::minimized"] = {
@@ -94,15 +110,16 @@ M.client = {
 					layout	= wibox.layout.flex.horizontal
 				},
 				{ -- Right
-					awful.titlebar.widget.floatingbutton (c),
+					awful.titlebar.widget.floatingbutton(c),
 					awful.titlebar.widget.maximizedbutton(c),
-					awful.titlebar.widget.stickybutton	 (c),
-					awful.titlebar.widget.ontopbutton		 (c),
-					awful.titlebar.widget.closebutton		 (c),
+					awful.titlebar.widget.stickybutton(c),
+					awful.titlebar.widget.ontopbutton(c),
+					awful.titlebar.widget.closebutton(c),
 					layout = wibox.layout.fixed.horizontal()
 				},
 				layout = wibox.layout.align.horizontal
 			}
+			awful.titlebar(c, { position = "top", size = beautiful.titlebar_height })
 		end
 	},
 	["mouse::enter"] = {
@@ -114,11 +131,16 @@ M.client = {
 	},
 	focus = {
 		function (c)
+			-- always check that it's valid in case it was closed during the execution
+			-- of this callback
+			if not c.valid then return end
 			c.border_color = beautiful.border_focus
 			-- unhighlight the client after a delay
-			gears.timer.weak_start_new(config.focus_highlight_fade, function () 
+			if not c.valid then return end
+			c._timer = gears.timer.weak_start_new(config.focus_highlight_fade, function () 
 				-- client may have been closed before timer expired so check
-				if not c then return end
+				--if not c then return end
+				if not c.valid then return end
 				c.border_color = beautiful.border_normal
 			end)
 		end
