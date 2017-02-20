@@ -5,9 +5,9 @@ local dpi = xresources.apply_dpi
 local shape = require("gears.shape")
 
 local theme = dofile("/usr/share/awesome/themes/xresources/theme.lua")
-local theme_assets = dofile(awful.util.getdir("config") .. "/utils/assets.lua")
+local theme_assets = dofile(awful.util.getdir("config") .. "utils/assets.lua")
 
---theme.wallpaper = "/usr/share/awesome/themes/zenburn/zenburn-background.png"
+local theme_dir = awful.util.getdir("config") .. "themes/oblivion"
 
 local colors = {
 	foreground = "#f8f8f8",
@@ -108,30 +108,6 @@ theme.mouse_finder_color = "#CC9393"
 -- menu_[border_color|border_width]
 theme.menu_height = dpi(15)
 theme.menu_width  = dpi(100)
--- }}}
-
--- {{{ Icons
-
-
--- {{{ Layout
-theme.layout_tile       = "/usr/share/awesome/themes/zenburn/layouts/tile.png"
-theme.layout_tileleft   = "/usr/share/awesome/themes/zenburn/layouts/tileleft.png"
-theme.layout_tilebottom = "/usr/share/awesome/themes/zenburn/layouts/tilebottom.png"
-theme.layout_tiletop    = "/usr/share/awesome/themes/zenburn/layouts/tiletop.png"
-theme.layout_fairv      = "/usr/share/awesome/themes/zenburn/layouts/fairv.png"
-theme.layout_fairh      = "/usr/share/awesome/themes/zenburn/layouts/fairh.png"
-theme.layout_spiral     = "/usr/share/awesome/themes/zenburn/layouts/spiral.png"
-theme.layout_dwindle    = "/usr/share/awesome/themes/zenburn/layouts/dwindle.png"
-theme.layout_max        = "/usr/share/awesome/themes/zenburn/layouts/max.png"
-theme.layout_fullscreen = "/usr/share/awesome/themes/zenburn/layouts/fullscreen.png"
-theme.layout_magnifier  = "/usr/share/awesome/themes/zenburn/layouts/magnifier.png"
-theme.layout_floating   = "/usr/share/awesome/themes/zenburn/layouts/floating.png"
-theme.layout_cornernw   = "/usr/share/awesome/themes/zenburn/layouts/cornernw.png"
-theme.layout_cornerne   = "/usr/share/awesome/themes/zenburn/layouts/cornerne.png"
-theme.layout_cornersw   = "/usr/share/awesome/themes/zenburn/layouts/cornersw.png"
-theme.layout_cornerse   = "/usr/share/awesome/themes/zenburn/layouts/cornerse.png"
--- }}}
-
 -- }}}
 
 theme.wallpaper = function (s)
