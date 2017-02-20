@@ -1,12 +1,12 @@
 #!/bin/zsh
 
-LEFT=`amixer get $1 | tail -n 2 | awk '{print $5}' | head -n 1 | sed "s/\[//" | sed "s/\]//"`
-RIGHT=`amixer get $1 | tail -n 2 | awk '{print $5}' | tail -n 1 | sed "s/\[//" | sed "s/\]//"`
+LEFT=`amixer get $1 | tail -n 2 | awk '{print $5}' | head -n 1 | sed "s/\[//" | sed "s/\]//" | sed "s/%//"`
+RIGHT=`amixer get $1 | tail -n 2 | awk '{print $5}' | tail -n 1 | sed "s/\[//" | sed "s/\]//" | sed "s/%//"`
 
 if [[ ${LEFT} = ${RIGHT} ]]; then
-    VOL_DISPLAY=${LEFT}
+	VOL_DISPLAY=${LEFT}
 else 
-    VOL_DISPLAY="${LEFT}/${RIGHT}"
+	VOL_DISPLAY="${LEFT}/${RIGHT}"
 fi
 
 echo -n ${VOL_DISPLAY}

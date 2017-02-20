@@ -3,6 +3,9 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local wibox = require("wibox")
 
+local iconutils = require("utils.icon")
+
+local exec = awful.spawn
 local sexec = awful.spawn.with_shell
 local easy_async = awful.spawn.easy_async
 
@@ -25,10 +28,117 @@ function M.spacer (text)
 	return cache.spacer
 end
 
+--- Volume display with revealable slider to adjust levels.
+-- Theme variables:
+--	volume_slider_color
+--	volume_slider_handle_color
+--	volume_slider_width
+--	volume_slider_handle_size
+function M.volume (device_name)
+	device_name = device_name or "Master"
+
+	if cache.volume then
+		return cache.volume
+	end
+
+	local slider
+	local timer
+	local vol_level
+	local script_cmd = awful.util.getdir("config") .. "scripts/volume " .. device_name
+
+	local buttons = awful.util.table.join(
+		-- left-click
+		awful.button(
+			{ }, 
+			1, 
+			function () 
+				slider.visible = not slider.visible
+			end
+		),
+		-- right-click
+		awful.button({ }, 3, function () exec("pavucontrol") end)
+	)
+
+	local icon = wibox.widget{
+		markup = iconutils.volume .. " ",
+		align = "center",
+		valign = "center",
+		widget = wibox.widget.textbox,
+	}
+	icon:buttons(buttons)
+
+	local status = wibox.widget{
+		align = "center",
+		valign = "center",
+		widget = wibox.widget.textbox
+	}
+	status:buttons(buttons)
+
+	slider = wibox.widget {
+		bar_shape = gears.shape.rounded_rect,
+		bar_height = 3,
+		bar_color = beautiful.volume_slider_color or beautiful.fg_urgent,
+		handle_color = beautiful.volume_slider_handle_color or beautiful.fg_urgent,
+		handle_shape = gears.shape.circle,
+		handle_border_width = 0,
+		handle_width = beautiful.volume_slider_handle_size or 10,
+		forced_width = beautiful.volume_slider_width or 50,
+		value = 25,
+		visible = false,
+		maximum = 100,
+		minimum = 0,
+		widget = wibox.widget.slider,
+	}
+
+	slider:connect_signal("widget::redraw_needed", function () 
+		status.text = slider.value .. "%"
+		sexec("amixer set " .. device_name .. " " .. slider.value .. "% &>/dev/null")
+	end)
+
+	slider:connect_signal("mouse::enter", function ()
+		timer:stop()
+	end)
+
+	slider:connect_signal("mouse::leave", function ()
+		timer:start()
+		slider.visible = false
+	end)
+
+	local function update_status ()
+		easy_async(script_cmd, function (stdout, stderr, exitreason, exitcode)
+			if exitcode > 0 then
+				status.text = ":("
+			end
+			vol_level = tonumber(stdout)
+			status.text = vol_level .. "%"
+			slider.value = vol_level
+		end)
+	end
+
+	-- initialize text
+	update_status()
+
+	-- update every 40ish seconds
+	timer = gears.timer({ timeout = 47 })
+	timer:connect_signal("timeout", update_status)
+	timer:start()
+
+	cache.volume = wibox.widget{
+		layout = wibox.layout.fixed.horizontal,
+		icon,
+		status,
+		slider,
+		M.spacer()
+	}
+
+	return cache.volume
+end
+
 function M.clock () 
 	if not cache.clock then
 		local icon = wibox.widget{
-			markup = " ",
+			markup = iconutils.clock .. " ",
+			--markup = " ",
 			align = "center",
 			valign = "center",
 			widget = wibox.widget.textbox
@@ -56,7 +166,8 @@ function M.pacman ()
 		)
 
 		local icon = wibox.widget{
-			markup = " ",
+			markup = iconutils.tux .. " ",
+			--markup = " ",
 			align = "center",
 			valign = "center",
 			widget = wibox.widget.textbox

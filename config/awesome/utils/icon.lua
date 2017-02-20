@@ -4,13 +4,16 @@
 
 local M = {
 	chat = "",
-	steam = "",
-	web = "",
+	clock = "",
 	dev = "",
-	games = "",
-	music = "",
 	devalt = "",
+	games = "",
 	misc = "",
+	music = "",
+	steam = "",
+	tux = "",
+	volume = "",
+	web = "",
 }
 
 return M
