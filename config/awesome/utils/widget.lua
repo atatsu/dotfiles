@@ -110,6 +110,8 @@ function M.volume (device_name)
 		widget = wibox.widget.slider,
 	}
 
+	local margin = wibox.container.margin(slider, 10, 10, nil, nil, nil, false)
+
 	slider:connect_signal("widget::redraw_needed", function () 
 		status.text = slider.value .. "%"
 		sexec("amixer set " .. device_name .. " " .. slider.value .. "% &>/dev/null")
@@ -138,7 +140,7 @@ function M.volume (device_name)
 		layout = wibox.layout.fixed.horizontal,
 		icon,
 		status,
-		slider,
+		margin,
 		M.spacer()
 	}
 
