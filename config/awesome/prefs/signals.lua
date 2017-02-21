@@ -156,7 +156,14 @@ M.tag = {
 	["tagged"] = {
 		-- enable useless_gap when there is more than one client tagged
 		function (t)
-			if #t:clients() > 1 then
+			local nonfloat = {}
+			for _, c in ipairs(t:clients()) do
+				if not c.floating then
+					nonfloat[#nonfloat+1] = c
+				end
+			end
+
+			if #nonfloat > 1 then
 				t.gap = beautiful.useless_gap
 				return
 			end
@@ -167,7 +174,14 @@ M.tag = {
 	["untagged"] = {
 		-- disable useless_gap when fewer than 2 clients are tagged
 		function (t)
-			if #t:clients() < 2 then
+			local nonfloat = {}
+			for _, c in ipairs(t:clients()) do
+				if not c.floating then
+					nonfloat[#nonfloat+1] = c
+				end
+			end
+
+			if #nonfloat < 2 then
 				t.gap = 0
 			end
 		end,
