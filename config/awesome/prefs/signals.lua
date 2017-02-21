@@ -164,8 +164,12 @@ M.tag = {
 			end
 
 			if #nonfloat > 1 then
-				t.gap = beautiful.useless_gap
+				-- only set gap to theme if there isn't already a value > 0
+				-- so we don't fuck up any tags that had some manual gap adjustments
+				t.gap = t.gap > 0 and t.gap or beautiful.useless_gap
 				return
+			else
+				print(t.gap)
 			end
 
 			t.gap = 0
