@@ -7,10 +7,15 @@
 --
 -- Standard awesome library
 local awful = require("awful")
+local beautiful = require("beautiful")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 local naughty = require("naughty")
 local wibox = require("wibox")
 require("awful.autofocus")
+
+local capi = {
+	screen = screen,
+}
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -98,14 +103,14 @@ awful.screen.connect_for_each_screen(function(s)
 	s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, prefs.buttons.tasklist)
 
 	-- Create the wibox
-	s.mywibox = awful.wibar({ position = "top", screen = s })
+	s.mywibox = awful.wibar({ position = "top", height = beautiful.main_wibar_height, screen = s })
 
 	-- Add widgets to the wibox
 	s.mywibox:setup {
 		layout = wibox.layout.align.horizontal,
 		{-- Left widgets
 			layout = wibox.layout.fixed.horizontal,
-			prefs.widgets.mainmenu_launcher,
+			s == capi.screen.primary and prefs.widgets.mainmenu_launcher or nil,
 			s.mytaglist,
 			s.mypromptbox,
 		},

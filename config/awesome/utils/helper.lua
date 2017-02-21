@@ -2,6 +2,11 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
 
+local capi = {
+	client = client,
+	screen = screen,
+}
+
 local M = {}
 
 function M.client_menu_toggle ()
@@ -13,7 +18,22 @@ function M.client_menu_toggle ()
 			instance:hide()
 			instance = nil
 		else
-			instance = awful.menu.clients({ theme = { width = 250 } })
+			local clients = {}
+			for i, c in pairs(capi.client.get()) do
+				local hidden = c.hidden and " (h)" or ""
+				local minimized = c.minimized and " (m)" or ""
+				clients[i] = {
+					c.name .. hidden .. minimized,
+					function ()
+						c.first_tag:view_only()
+						c.hidden = false
+						capi.client.focus = c
+					end,
+					c.icon
+				}
+			end
+			instance = awful.menu(clients)
+			instance:show()
 		end
 	end
 end

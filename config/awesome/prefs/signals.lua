@@ -50,7 +50,7 @@ M.client = {
 
 			-- No clients should be shown in the tasklist
 			c.skip_taskbar = true
-		end
+		end,
 	},
 	unmanage = {
 		-- check if the client has a timer attached to it (from the 'focus' signal) and if so
@@ -65,7 +65,7 @@ M.client = {
 			end
 
 			c._timer:stop()
-		end
+		end,
 	},
 	["property::minimized"] = {
 		-- We want minimized clients to show up in the taskbar...
@@ -153,6 +153,25 @@ M.client = {
 }
 
 M.tag = {
+	["tagged"] = {
+		-- enable useless_gap when there is more than one client tagged
+		function (t)
+			if #t:clients() > 1 then
+				t.gap = beautiful.useless_gap
+				return
+			end
+
+			t.gap = 0
+		end,
+	},
+	["untagged"] = {
+		-- disable useless_gap when fewer than 2 clients are tagged
+		function (t)
+			if #t:clients() < 2 then
+				t.gap = 0
+			end
+		end,
+	},
 	["property::layout"] = {
 		-- hide titlebars for clients if layout isn't floating
 		function (t)
