@@ -176,6 +176,7 @@ function M.volume (device_name)
 				return
 			end
 
+			icon:set_markup_silently(markup_color(iconutils.volume .. " ", beautiful.widget_icon_color))
 			set_volume_level(vol_level)
 			slider.visible = true
 		end),
@@ -191,6 +192,12 @@ function M.volume (device_name)
 		M.spacer()
 	}
 	widget:buttons(buttons)
+	local tooltip = awful.tooltip({
+		objects = { widget },
+		timer_function = function ()
+			return device_name
+		end,
+	})
 
 	widget:connect_signal("mouse::enter", function ()
 		timer:stop()
