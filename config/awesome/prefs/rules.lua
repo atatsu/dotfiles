@@ -38,9 +38,11 @@ M.float_center = {
 	rule_any = {
 		class = {
 			"Xmessage",
+			"Yad",
 		},
 		instance = {
-			"xmessage"
+			"xmessage",
+			"yad",
 		},
 		name = {
 		},
