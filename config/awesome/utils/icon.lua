@@ -20,6 +20,7 @@ local M = {
 	sticky = "",
 	tux = "",
 	volume = "",
+	volumeoff = "",
 	web = "",
 }
 

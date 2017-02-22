@@ -54,45 +54,68 @@ function M.color_text_surface (text, color, opts)
 end
 
 --- Volume display with revealable slider to adjust levels.
--- Theme variables:
+-- @param device_name The name of the device to control (such as 'Master')
+--- Theme variables:
 --	volume_slider_color
 --	volume_slider_handle_color
 --	volume_slider_width
 --	volume_slider_handle_size
 function M.volume (device_name)
-	device_name = device_name or "Master"
-
 	if cache.volume then
 		return cache.volume
 	end
 
+	device_name = device_name or "Master"
+	local script_cmd = awful.util.getdir("config") .. "scripts/volume " .. device_name
+	local is_muted = false
+
+	local icon
+	local status
 	local slider
 	local timer
 	local vol_level
-	local script_cmd = awful.util.getdir("config") .. "scripts/volume " .. device_name
 
-	local buttons = awful.util.table.join(
-		-- left-click
-		awful.button(
-			{ }, 
-			1, 
-			function () 
-				slider.visible = not slider.visible
+	local function update_display_widgets (level)
+		slider.value = level
+		status.text = level .. "%"
+	end
+
+	local function set_volume_level (level)
+		update_display_widgets(level)
+		sexec("amixer set " .. device_name .. " " .. level .. "% &>/dev/null")
+	end
+
+	-- Called to get the initial volume level. Called periodically
+	-- afterwards to check if the volume level changed via other
+	-- means.
+	local function update_status ()
+		easy_async(script_cmd, function (stdout, stderr, exitreason, exitcode)
+			if exitcode > 0 then
+				status.text = ":("
 			end
-		),
-		-- right-click
-		awful.button({ }, 3, function () exec("pavucontrol") end)
-	)
 
-	local icon = M.color_text(iconutils.volume .. " ", beautiful.widget_icon_color)
-	icon:buttons(buttons)
+			local level = tonumber(stdout)
+			if is_muted and level == 0 then
+				-- we're muted so don't bother updating anything
+				return
+			elseif is_muted and level ~= 0 then
+				-- volume was adjusted somewhere that wasn't this widget, so
+				-- consider us no longer muted
+				is_muted = false
+			end
 
-	local status = wibox.widget{
+			vol_level = level
+			update_display_widgets(level)
+		end)
+	end
+
+	icon = M.color_text(iconutils.volume .. " ", beautiful.widget_icon_color)
+
+	status = wibox.widget{
 		align = "center",
 		valign = "center",
 		widget = wibox.widget.textbox
 	}
-	status:buttons(buttons)
 
 	slider = wibox.widget {
 		bar_shape = gears.shape.rounded_rect,
@@ -113,20 +136,15 @@ function M.volume (device_name)
 	local margin = wibox.container.margin(slider, 10, 10, nil, nil, nil, false)
 
 	slider:connect_signal("widget::redraw_needed", function () 
-		status.text = slider.value .. "%"
-		sexec("amixer set " .. device_name .. " " .. slider.value .. "% &>/dev/null")
-	end)
+		if is_muted and slider.value == 0 then
+			-- ignore as this redraw is the act of muting and setting the slider
+			-- to 0
+			return
+		end
 
-	local function update_status ()
-		easy_async(script_cmd, function (stdout, stderr, exitreason, exitcode)
-			if exitcode > 0 then
-				status.text = ":("
-			end
-			vol_level = tonumber(stdout)
-			status.text = vol_level .. "%"
-			slider.value = vol_level
-		end)
-	end
+		vol_level = slider.value
+		set_volume_level(vol_level)
+	end)
 
 	-- initialize text
 	update_status()
@@ -136,6 +154,35 @@ function M.volume (device_name)
 	timer:connect_signal("timeout", update_status)
 	timer:start()
 
+	local buttons = awful.util.table.join(
+		--[[
+		-- left-click
+		awful.button({ }, 1, function () 
+			slider.visible = not slider.visible
+		end),
+		--]]
+		-- middle-click
+		awful.button({ }, 2, function () 
+			-- if the slider is at 0 assume we've already muted it and restore it
+			-- to its previously held value
+			is_muted = not is_muted
+
+			if is_muted then
+				set_volume_level(0)
+				-- update icon to reflect muted status
+				icon:set_markup_silently(markup_color(iconutils.volumeoff .. " ", beautiful.widget_icon_color))
+				status.text = ""
+				slider.visible = false
+				return
+			end
+
+			set_volume_level(vol_level)
+			slider.visible = true
+		end),
+		-- right-click
+		awful.button({ }, 3, function () exec("pavucontrol") end)
+	)
+
 	local widget = wibox.widget{
 		layout = wibox.layout.fixed.horizontal,
 		icon,
@@ -143,13 +190,19 @@ function M.volume (device_name)
 		margin,
 		M.spacer()
 	}
+	widget:buttons(buttons)
 
 	widget:connect_signal("mouse::enter", function ()
 		timer:stop()
+
+		-- if we're muted don't bother displaying the slider
+		if is_muted then return end
+		slider.visible = true
 	end)
 
 	widget:connect_signal("mouse::leave", function ()
 		timer:start()
+
 		slider.visible = false
 	end)
 
