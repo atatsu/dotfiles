@@ -105,6 +105,7 @@ awful.screen.connect_for_each_screen(function(s)
 	-- Create the wibox
 	s.mywibox = awful.wibar({ position = "top", height = beautiful.main_wibar_height, screen = s })
 
+	--local widgets = require("widgets")
 	-- Add widgets to the wibox
 	s.mywibox:setup {
 		layout = wibox.layout.align.horizontal,
@@ -117,6 +118,7 @@ awful.screen.connect_for_each_screen(function(s)
 		s.mytasklist, -- Middle widget
 		{-- Right widgets
 			layout = wibox.layout.fixed.horizontal,
+			--widgets.volumecontrol(),
 			widgetutils.pacman(),
 			widgetutils.volume(),
 			prefs.widgets.keyboard_layout,

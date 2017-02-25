@@ -1,18 +1,19 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
+local naughty = require("naughty")
 local wibox = require("wibox")
 
 local helperutils = require("utils").helper
 local config = require("prefs.config")
 
-local is_setup = false
-
-local classes = { 
-	["client"] = client, 
-	["tag"] = tag, 
-	["screen"] = screen,
+local capi = {
+	client = client,
+	tag = tag,
+	screen = screen,
 }
+
+local is_setup = false
 
 local M
 M = {
@@ -20,7 +21,7 @@ M = {
 		if is_setup then return end
 		is_setup = true
 
-		for class_name, class in pairs(classes) do
+		for class_name, class in pairs(capi) do
 			local section = M[class_name] or {}
 			for signal_name, callbacks in pairs(section) do
 				for _, callback in ipairs(callbacks) do
@@ -30,6 +31,50 @@ M = {
 		end
 	end
 }
+
+function get_tiled_visible_clients (tag)
+	local tiled_visible = {}
+	for _, c in ipairs(tag:clients()) do
+		if not c.floating and not c.minimized and not c.hidden and not c.maximized then
+			tiled_visible[#tiled_visible+1] = c
+		end
+	end
+	return tiled_visible
+end
+
+-- enable useless_gap when there is more than one client tagged
+-- and disable it when there is only one or none
+function manage_useless_gap (client_or_tag)
+	local tag
+	if type(client_or_tag) == "client" then
+		tag = client_or_tag.valid and client_or_tag.first_tag
+	elseif type(client_or_tag) == "tag" then
+		tag = client_or_tag
+	else
+		naughty.notify({
+			preset = naughty.config.presets.normal,
+			title = "Unhandled thing",
+			text = type(client_or_tag)
+		})
+	end
+	if tag == nil then 
+		-- when clients close some of their signals get emitted but there isn't
+		-- actually a valid client to do anything with (and the tag's "untagged" signal
+		-- will still fire so it doesn't matter) so we get `nil` here and can 
+		-- just forget about it
+		return
+	end
+
+	local tiled_visible = get_tiled_visible_clients(tag)
+
+	if #tiled_visible > 1 then
+		-- only set gap to theme if there isn't already a value > 0
+		-- so we don't fuck up any tags that had some manual gap adjustments
+		tag.gap = tag.gap > 0 and tag.gap or beautiful.useless_gap
+	else
+		tag.gap = 0
+	end
+end
 
 M.client = {
 	manage = {
@@ -56,16 +101,18 @@ M.client = {
 		-- check if the client has a timer attached to it (from the 'focus' signal) and if so
 		-- stop it
 		function (c)
-			if not c._timer then
-				return
-			end
-
-			if not c._timer.started then
+			if not c._timer or not c._timer.started then
 				return
 			end
 
 			c._timer:stop()
 		end,
+	},
+	["property::floating"] = {
+		manage_useless_gap,
+	},
+	["property::maximized"] = {
+		manage_useless_gap,
 	},
 	["property::minimized"] = {
 		-- We want minimized clients to show up in the taskbar...
@@ -77,19 +124,21 @@ M.client = {
 			else
 				c.skip_taskbar = true
 			end
-		end
+		end,
+		-- update useless_gap
+		manage_useless_gap
 	},
 	["request::titlebars"] = {
 		function (c)
 			-- buttons for the titlebar
 			local buttons = awful.util.table.join(
 				awful.button({ }, 1, function()
-					client.focus = c
+					capi.client.focus = c
 					c:raise()
 					awful.mouse.client.move(c)
 				end),
 				awful.button({ }, 3, function()
-					client.focus = c
+					capi.client.focus = c
 					c:raise()
 					awful.mouse.client.resize(c)
 				end)
@@ -125,7 +174,7 @@ M.client = {
 	["mouse::enter"] = {
 		function (c)
 			if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier and awful.client.focus.filter(c) then
-				client.focus = c
+				capi.client.focus = c
 			end
 		end
 	},
@@ -154,41 +203,10 @@ M.client = {
 
 M.tag = {
 	["tagged"] = {
-		-- enable useless_gap when there is more than one client tagged
-		function (t)
-			local nonfloat = {}
-			for _, c in ipairs(t:clients()) do
-				if not c.floating then
-					nonfloat[#nonfloat+1] = c
-				end
-			end
-
-			if #nonfloat > 1 then
-				-- only set gap to theme if there isn't already a value > 0
-				-- so we don't fuck up any tags that had some manual gap adjustments
-				t.gap = t.gap > 0 and t.gap or beautiful.useless_gap
-				return
-			else
-				print(t.gap)
-			end
-
-			t.gap = 0
-		end,
+		manage_useless_gap,
 	},
 	["untagged"] = {
-		-- disable useless_gap when fewer than 2 clients are tagged
-		function (t)
-			local nonfloat = {}
-			for _, c in ipairs(t:clients()) do
-				if not c.floating then
-					nonfloat[#nonfloat+1] = c
-				end
-			end
-
-			if #nonfloat < 2 then
-				t.gap = 0
-			end
-		end,
+		manage_useless_gap,
 	},
 	["property::layout"] = {
 		-- hide titlebars for clients if layout isn't floating

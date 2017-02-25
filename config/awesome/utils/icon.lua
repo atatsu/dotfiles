@@ -19,6 +19,7 @@ local M = {
 	steam = "",
 	sticky = "",
 	tux = "",
+	video = "",
 	volume = "",
 	volumeoff = "",
 	web = "",

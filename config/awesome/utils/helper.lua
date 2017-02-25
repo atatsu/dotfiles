@@ -32,7 +32,7 @@ function M.client_menu_toggle ()
 					c.icon
 				}
 			end
-			instance = awful.menu(clients)
+			instance = awful.menu({ items = clients, theme = { width = 200 } })
 			instance:show()
 		end
 	end

@@ -39,10 +39,12 @@ M.float_center = {
 		class = {
 			"Xmessage",
 			"Yad",
+			"Pavucontrol",
 		},
 		instance = {
 			"xmessage",
 			"yad",
+			"pavucontrol",
 		},
 		name = {
 		},
@@ -54,6 +56,34 @@ M.float_center = {
 	end
 }
 -- }}}
+
+--[[
+M.mplayer = {
+	rule = {
+		class = "MPlayer",
+		--instance = "vdpau"
+	},
+	properties = { floating = false, focus = false },
+	callback = ruleutils.dynamic_tag(
+		screen.primary,
+		iconutils.video,
+		function (c, t, s)
+			local naughty = require("naughty")
+			c.hidden = true
+			gears.timer.weak_start_new(1, function ()
+				naughty.notify({
+					preset = naughty.config.presets.critical,
+					title = "mplayer",
+					text = "applying rules"
+				})
+				awful.rules.execute(c, { tag = t })
+				c.hidden = false
+				t:view_only()
+			end)
+		end
+	),
+}
+--]]
 
 -- {{{ Steam is a fuckin' bitch. Most of its windows don't spawn with
 -- the appropriate info and consequently you need timeouts with callbacks 
