@@ -167,7 +167,7 @@ M.global = (function ()
 				"#" .. i + 9,
 				function ()
 					local screen = awful.screen.focused()
-					local tag = capi.screen.tags[i]
+					local tag = screen.tags[i]
 					if tag then
 						tag:view_only()
 					end
@@ -180,7 +180,7 @@ M.global = (function ()
 				"#" .. i + 9,
 				function ()
 					local screen = awful.screen.focused()
-					local tag = capi.screen.tags[i]
+					local tag = screen.tags[i]
 					if tag then
 						awful.tag.viewtoggle(tag)
 					end

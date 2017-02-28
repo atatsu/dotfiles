@@ -85,6 +85,29 @@ M.mplayer = {
 }
 --]]
 
+-- {{{ 
+M.video = {
+	rule_any = {
+		class = {
+			"google-chrome",
+		},
+		instance = {
+			"google-chrome",
+		}
+	},
+	properties = { switchtotag = true },
+	callback = ruleutils.dynamic_tag(
+		screen.primary,
+		iconutils.video,
+		function (c, t, s)
+			mouse.coords({ x = c.x, y = c.y })
+		end,
+		nil,
+		{ before = iconutils.misc }
+	)
+}
+-- }}}
+
 -- {{{ Steam is a fuckin' bitch. Most of its windows don't spawn with
 -- the appropriate info and consequently you need timeouts with callbacks 
 -- for most of them.
