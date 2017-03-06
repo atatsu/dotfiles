@@ -227,6 +227,15 @@ M.screen = {
 	["property::geometry"] = {
 		-- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 		helperutils.set_wallpaper,
+	},
+	["tag::history::update"] = {
+		function (s)
+			if s.selected_tag == nil then
+				s.tags[1]:view_only()
+				awful.tag.history.restore(s)
+				s.selected_tag:view_only()
+			end
+		end
 	}
 }
 

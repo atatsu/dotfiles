@@ -85,6 +85,12 @@ function M.volume (device_name)
 		sexec("amixer set " .. device_name .. " " .. level .. "% &>/dev/null")
 	end
 
+	local function adjust_volume_level (amount)
+		level = vol_level + amount
+		update_display_widgets(level)
+		sexec("amixer set " .. device_name .. " " .. level .. "% &>/dev/null")
+	end
+
 	-- Called to get the initial volume level. Called periodically
 	-- afterwards to check if the volume level changed via other
 	-- means.
@@ -181,7 +187,9 @@ function M.volume (device_name)
 			slider.visible = true
 		end),
 		-- right-click
-		awful.button({ }, 3, function () exec("pavucontrol") end)
+		awful.button({ }, 3, function () exec("pavucontrol") end),
+		awful.button({ }, 4, function () adjust_volume_level(1) end),
+		awful.button({ }, 5, function () adjust_volume_level(-1) end)
 	)
 
 	local widget = wibox.widget{

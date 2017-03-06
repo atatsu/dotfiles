@@ -180,7 +180,7 @@ M.web = {
 	},
 	properties = { switchtotag = true },
 	callback = ruleutils.dynamic_tag(
-		screenutils.get_by_index(3),
+		screenutils.get_by_index(2),
 		iconutils.web,
 		function (c, tag, s)
 			mouse.coords({ x = c.x, y = c.y})
@@ -208,22 +208,28 @@ M.music = {
 		screenutils.get_by_index(3),
 		iconutils.music,
 		function (c, t, s)
-			if c.instance == "ncmpcpp-visualizer" then
-				awful.client.setslave(c)
-				return
-			elseif c.name:lower() == "album-art" then
-				-- feh
-				-- we don't want spawning feh windows to steal the focus
-				c.focusable = false
+			local is_first_time = true
+			return (function ()
+				if c.instance == "ncmpcpp-visualizer" then
+					awful.client.setslave(c)
+					return
+				elseif c.name:lower() == "album-art" then
+					-- feh
+					-- we don't want spawning feh windows to steal the focus
+					c.focusable = false
 
-				awful.client.setslave(c)
-				awful.client.setwfact(0.2, c)
-				t:view_only()
-				return
-			end
+					awful.client.setslave(c)
+					awful.client.setwfact(0.2, c)
+					
+					if is_first_time then
+						t:view_only()
+					end
+					return
+				end
 
-			-- ncmpcpp-playlist
-			awful.client.setmaster(c)
+				-- ncmpcpp-playlist
+				awful.client.setmaster(c)
+			end)()
 		end,
 		{ gap = 5, master_width_factor = 0.7, layout = awful.layout.suit.tile.bottom },
 		{ before = iconutils.misc }

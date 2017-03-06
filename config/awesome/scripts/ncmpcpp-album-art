@@ -19,4 +19,4 @@ echo -e $art > /tmp/album-art-path
 
 [[ ! -s /tmp/album-art-path ]] && echo 'album-art-path file is empty' && exit 1
 
-cat "$(cat /tmp/album-art-path)" | feh -Z -g 100x100 -B black -^ album-art - &
+cat "$(cat /tmp/album-art-path)" | feh -. -s -Z -g 100x100 -B black -^ album-art - &

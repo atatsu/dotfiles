@@ -1,6 +1,7 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
+local naughty = require("naughty")
 
 local iconutils = require("utils.icon")
 
@@ -38,6 +39,14 @@ function M.client_menu_toggle ()
 			instance:show()
 		end
 	end
+end
+
+function M.notify_normal (title, text)
+	naughty.notify({
+		preset = naughty.config.presets.normal,
+		title = title,
+		text = text
+	})
 end
 
 function M.set_wallpaper (s)
