@@ -1,49 +1,44 @@
 if has('unix')
 	let s:uname = substitute(system('uname -s'), '\n', '', '')
-endif 
+endif
 
+" {{{ stock options
 scriptencoding utf-8
 set encoding=utf-8
-
-"source .vimrc from any directory vim is run from
+" source .vimrc or .exrc from any directory vim is run from
 set exrc
 set secure
-
-setlocal lcs=tab:»·,trail:·,eol:$
-"set termguicolors
+" display whitespace characters
+setlocal listchars=tab:»·,trail:·,eol:¬,space:␣
 set list
-set bs=2
-set t_Co=256
-set nocp
+" font
 set guifont=Inconsolata\ for\ Powerline:h15
-let g:Powerline_symbols = 'fancy'
-
+" tabs and shit
 set softtabstop=2
 set tabstop=2
 set noexpandtab
 set shiftwidth=2
 set autoindent
-set hidden	    "buffers keep change history
-set scrolloff=3	    "keep 3 lines below and above cursor
-set splitbelow  "new splits will be focused on bottom
-set splitright  "new vsplits will be focused on right
-
+" keep three lines below and above the cursor
+set scrolloff=3
+" buffers keep change history
+set hidden
+" new splits will be focused on bottom
+set splitbelow
+" new vsplits will be focused on right
+set splitright
+" Disable Background Color Erase (BCE) so that color schemes
+" work properly when vim is used inside tmux and screen.
 if &term =~ 'screen'
-    " Disable Background Color Erase (BCE) so that color schemes
-    " work properly when Vim is used inside tmux and GNU screen.
-    " http://snk.tuxfamily.org/log/vim-256color-bce.html
-    set t_ut=
-endif
-
+	set t_ut=
+endif 
 " ignores
 set wildignore+=virtualenv/**,node_modules/**,static/js/lib/**
-
 " filetype plugins
 filetype on
 filetype plugin on
 filetype plugin indent on
-
-" Display
+" display
 set number
 syntax on
 hi clear SpellBad
@@ -53,156 +48,42 @@ set foldlevel=100
 set nowrap
 set hlsearch
 set cursorline
+" sytles the omnicomplete popup
 highlight Pmenu ctermbg=235 cterm=NONE
 highlight PmenuSel ctermbg=130 ctermfg=232 cterm=bold
-
-"""" nvim
-if has('nvim')
-	nmap <BS> <C-w>h
-	let g:python2_host_prog='/usr/bin/python2'
-	"let g:python3_host_prog='/usr/bin/python'
-	let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
-	"let g:loaded_python_provider = 1
-" allows navigating out of the terminal
-	tnoremap <C-h> <C-\><C-n><C-w>h
-	tnoremap <C-j> <C-\><C-n><C-w>j
-	tnoremap <C-k> <C-\><C-n><C-w>k
-	tnoremap <C-l> <C-\><C-n><C-w>l
-	let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-	" automatically enter insert mode
-	autocmd BufWinEnter,WinEnter term://* startinsert
-	" exclude terminal from buffer list
-	autocmd TermOpen * set nobuflisted
-	" zsh
-	nnoremap <silent> <F3> :terminal zsh<CR>
-	" zsh - but split the window first
-	nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
-	" ranger
-	nnoremap <silent> <F4> :terminal ranger<CR>
-endif
-
-" Autocomplete features in the status bar
+" set current buffer as window title
+set title
+" autocomplete vim commands
 set wildmenu
-
-"""" statusline
-"set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P\ %{fugitive#statusline()}
+" displays the statusline always
 set laststatus=2
-
-"""" Paste mode toggle
+" paste mode toggle
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
-
-"""" Djagno snippets
-"autocmd FileType python set ft=python.django
-"autocmd FileType html set ft=htmldjango.html
-
-"""" PySmell
-"autocmd FileType python setlocal omnifunc=pysmell#Complete
-
-"""" MiniBufExplorer
-"let g:miniBufExplMapWindowNavVim = 1
-"let g:miniBufExplMapWindowNavArrows = 1
-"let g:miniBufExplMapCTabSwitchBufs = 1
-"let g:miniBufExplModSelTarget = 1 
-
-"""" SuperTab
-let g:SuperTabDefaultCompletionType = 'context'
-"let g:SuperTabDefaultCompletionType = "<C-x><C-o>"
-
+" refresh syntax highlighting
+autocmd BufEnter,InsertLeave * :syntax sync fromstart
 """" completion menu tweaks
+" vim's popup menu doesn't select the first completion item, but rather just
+" inserts the longest common text of all matches
 set completeopt=longest,menuone
+" changes behavior of the <Enter> key when the popup is visible in that the
+" Enter key will simply select the highlighted menu item, just as <C-Y> does
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Makes <C-N> work the way it normally does, howver when the mneu appears the
+" <Down> key is simulated. Keeps a menu item alwyas highlighted which results
+" in the ability to keep typing characters to narrow the matches and the
+" nearest match will be selected so that Enter can be hit at anytime to insert
+" it.
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
 
-"""" Tagbar
-map <leader>tb :TagbarToggle<CR>
+inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+set background=dark
+" }}}
 
-"""" fzf
-map <leader>c :FZF<CR>
-
-"""" TaskList
-"map T :TaskList<CR>
-
-"""" NERDTree
-let NERDTreeQuitOnOpen = 1
-let NERDTreeWinSize = 50
-let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
-map <leader>N :NERDTreeToggle<CR>
-"map ob :NERDTreeFromBookmark 
-
-"""" NERDCommenter
-let g:NERDDefaultAlign = 'left'
-
-"""" Rope
-map <leader>j :RopeGotoDefinition<CR>
-map <leader>r :RopeRename<CR>
-
-"""" Pymode
-let g:pymode_options_max_line_length = 95
-"let g:pymode_virtualenv = 1
-"let g:pymode_virtualenv_path = './virtualenv'
-let g:pymode_rope = 0
-let g:pymode_lint_checkers = ['pep8', 'pylint', 'pyflakes']
-let g:pymode_lint_options_pep8 = {'max_line_length': g:pymode_options_max_line_length}
-
-"""" BufExplorer
-"map <leader>b :BufExplorer<CR>
-
-"""" Buffergator
-map <leader>bg :BuffergatorToggle<CR>
-"map <leader>bn :BuffergatorMruCycleNext<CR>
-"map <leader>bp :BuffergatorMruCyclePrev<CR>
-let g:buffergator_viewport_split_policy = "L"
-let g:buffergator_split_size = 60
-let g:buffergator_show_full_directory_path = 0
-
-"""" Syntastic
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_aggregate_errors = 1
-let g:syntastic_javascript_checkers = ["jshint", "jscs"]
-let g:syntastic_quiet_messages = {"level": []}
-"let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
-let g:syntastic_python_checkers = []
-let g:syntastic_html_checkers = []
-
-"""" vim-javascript 
-let g:javascript_plugin_jsdoc = 1
-let g:javascript_plugin_ngdoc = 1
-
-"""" vim-jasmine
-autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
-"""" javascript-libraries-syntax
-let g:used_javascript_libs = 'angularjs'
-
-"""" deoplete
-let g:deoplete#enable_at_startup = 1
-
-"""" GoldenView
-let g:goldenview__enable_default_mapping=0
-nmap <silent> <leader>l <Plug>GoldenViewSplit
-
-"""" airline
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-
-"""" YCM
-let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
-
-"""" vCooler
-let g:vcoolor_lowercase = 1
-if s:uname != 'Darwin'
-	let g:vcoolor_custom_picker = 'yad --color --center --init-color '
-endif
-
-"""" vim-bufkill
-cabbrev bd :BD!
-" when in terminal Ctrl-d calls :BD! rather than doing a normal shell exit
-tnoremap <C-d> <C-\><C-n>:BD!<CR>
-
-"""" vim-cpp-enhanced-highlight
-let g:cpp_class_scope_highlight = 1
-
-"""" Key Mappings
+" {{{ key bindings
 " bind ctrl+space for omnicompletion
 inoremap <Nul> <C-x><C-o>
 " Code folding toggle
@@ -239,18 +120,134 @@ map <silent> <C-j> <C-w>j
 map <F7> mzgg=G`z
 " display a list of buffers prompting for the number to switch to
 nnoremap <F5> :buffers<CR>:buffer<Space>
-" refresh syntax highlighting
-autocmd BufEnter,InsertLeave * :syntax sync fromstart
+" }}}
 
-"""" Virtualenv
-if !empty($VIRTUAL_ENV_PY)
-	let g:python3_host_prog=$VIRTUAL_ENV_PY
+" {{{ nvim specific
+if has('nvim')
+	let g:python2_host_prog='/usr/bin/python2'
+	"let g:python3_host_prog='/usr/bin/python'
+	let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+	"let g:loaded_python_provider = 1
+" allows navigating out of the terminal
+	tnoremap <C-h> <C-\><C-n><C-w>h
+	tnoremap <C-j> <C-\><C-n><C-w>j
+	tnoremap <C-k> <C-\><C-n><C-w>k
+	tnoremap <C-l> <C-\><C-n><C-w>l
+	let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+	" automatically enter insert mode when switching to a terminal buffer
+	autocmd BufWinEnter,WinEnter term://* startinsert
+	" don't display whitespace characters in the terminal
+	autocmd BufWinEnter,WinEnter term://* set nolist
+	" don't show whitespace for vim-fugitive windows
+	autocmd BufWinEnter,WinEnter */.git/* set nolist
+	" exclude terminal from buffer list
+	autocmd TermOpen * set nobuflisted
+	" zsh
+	nnoremap <silent> <F3> :terminal zsh<CR>
+	" zsh - but split the window first
+	nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
+	" ranger
+	nnoremap <silent> <F4> :terminal ranger<CR>
+endif
+" }}}
+
+" {{{ plugins
+" SuperTab
+let g:SuperTabDefaultCompletionType = 'context'
+
+" Tagbar
+map <leader>tb :TagbarToggle<CR>
+
+" fzf
+map <leader>c :FZF<CR>
+
+"NERDTree
+let NERDTreeQuitOnOpen = 1
+let NERDTreeWinSize = 50
+let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
+map <leader>N :NERDTreeToggle<CR>
+
+" NERDCommenter
+let g:NERDDefaultAlign = 'left'
+
+" rope
+map <leader>j :RopeGotoDefinition<CR>
+map <leader>r :RopeRename<CR>
+
+" pymode
+let g:pymode_options_max_line_length = 95
+"let g:pymode_virtualenv = 1
+"let g:pymode_virtualenv_path = './virtualenv'
+let g:pymode_rope = 0
+let g:pymode_lint_checkers = ['pep8', 'pylint', 'pyflakes']
+let g:pymode_lint_options_pep8 = {'max_line_length': g:pymode_options_max_line_length}
+let g:pymode_lint_ignore = 'W191'
+
+" buffergator
+map <leader>bg :BuffergatorToggle<CR>
+"map <leader>bn :BuffergatorMruCycleNext<CR>
+"map <leader>bp :BuffergatorMruCyclePrev<CR>
+let g:buffergator_viewport_split_policy = "T"
+let g:buffergator_hsplit_size = 15
+let g:buffergator_show_full_directory_path = 0
+let g:buffergator_sort_regime = "basename"
+let g:buffergator_suppress_keymaps = 1
+
+" syntastic
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_aggregate_errors = 1
+let g:syntastic_javascript_checkers = ["jshint", "jscs"]
+let g:syntastic_quiet_messages = {"level": []}
+"let g:syntastic_python_checkers = ['pylint', 'pyflakes', 'pep8']
+let g:syntastic_python_checkers = []
+let g:syntastic_html_checkers = []
+
+" vim-javascript
+let g:javascript_plugin_jsdoc = 1
+let g:javascript_plugin_ngdoc = 1
+
+" vim-jasmine
+autocmd BufReadPost,BufNewFile *.spec.js set filetype=jasmine.javascript syntax=jasmine
+" javascript-libraries-syntax
+let g:used_javascript_libs = 'angularjs'
+
+" deoplete
+let g:deoplete#enable_at_startup = 1
+
+" airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+
+" YCM
+let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
+
+" vCooler (color picker)
+" alt-c activates
+let g:vcoolor_lowercase = 1
+if s:uname != 'Darwin'
+	let g:vcoolor_custom_picker = 'yad --color --center --init-color '
 endif
 
-"""" Plugin overrides
-autocmd FileType python call overrides#pymode()
+" vim-bufkill
+cabbrev bd :BD!
+" when in terminal Ctrl-d calls :BD! rather than doing a normal shell exit
+" (which preserves splits)
+tnoremap <C-d> <C-\><C-n>:BD!<CR>
 
+" vim-cpp-enhanced-highlight
+let g:cpp_class_scope_highlight = 1
+" }}}
+
+" {{{ plugin overrides
+" pymode and it's fuckin' spaces only shit
+autocmd FileType python call overrides#pymode()
+" }}}
+
+" {{{ vim-plug
 call plug#begin('~/.vim/plugged')
+" plugin to toggle, display and navigate marks
+Plug 'kshenoy/vim-signature'
 " shows git diff in the gutter
 Plug 'airblade/vim-gitgutter'
 " preserves splits when closing buffers
@@ -292,6 +289,7 @@ Plug 'jeetsukumaran/vim-buffergator'
 Plug 'majutsushi/tagbar'
 " plugin for intensely orgasmic commenting
 Plug 'scrooloose/nerdcommenter'
+" tree explorer 
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 " nerdtree git status
 Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -299,22 +297,47 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 " TODO: don't forget to learn this one
 Plug 'mattn/emmet-vim'
+" powerline variant
 Plug 'vim-airline/vim-airline'
 
 " Themes
 Plug 'sheerun/vim-wombat-scheme'
 Plug 'morhetz/gruvbox'
 Plug 'dracula/vim'
+Plug 'reewr/vim-monokai-phoenix'
+" generates and changes colorschemes on the fly
+Plug 'dylanaraps/wal'
 " TODO: https://github.com/sjl/gundo.vim
 " -- visualize vim undo tree
-
-" At once time active but replacements are being tried out or dropping
-" entirely
-"Plug 'jlanzarotta/bufexplorer'
-"Plug 'fholgado/minibufexpl.vim'
-" always have a nice view for split windows
-"Plug 'zhaocai/GoldenView.Vim'
 call plug#end()
+" }}}
 
-set background=dark
-colorscheme dracula
+colorscheme monokai-phoenix
+
+" {{{ vim-signature keybindings
+" mx           Toggle mark 'x' and display it in the leftmost column
+" dmx          Remove mark 'x' where x is a-zA-Z
+" 
+" m,           Place the next available mark
+" m.           If no mark on line, place the next available mark. Otherwise, remove (first) existing mark.
+" m-           Delete all marks from the current line
+" m<Space>     Delete all marks from the current buffer
+" ]`           Jump to next mark
+" [`           Jump to prev mark
+" ]'           Jump to start of next line containing a mark
+" ['           Jump to start of prev line containing a mark
+" `]           Jump by alphabetical order to next mark
+" `[           Jump by alphabetical order to prev mark
+" ']           Jump by alphabetical order to start of next line having a mark
+" '[           Jump by alphabetical order to start of prev line having a mark
+" m/           Open location list and display marks from current buffer
+" 
+" m[0-9]       Toggle the corresponding marker !@#$%^&*()
+" m<S-[0-9]>   Remove all markers of the same type
+" ]-           Jump to next line having a marker of the same type
+" [-           Jump to prev line having a marker of the same type
+" ]=           Jump to next line having a marker of any type
+" [=           Jump to prev line having a marker of any type
+" m?           Open location list and display markers from current buffer
+" m<BS>        Remove all markers
+" }}}
