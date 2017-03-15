@@ -1,0 +1,50 @@
+touch forms.html
+touch forms.py
+mkdir util
+touch form.py
+rename view.py
+rename fields.py
+mkdir img css js
+mkdir img
+mkdir js
+mkdir css
+touch login.css
+mkdir bots
+touch auth.py
+touch feralcountdown.py
+touch playerwatch.py
+touch hordewatch.py
+touch bot-playerwatch-tests.py
+touch botman-tests.py
+touch bot-
+touch bot-auth-tests.py
+touch bot-feralcountdown-tests.py
+touch bot-tests.py
+touch bot-hordewatch-tests.py
+touch hordeme.py
+mkdir thing one
+touch curie.py
+touch viewname.py
+touch hal.py
+touch resources.py
+touch streams
+touch non-streams
+rename listener-transport
+rename listener-stream
+mkdir server
+mkdir world
+delete
+set show_hidden false
+search pics
+touch settings.py
+mkdir genesis
+touch __init__.py
+touch views.py
+touch routes.py
+mkdir requirements
+touch common.txt
+touch development.txt
+touch production.txt
+search dotfiles
+
+search dev
