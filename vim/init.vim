@@ -1,9 +1,13 @@
+"""" Dependencies
+" * nerd-fonts-complete (AUR)
+" * alexanderjeurissen/ranger_devicons (for ranger... dev icons)
+
 if has('unix')
 	let s:uname = substitute(system('uname -s'), '\n', '', '')
 endif
 
 " {{{ stock options
-scriptencoding utf-8
+"scriptencoding utf-8
 set encoding=utf-8
 " source .vimrc or .exrc from any directory vim is run from
 set exrc
@@ -12,7 +16,8 @@ set secure
 setlocal listchars=tab:»·,trail:·,eol:¬,space:␣
 set list
 " font
-set guifont=Inconsolata\ for\ Powerline:h15
+"set guifont=Inconsolata\ for\ Powerline:h15
+"set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Nerd\ Font\ Complete\ 12
 " tabs and shit
 set softtabstop=2
 set tabstop=2
@@ -310,6 +315,8 @@ Plug 'dracula/vim'
 Plug 'reewr/vim-monokai-phoenix'
 " generates and changes colorschemes on the fly
 Plug 'dylanaraps/wal'
+" Adds file type glyphs/icons to many popular vim plugins
+Plug 'ryanoasis/vim-devicons'
 " TODO: https://github.com/sjl/gundo.vim
 " -- visualize vim undo tree
 call plug#end()
