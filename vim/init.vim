@@ -319,6 +319,8 @@ Plug 'reewr/vim-monokai-phoenix'
 Plug 'dylanaraps/wal'
 " Adds file type glyphs/icons to many popular vim plugins
 Plug 'ryanoasis/vim-devicons'
+" fancy start screen for vim
+Plug 'mhinz/vim-startify'
 " TODO: https://github.com/sjl/gundo.vim
 " -- visualize vim undo tree
 call plug#end()
