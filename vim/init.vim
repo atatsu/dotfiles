@@ -148,6 +148,8 @@ if has('nvim')
 	autocmd BufAdd * set list
 	" don't show whitespace for vim-fugitive windows
 	autocmd BufWinEnter,WinEnter */.git/* set nolist
+	" remove whitespace chars from NERDTree
+	autocmd BufWinEnter,WinEnter *NERD* set nolist
 	" exclude terminal from buffer list
 	autocmd TermOpen * set nobuflisted
 	" zsh
