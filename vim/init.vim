@@ -137,7 +137,7 @@ if has('nvim')
 	" automatically enter insert mode when switching to a terminal buffer
 	autocmd BufWinEnter,WinEnter term://* startinsert
 	" don't display whitespace characters in the terminal
-	autocmd BufWinEnter,WinEnter term://* set nolist
+	autocmd TermOpen term://* set nolist
 	" don't show whitespace for vim-fugitive windows
 	autocmd BufWinEnter,WinEnter */.git/* set nolist
 	" exclude terminal from buffer list
