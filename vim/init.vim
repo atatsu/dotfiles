@@ -138,6 +138,9 @@ if has('nvim')
 	autocmd BufWinEnter,WinEnter term://* startinsert
 	" don't display whitespace characters in the terminal
 	autocmd TermOpen term://* set nolist
+	" need this so that whitespace chars are displayed if a file is opened
+	" via ranger
+	autocmd BufAdd * set list
 	" don't show whitespace for vim-fugitive windows
 	autocmd BufWinEnter,WinEnter */.git/* set nolist
 	" exclude terminal from buffer list
