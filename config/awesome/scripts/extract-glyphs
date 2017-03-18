@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+"""
+Use fontforge to run the following:
+
+import fontforge
+
+try:
+	with open('/tmp/glyphs', 'w') as f:
+		for font in fontforge.fonts():
+			for glyph in font:
+				if font[glyph].unicode != -1:
+					f.write(chr(font[glyph].unicode) + '\n')
+except Exception as e:
+	with open('/tmp/glyphs-error', 'w') as ef:
+		ef.write(str(e))
+
+Modify the resulting file (/tmp/glyphs) and remove any glyphs
+you don't want to use.
+
+Then just run this script.
+
+The index-key-style-thinger is used so in the event you're wanting
+to create an array/dict combo table.
+"""
+index = 1
+glyphs = []
+
+for line in open('/tmp/glyphs', 'r'):
+	glyphs.append('[{}] = "{}",'.format(index, line.strip('\n')))
+	index += 1
+
+with open('/tmp/glyphs.lua', 'w') as f:
+	f.write('local M = {\n')
+
+	for glyph in glyphs:
+		f.write('\t{}\n'.format(glyph))
+
+	f.write('}\n')
+	f.write('\nreturn M')
