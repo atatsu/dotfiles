@@ -109,7 +109,6 @@ function Leaf:toggle()
 	-- our app hasn't finished launching yet
 	if not self._client then return self end
 
-	local s = capi.mouse.screen
 	local current_tag = awful.screen.focused().selected_tag
 	
 	-- first time the app has been displayed, set the tag
@@ -126,32 +125,17 @@ function Leaf:toggle()
 		return self
 	end
 
-	-- when the app is already being shown but a toggle happens from a different
-	-- tag simply move the app to that tag
-	if not self._client.hidden and self._last_tag ~= current_tag then
-		self._client:move_to_tag(current_tag)
-		self._last_tag = current_tag
-		capi.client.focus = self._client
-		return self
-	end
-
-	-- client is hidden, show it and set its dimensions and position
-	local workarea = capi.screen[s].workarea
-	local x, y, width, height
-
-	if self.opts.height <= 1 then height = workarea.height * self.opts.height
-	else height = self.opts.height end
-	if self.opts.width <= 1 then width = workarea.width * self.opts.width
-	else width = self.opts.width end
-
+	-- client is hidden and potentially on a different tag
+	-- move it, show it, and set its dimensions and position
 	local pos = self.opts.position
 
-	f = (awful.placement[pos])
+	self._last_tag = current_tag
+	self._client:move_to_tag(current_tag)
+	awful.placement.scale(self._client, { to_percent = self.opts.height, direction = "down" })
+	awful.placement.scale(self._client, { to_percent = self.opts.width, direction = "left" })
+	local f = (awful.placement[pos])
 	f(self._client)
 
-	self._last_tag = current_tag
-	self._client:geometry({x = x, y = y, height = height, width = width})
-	self._client:move_to_tag(current_tag)
 	self._client.hidden = false
 	self._client:raise()
 	capi.client.focus = self._client
