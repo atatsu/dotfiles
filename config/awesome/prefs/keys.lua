@@ -125,7 +125,7 @@ M.global = (function ()
 		-- Standard program
 		awful.key({ modkey, }, "`", function () widgets.termleaf:toggle() end),
 		awful.key({ modkey, }, "Return", function () awful.spawn(config.terminal) end, { description = "open a terminal", group = "launcher" }),
-		awful.key({ modkey, "Control" }, "r", capi.awesome.restart, { description = "reload awesome", group = "awesome" }),
+		awful.key({ modkey, "Shift" }, "r", capi.awesome.restart, { description = "reload awesome", group = "awesome" }),
 		awful.key({ modkey, "Shift" }, "q", capi.awesome.quit, { description = "quit awesome", group = "awesome" }),
 		awful.key({ modkey, }, "l", function () awful.tag.incmwfact( 0.05) end, { description = "increase master width factor", group = "layout" }),
 		awful.key({ modkey, }, "h", function () awful.tag.incmwfact(-0.05) end, { description = "decrease master width factor", group = "layout" }),
@@ -160,6 +160,10 @@ M.global = (function ()
 					prompt = "New tag: ",
 					textbox = awful.screen.focused().mypromptbox.widget,
 					exe_callback = function (tag_name)
+						if tag_name == "icon" then
+							helperutils.tag_icon_picker_window_toggle(30)()
+							return
+						end
 						if tag_name == nil or tag_name:len() < 1 then 
 							return
 						end
@@ -172,6 +176,12 @@ M.global = (function ()
 				}
 			end,
 			{ description = "create a new tag with name", group = "awesome" }
+		),
+		awful.key(
+			{ modkey, "Control" },
+			"r",
+			helperutils.tag_icon_picker_window_toggle(30),
+			{ description = "create a new tag with icon", group = "awesome" }
 		),
 		awful.key(
 			{ modkey }, 

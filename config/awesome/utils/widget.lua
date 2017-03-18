@@ -15,7 +15,7 @@ local M = {}
 
 local spacer_text
 
-function markup_color (text, color)
+function M.markup_color (text, color)
 	color = color or beautiful.fg_color
 	return "<span foreground=\"" .. color .. "\">" .. text .. "</span>"
 end
@@ -36,7 +36,7 @@ end
 function M.color_text (text, color, opts)
 	opts = opts or {}
 	return wibox.widget{
-		markup = markup_color(text, color),
+		markup = M.markup_color(text, color),
 		align = "center",
 		valign = "center",
 		opacity = opts.opacity,
@@ -176,13 +176,13 @@ function M.volume (device_name)
 			if is_muted then
 				set_volume_level(0)
 				-- update icon to reflect muted status
-				icon:set_markup_silently(markup_color(icons.volumeoff .. " ", beautiful.widget_icon_color))
+				icon:set_markup_silently(M.markup_color(icons.volumeoff .. " ", beautiful.widget_icon_color))
 				status.text = ""
 				slider.visible = false
 				return
 			end
 
-			icon:set_markup_silently(markup_color(icons.volume .. " ", beautiful.widget_icon_color))
+			icon:set_markup_silently(M.markup_color(icons.volume .. " ", beautiful.widget_icon_color))
 			set_volume_level(vol_level)
 			slider.visible = true
 		end),

@@ -6,7 +6,7 @@
 
 local awful = require("awful")
 
-local exec = awful.util.spawn
+local exec = awful.spawn
 
 local capi = {
 	mouse = mouse,

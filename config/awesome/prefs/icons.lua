@@ -1,3 +1,4 @@
+local glyphs = require("assets.glyphs")
 -- Everything here was chosen based on font awesome
 --
 --[[
@@ -11,6 +12,9 @@ M = {
 	init = function ()
 		if is_setup then return end
 		is_setup = true
+		for i, v in ipairs(glyphs) do
+			M[i] = v
+		end
 	end
 }
 
