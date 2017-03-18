@@ -97,7 +97,13 @@ awful.screen.connect_for_each_screen(function(s)
 	s.mylayoutbox = awful.widget.layoutbox(s)
 	s.mylayoutbox:buttons(prefs.buttons.layout)
 	-- Create a taglist widget
-	s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, prefs.buttons.taglist)
+	s.mytaglist = awful.widget.taglist(
+		s, 
+		awful.widget.taglist.filter.all, 
+		prefs.buttons.taglist, 
+		nil, 
+		prefs.taglist.remove_shape_from_text_tags
+	)
 
 	-- Create a tasklist widget
 	s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, prefs.buttons.tasklist)

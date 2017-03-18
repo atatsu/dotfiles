@@ -43,6 +43,7 @@ function M.init ()
 	M.keys.init()
 	M.buttons.init()
 	M.signals.init()
+	M.taglist.init()
 	M.widgets.init()
 end
 

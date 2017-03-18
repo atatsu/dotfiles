@@ -151,7 +151,28 @@ M.global = (function ()
 			{ description = "restore minimized", group = "client" }),
 
 		-- Prompt
-		awful.key({ modkey }, "r", function () awful.screen.focused().mypromptbox:run() end, { description = "run prompt", group = "launcher" }),
+		--awful.key({ modkey }, "r", function () awful.screen.focused().mypromptbox:run() end, { description = "run prompt", group = "launcher" }),
+		awful.key(
+			{ modkey }, 
+			"r", 
+			function ()
+				awful.prompt.run {
+					prompt = "New tag: ",
+					textbox = awful.screen.focused().mypromptbox.widget,
+					exe_callback = function (tag_name)
+						if tag_name == nil or tag_name:len() < 1 then 
+							return
+						end
+						local tag = awful.tag.add(
+							tag_name, 
+							{ layout = awful.layout.suit.tile, screen = awful.screen.focused(), volatile = true }
+						)
+					end,
+					history_path = awful.util.get_cache_dir() .. "/history_new_tag_name"
+				}
+			end,
+			{ description = "create a new tag with name", group = "awesome" }
+		),
 		awful.key(
 			{ modkey }, 
 			"x",
