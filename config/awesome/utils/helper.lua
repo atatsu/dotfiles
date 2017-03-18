@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local naughty = require("naughty")
 
-local iconutils = require("utils.icon")
+local icons = require("prefs.icons")
 
 local capi = {
 	client = client,
@@ -23,8 +23,8 @@ function M.client_menu_toggle ()
 		else
 			local clients = {}
 			for i, c in pairs(capi.client.get()) do
-				local hidden = c.hidden and iconutils.eyeclosed or ""
-				local minimized = c.minimized and iconutils.minimized or ""
+				local hidden = c.hidden and icons.eyeclosed or ""
+				local minimized = c.minimized and icons.minimized or ""
 				clients[i] = {
 					hidden .. " " .. minimized .. " " .. c.name,
 					function ()

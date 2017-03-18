@@ -1,7 +1,7 @@
 local awful = require("awful")
 
 local utils = require("utils")
-local iconutils = utils.icon
+local icons = require("prefs.icons")
 
 local terminal = "termite"
 local editor = os.getenv("EDITOR") or "vim"
@@ -16,9 +16,9 @@ local M = {
 	focus_highlight_fade = 1,
 	theme = awful.util.getdir("config") .. "themes/oblivion/theme.lua",
 	tags_for_screen = {
-		[1] = { iconutils.dev, iconutils.games, iconutils.misc },
-		[2] = { iconutils.devalt, iconutils.misc },
-		[3] = { iconutils.misc },
+		[1] = { icons.dev, icons.games, icons.misc },
+		[2] = { icons.devalt, icons.misc },
+		[3] = { icons.misc },
 	},
 }
 

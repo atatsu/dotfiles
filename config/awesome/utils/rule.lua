@@ -2,7 +2,6 @@ local awful = require("awful")
 local gears = require("gears")
 local naughty = require("naughty")
 
-local iconutils = require("utils.icon")
 local screenutils = require("utils.screen")
 
 local M = {}

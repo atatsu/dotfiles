@@ -1,5 +1,4 @@
 local M = {
-	icon = require("utils.icon"),
 	helper = require("utils.helper"),
 	rule = require("utils.rule"),
 	screen = require("utils.screen"),

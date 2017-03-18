@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local wibox = require("wibox")
 
-local iconutils = require("utils.icon")
+local icons = require("prefs.icons")
 
 local exec = awful.spawn
 local sexec = awful.spawn.with_shell
@@ -115,7 +115,7 @@ function M.volume (device_name)
 		end)
 	end
 
-	icon = M.color_text(iconutils.volume .. " ", beautiful.widget_icon_color)
+	icon = M.color_text(icons.volume .. " ", beautiful.widget_icon_color)
 
 	status = wibox.widget{
 		align = "center",
@@ -176,13 +176,13 @@ function M.volume (device_name)
 			if is_muted then
 				set_volume_level(0)
 				-- update icon to reflect muted status
-				icon:set_markup_silently(markup_color(iconutils.volumeoff .. " ", beautiful.widget_icon_color))
+				icon:set_markup_silently(markup_color(icons.volumeoff .. " ", beautiful.widget_icon_color))
 				status.text = ""
 				slider.visible = false
 				return
 			end
 
-			icon:set_markup_silently(markup_color(iconutils.volume .. " ", beautiful.widget_icon_color))
+			icon:set_markup_silently(markup_color(icons.volume .. " ", beautiful.widget_icon_color))
 			set_volume_level(vol_level)
 			slider.visible = true
 		end),
@@ -228,7 +228,7 @@ end
 
 function M.clock () 
 	if not cache.clock then
-		local icon = M.color_text(iconutils.clock .. " ", beautiful.widget_icon_color)
+		local icon = M.color_text(icons.clock .. " ", beautiful.widget_icon_color)
 
 		local textclock = wibox.widget.textclock()
 
@@ -251,7 +251,7 @@ function M.pacman ()
 			function () sexec("pacman -Qu | xmessage -file - -nearmouse") end
 		)
 
-		local icon = M.color_text(iconutils.tux .. " ", beautiful.widget_icon_color)
+		local icon = M.color_text(icons.tux .. " ", beautiful.widget_icon_color)
 		icon:buttons(buttons)
 
 		local status = wibox.widget{

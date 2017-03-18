@@ -39,9 +39,10 @@ function M.init ()
 	-- that needs it. Because you don't have to worry! If `init()`
 	-- has already been called nothing will happen. If called new
 	-- and mod requires another, it'll get included.
-	M.rules.init()
-	M.keys.init()
 	M.buttons.init()
+	M.icons.init()
+	M.keys.init()
+	M.rules.init()
 	M.signals.init()
 	M.taglist.init()
 	M.widgets.init()

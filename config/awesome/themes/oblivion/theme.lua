@@ -2,8 +2,8 @@ local awful = require("awful")
 local gears = require("gears")
 local xresources = require("beautiful.xresources")
 
+local icons = require("prefs.icons")
 local widgetutils = require("utils.widget")
-local iconutils = require("utils.icon")
 
 local theme = dofile("/usr/share/awesome/themes/xresources/theme.lua")
 local theme_assets = dofile(awful.util.getdir("config") .. "utils/assets.lua")
@@ -111,18 +111,18 @@ local _ = (function ()
 	local normal_activeopts = { width = theme.titlebar_height, height = theme.titlebar_height, opacity = 0.8 }
 	local normal_inactiveopts = { width = theme.titlebar_height, height = theme.titlebar_height, opacity = 0.4 }
 
-	theme.titlebar_close_button_focus = widgetutils.color_text_surface(iconutils.close, xrdb.color0, activeopts)
-	theme.titlebar_close_button_normal = widgetutils.color_text_surface(iconutils.close, xrdb.color7, normal_activeopts)
+	theme.titlebar_close_button_focus = widgetutils.color_text_surface(icons.close, xrdb.color0, activeopts)
+	theme.titlebar_close_button_normal = widgetutils.color_text_surface(icons.close, xrdb.color7, normal_activeopts)
 
 	local buttons = { "ontop", "sticky", "floating", "maximized" }
 	local states = { "focus_inactive", "focus_active", "normal_inactive", "normal_active" }
 
 	local create_icon = widgetutils.color_text_surface
 	local iconfuncs = { 
-		focus_inactive = function (button) return create_icon(iconutils[button], xrdb.color0, inactiveopts) end,
-		focus_active = function (button) return create_icon(iconutils[button], xrdb.color0, activeopts) end,
-		normal_inactive = function (button) return create_icon(iconutils[button], xrdb.color7, normal_inactiveopts) end,
-		normal_active = function (button) return create_icon(iconutils[button], xrdb.color7, normal_activeopts) end,
+		focus_inactive = function (button) return create_icon(icons[button], xrdb.color0, inactiveopts) end,
+		focus_active = function (button) return create_icon(icons[button], xrdb.color0, activeopts) end,
+		normal_inactive = function (button) return create_icon(icons[button], xrdb.color7, normal_inactiveopts) end,
+		normal_active = function (button) return create_icon(icons[button], xrdb.color7, normal_activeopts) end,
 	}
 
 	for _, button in ipairs(buttons) do

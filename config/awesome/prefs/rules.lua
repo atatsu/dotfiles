@@ -4,12 +4,12 @@ local gears = require("gears")
 
 local utils = require("utils")
 
+local icons = require("prefs.icons")
 local keys = require("prefs.keys")
 local buttons = require("prefs.buttons")
 
 local ruleutils = utils.rule
 local screenutils = utils.screen
-local iconutils = utils.icon
 
 local clientkeys = keys.client
 local clientbuttons = buttons.client
@@ -66,7 +66,7 @@ M.mplayer = {
 	properties = { floating = false, focus = false },
 	callback = ruleutils.dynamic_tag(
 		screen.primary,
-		iconutils.video,
+		icons.video,
 		function (c, t, s)
 			local naughty = require("naughty")
 			c.hidden = true
@@ -98,12 +98,12 @@ M.video = {
 	properties = { switchtotag = true },
 	callback = ruleutils.dynamic_tag(
 		screen.primary,
-		iconutils.video,
+		icons.video,
 		function (c, t, s)
 			mouse.coords({ x = c.x, y = c.y })
 		end,
 		nil,
-		{ before = iconutils.misc }
+		{ before = icons.misc }
 	)
 }
 -- }}}
@@ -118,7 +118,7 @@ M.steam = {
 	},
 	callback = ruleutils.dynamic_tag(
 		screen.primary,
-		iconutils.steam,
+		icons.steam,
 		function (c, tag, s)
 			-- The 'Friends' window and main library window spawn at the same time
 			-- which seems to fuck up the rule application. Consequently the Friends
@@ -161,7 +161,7 @@ M.steam = {
 			end
 		end,
 		{ layout = awful.layout.suit.tile.left, master_width_factor = 0.75 },
-		{ before = iconutils.misc }
+		{ before = icons.misc }
 	)
 }
 -- }}}
@@ -181,7 +181,7 @@ M.web = {
 	properties = { switchtotag = true },
 	callback = ruleutils.dynamic_tag(
 		screenutils.get_by_index(2),
-		iconutils.web,
+		icons.web,
 		function (c, tag, s)
 			mouse.coords({ x = c.x, y = c.y})
 		end,
@@ -206,7 +206,7 @@ M.music = {
 	},
 	callback = ruleutils.dynamic_tag(
 		screenutils.get_by_index(3),
-		iconutils.music,
+		icons.music,
 		function (c, t, s)
 			local is_first_time = true
 			return (function ()
@@ -232,7 +232,7 @@ M.music = {
 			end)()
 		end,
 		{ gap = 5, master_width_factor = 0.7, layout = awful.layout.suit.tile.bottom },
-		{ before = iconutils.misc }
+		{ before = icons.misc }
 	)
 }
 -- }}}
@@ -252,7 +252,7 @@ M.chat = {
 	--callback = ruleutils.chat_rule_callback
 	callback = ruleutils.dynamic_tag(
 		screenutils.get_by_index(3), 
-		iconutils.chat, 
+		icons.chat, 
 		function (c, tag, s)
 			-- ignore the mumble connection dialog
 			if c.floating then
@@ -271,7 +271,7 @@ M.chat = {
 			awful.client.setmaster(c)
 		end,
 		{ master_width_factor = 0.8 },
-		{ after = iconutils.web, fallback = 1 }
+		{ after = icons.web, fallback = 1 }
 	)
 }
 -- }}}
