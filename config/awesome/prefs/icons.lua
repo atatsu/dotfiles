@@ -18,6 +18,7 @@ M = {
 	end
 }
 
+M.add = ""
 M.chat = ""
 M.clock = ""
 M.close = ""

@@ -18,6 +18,10 @@ local wibox = require("wibox")
 
 local widgetutil = require("widgets.util")
 
+local capi = {
+	tag = tag,
+}
+
 local DynamicTag = {}
 DynamicTag.__index = DynamicTag
 
@@ -27,6 +31,8 @@ DynamicTag.__index = DynamicTag
 -- @tparam[opt={}] table array
 
 local properties = {
+	can_delete_non_dynamic_tags = false,
+
 	-- widget display properties
 	icon_add = "+",
 	icon_delete = '-',
@@ -39,6 +45,8 @@ local properties = {
 		volatile = true,
 	},
 	tag_switch_to = true,
+	-- start || end
+	tag_position = "end",
 
 	-- glyph window properties
 	glyph_window_margins = 10,
@@ -89,28 +97,35 @@ function DynamicTag.new (args)
 	util.table.crush(w._private, args or {})
 	local self = setmetatable(DynamicTag, { __index = w })
 
-	self._widgets = {
-		icon = wibox.widget{
-			align = "center",
-			text = self:get_icon_add(),
-			valign = "center",
-			opacity = 0,
-			widget = wibox.widget.textbox
+	self._widgets = wibox.layout.fixed.horizontal()
+	self._widgets:setup{
+		id = "row",
+		layout = wibox.layout.fixed.horizontal,
+		{
+			id = "margin",
+			layout = wibox.container.margin,
+			left = 5,
+			right = 5,
+			{
+				id = "icon",
+				align = "center",
+				text = self:get_icon_add(),
+				valign = "center",
+				opacity = 0,
+				widget = wibox.widget.textbox
+			}
 		},
-		glyph_window = nil,
-		layout = wibox.layout.fixed.horizontal(),
-		promptbox = wibox.widget{
+		{
+			id = "promptbox",
 			align = "center",
 			text = "",
 			valign = "center",
 			widget = wibox.widget.textbox
 		},
+		_glyph_window = nil
 	}
-	local layout = self._widgets.layout
-	layout:add(self._widgets.icon)
-	layout:add(self._widgets.promptbox)
 
-	local icon = self._widgets.icon
+	local icon = self._widgets.row.margin.icon
 	icon:buttons(_get_buttons(self))
 	if not self:get_icon_always_visible() then
 		icon:connect_signal("mouse::enter", function () 
@@ -123,35 +138,51 @@ function DynamicTag.new (args)
 		end)
 	end
 
-	return setmetatable(self._widgets.layout, { __index = self, __newindex = self })
+	return setmetatable(self._widgets, { __index = self, __newindex = self })
 end
 
 function DynamicTag:new_text_tag ()
+	local function _exe_callback (tag_name)
+		if tag_name == nil or #tag_name < 1 then return end
+
+		if tag_name == "glyph" or tag_name == "icon" then
+			-- TODO
+		end
+
+		local props = self:get_tag_props() or {}
+		props.screen = awful.screen.focused()
+		if self:get_tag_position() == "end" then
+			props.index = capi.tag:instances() + 1
+		else
+			props.index = -1
+		end
+
+		local tag = awful.tag.add(tag_name, props)
+		tag._is_dynamic_tag = true
+		if self:get_tag_switch_to() then
+			tag:view_only()
+		end
+	end
+
 	awful.prompt.run {
 		prompt = "New tag: ",
-		textbox = self._widgets.promptbox,
-		exe_callback = function (tag_name)
-			if tag_name == nil or #tag_name < 1 then return end
-
-			if tag_name == "glyph" or tag_name == "icon" then
-				-- TODO
-			end
-
-			local props = self:get_tag_props() or {}
-			props.screen = awful.screen.focused()
-			local tag = awful.tag.add(tag_name, props)
-
-			if self:get_tag_switch_to() then
-				tag:view_only()
-			end
-		end,
+		textbox = self._widgets.row.promptbox,
+		exe_callback = _exe_callback,
 		history_path = awful.util.get_cache_dir() .. "/history_dynamic_tag"
 	}
 end
 
 function _create_icon_tag (w)
-	local tag_props = w._dt:get_tag_props() or {}
-	local tag = awful.tag.add(w._glyph, tag_props)
+	local props = w._dt:get_tag_props() or {}
+	props.screen = awful.screen.focused()
+	if w._dt:get_tag_position() == "end" then
+		props.index = capi.tag:instances() + 1
+	else
+		props.index = -1
+	end
+
+	local tag = awful.tag.add(w._glyph, props)
+	tag._is_dynamic_tag = true
 	if w._dt:get_tag_switch_to() then
 		tag:view_only()
 	end

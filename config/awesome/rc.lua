@@ -50,8 +50,10 @@ end
 local prefs = require("prefs")
 prefs.init()
 -- homebrew modules
+local widgets = require("widgets")
 local helperutils = require("utils").helper
 local widgetutils = require("utils").widget
+local glyphassets = require("assets").glyphs
 
 -- }}}
 
@@ -90,8 +92,6 @@ awful.screen.connect_for_each_screen(function(s)
 		awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, prefs.config.preferred_layout)
 	end
 
-	-- Create a promptbox for each screen
-	s.mypromptbox = awful.widget.prompt()
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
 	s.mylayoutbox = awful.widget.layoutbox(s)
@@ -104,6 +104,7 @@ awful.screen.connect_for_each_screen(function(s)
 		nil, 
 		prefs.taglist.remove_shape_from_text_tags
 	)
+	s.mydynamictag = widgets.dynamictag({ icon_add = "", glyph_window_glyphs = glyphassets })
 
 	-- Create a tasklist widget
 	s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, prefs.buttons.tasklist)
@@ -119,7 +120,7 @@ awful.screen.connect_for_each_screen(function(s)
 			layout = wibox.layout.fixed.horizontal,
 			s == capi.screen.primary and prefs.widgets.mainmenu_launcher or nil,
 			s.mytaglist,
-			s.mypromptbox,
+			s.mydynamictag,
 		},
 		s.mytasklist, -- Middle widget
 		{-- Right widgets

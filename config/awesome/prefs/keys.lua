@@ -150,8 +150,8 @@ M.global = (function ()
 			end,
 			{ description = "restore minimized", group = "client" }),
 
-		-- Prompt
-		--awful.key({ modkey }, "r", function () awful.screen.focused().mypromptbox:run() end, { description = "run prompt", group = "launcher" }),
+		-- DynamicTag
+		--[[
 		awful.key(
 			{ modkey }, 
 			"r", 
@@ -183,19 +183,7 @@ M.global = (function ()
 			helperutils.tag_icon_picker_window_toggle(30),
 			{ description = "create a new tag with icon", group = "awesome" }
 		),
-		awful.key(
-			{ modkey }, 
-			"x",
-			function ()
-				awful.prompt.run {
-					prompt = "Run Lua code: ",
-					textbox = awful.screen.focused().mypromptbox.widget,
-					exe_callback = awful.util.eval,
-					history_path = awful.util.get_cache_dir() .. "/history_eval"
-				}
-			end,
-			{ description = "lua execute prompt", group = "awesome" }
-		),
+		--]]
 
 		-- Menubar
 		--awful.key({ modkey, "Shift" }, "m", function() menubar.show() end, { description = "show the menubar", group = "launcher" }),
