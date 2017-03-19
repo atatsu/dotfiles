@@ -160,7 +160,9 @@ M.global = (function ()
 		awful.key(
 			{ modkey, "Control" },
 			"r",
-			function () awful.screen.focused().mydynamictag:new_glyph_tag() end,
+			function () 
+				awful.screen.focused().mydynamictag:new_glyph_tag() 
+			end,
 			{ description = "dynamic glyph tag", group = "awesome" }
 		),
 

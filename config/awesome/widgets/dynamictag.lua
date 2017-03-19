@@ -95,10 +95,14 @@ end
 function DynamicTag.new (args)
 	local w = base.make_widget(nil, nil, { enable_properties = true })
 	util.table.crush(w._private, args or {})
-	local self = setmetatable(w, DynamicTag)
 
-	self._widgets = wibox.layout.fixed.horizontal()
-	self._widgets:setup{
+	local widget = wibox.layout.fixed.horizontal()
+	util.table.crush(w, widget, false)
+
+	local self = setmetatable(w, DynamicTag)
+	util.table.crush(self._private, args or {})
+
+	self:setup{
 		id = "row",
 		layout = wibox.layout.fixed.horizontal,
 		{
@@ -125,7 +129,7 @@ function DynamicTag.new (args)
 		_glyph_window = nil
 	}
 
-	local icon = self._widgets.row.margin.icon
+	local icon = self.row.margin.icon
 	icon:buttons(_get_buttons(self))
 	if not self:get_icon_always_visible() then
 		icon:set_opacity(0)
@@ -139,7 +143,7 @@ function DynamicTag.new (args)
 		end)
 	end
 
-	return setmetatable(self._widgets, { __index = self, __newindex = self })
+	return self
 end
 
 function DynamicTag:new_text_tag ()
@@ -167,7 +171,7 @@ function DynamicTag:new_text_tag ()
 
 	awful.prompt.run {
 		prompt = "New tag: ",
-		textbox = self._widgets.row.promptbox,
+		textbox = self.row.promptbox,
 		exe_callback = _exe_callback,
 		history_path = awful.util.get_cache_dir() .. "/history_dynamic_tag"
 	}
@@ -199,8 +203,8 @@ function _restore_icon (w)
 end
 
 function DynamicTag:new_glyph_tag ()
-	if self:get_glyph_window_keep_cache() and self._widgets._glyph_window ~= nil then 
-		self._widgets._glyph_window.visible = not self._widgets._glyph_window.visible
+	if self:get_glyph_window_keep_cache() and self._glyph_window ~= nil then 
+		self._glyph_window.visible = not self._glyph_window.visible
 		return 
 	end
 
@@ -274,7 +278,7 @@ function DynamicTag:new_glyph_tag ()
 	instance.visible = true
 
 	if self:get_glyph_window_keep_cache() then
-		self._widgets._glyph_window = instance
+		self._glyph_window = instance
 	end
 end
 
