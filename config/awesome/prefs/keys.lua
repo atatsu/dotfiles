@@ -151,39 +151,18 @@ M.global = (function ()
 			{ description = "restore minimized", group = "client" }),
 
 		-- DynamicTag
-		--[[
 		awful.key(
 			{ modkey }, 
 			"r", 
-			function ()
-				awful.prompt.run {
-					prompt = "New tag: ",
-					textbox = awful.screen.focused().mypromptbox.widget,
-					exe_callback = function (tag_name)
-						if tag_name == "icon" then
-							helperutils.tag_icon_picker_window_toggle(30)()
-							return
-						end
-						if tag_name == nil or tag_name:len() < 1 then 
-							return
-						end
-						local tag = awful.tag.add(
-							tag_name, 
-							{ layout = awful.layout.suit.tile, screen = awful.screen.focused(), volatile = true }
-						)
-					end,
-					history_path = awful.util.get_cache_dir() .. "/history_new_tag_name"
-				}
-			end,
-			{ description = "create a new tag with name", group = "awesome" }
+			function () awful.screen.focused().mydynamictag:new_text_tag() end,
+			{ description = "dynamic text tag", group = "awesome" }
 		),
 		awful.key(
 			{ modkey, "Control" },
 			"r",
-			helperutils.tag_icon_picker_window_toggle(30),
-			{ description = "create a new tag with icon", group = "awesome" }
+			function () awful.screen.focused().mydynamictag:new_glyph_tag() end,
+			{ description = "dynamic glyph tag", group = "awesome" }
 		),
-		--]]
 
 		-- Menubar
 		--awful.key({ modkey, "Shift" }, "m", function() menubar.show() end, { description = "show the menubar", group = "launcher" }),

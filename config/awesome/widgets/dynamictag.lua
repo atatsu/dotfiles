@@ -95,7 +95,7 @@ end
 function DynamicTag.new (args)
 	local w = base.make_widget(nil, nil, { enable_properties = true })
 	util.table.crush(w._private, args or {})
-	local self = setmetatable(DynamicTag, { __index = w })
+	local self = setmetatable(w, DynamicTag)
 
 	self._widgets = wibox.layout.fixed.horizontal()
 	self._widgets:setup{
@@ -111,7 +111,7 @@ function DynamicTag.new (args)
 				align = "center",
 				text = self:get_icon_add(),
 				valign = "center",
-				opacity = 0,
+				--opacity = 0,
 				widget = wibox.widget.textbox
 			}
 		},
@@ -128,6 +128,7 @@ function DynamicTag.new (args)
 	local icon = self._widgets.row.margin.icon
 	icon:buttons(_get_buttons(self))
 	if not self:get_icon_always_visible() then
+		icon:set_opacity(0)
 		icon:connect_signal("mouse::enter", function () 
 			icon:set_opacity(self:get_icon_opacity())
 			icon:set_visible(1)
@@ -198,8 +199,8 @@ function _restore_icon (w)
 end
 
 function DynamicTag:new_glyph_tag ()
-	if self:get_glyph_window_keep_cache() and self._widgets.glyph_window then 
-		self._widgets.glyph_window.visible = not self._widgets.glyph_window.visible
+	if self:get_glyph_window_keep_cache() and self._widgets._glyph_window ~= nil then 
+		self._widgets._glyph_window.visible = not self._widgets._glyph_window.visible
 		return 
 	end
 
@@ -273,7 +274,7 @@ function DynamicTag:new_glyph_tag ()
 	instance.visible = true
 
 	if self:get_glyph_window_keep_cache() then
-		self._widgets.glyph_window = instance
+		self._widgets._glyph_window = instance
 	end
 end
 
