@@ -1,7 +1,8 @@
 # {{{ User Settings
 
 # {{{ Environment
-export PATH=$PATH:~/bin:~/.i3/bin:~/games/bin
+# Purposefully stomping over /usr/bin with ~/bin
+export PATH=~/bin:$PATH:~/games/bin
 if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
@@ -377,5 +378,3 @@ setprompt
 # mac
 export NVM_DIR="${HOME}/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
-eval $(thefuck --alias)
