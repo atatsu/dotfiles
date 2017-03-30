@@ -2,7 +2,7 @@
 
 # {{{ Environment
 # Purposefully stomping over /usr/bin with ~/bin
-export PATH=~/bin:$PATH:~/games/bin
+export PATH=~/bin:~/.config/awesome/bin:$PATH:~/games/bin
 if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`

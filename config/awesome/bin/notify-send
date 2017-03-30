@@ -1,0 +1,15 @@
+#!/usr/bin/zsh -f
+
+# An *extremely* thin wrapper script for `awesome-client` so that calls to
+# `notify-send` will be passed through. At this point it assumes only the
+# `<SUMMARY> [BODY]` components of the `notify-send` usage (i.e. no flags).
+
+title="notify"
+message=
+if [[ -n $1 && -n $2 ]] {
+	title=$1
+	message=$2
+} else {
+	message=$1
+}
+echo "local helperutils = require(\"utils.helper\") ; helperutils.notify_normal(\"$title\", \"$message\")" | awesome-client
