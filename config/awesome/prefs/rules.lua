@@ -85,6 +85,24 @@ M.mplayer = {
 }
 --]]
 
+-- {{{ virt-manager
+M.virt_manager = {
+	rule = {
+		class = "Virt-manager",
+		instance = "virt-manager",
+	},
+	callback = ruleutils.dynamic_tag(
+	screen.primary,
+	icons.virt_manager,
+	function (c, t, s)
+
+	end,
+	nil,
+	{ after = icons.games }
+	)
+}
+-- }}}
+
 -- {{{ 
 M.video = {
 	rule_any = {
@@ -185,7 +203,7 @@ M.web = {
 		function (c, tag, s)
 			mouse.coords({ x = c.x, y = c.y})
 		end,
-		{ index = 1, master_width_factor = 0.75, layout = awful.layout.suit.magnifier }
+		{ index = 1, master_width_factor = 0.75, layout = awful.layout.suit.tile.bottom }
 	)
 }
 -- }}}
