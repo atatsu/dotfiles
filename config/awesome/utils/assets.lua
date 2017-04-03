@@ -1,7 +1,8 @@
 local gears = require("gears")
 local shape = gears.shape
 local surface = gears.surface
-local share_assets = dofile("/usr/share/awesome/themes/xresources/assets.lua")
+--local share_assets = dofile("/usr/share/awesome/themes/xresources/assets.lua")
+local share_assets = require("beautiful.theme_assets")
 
 local M = {
 	share = share_assets,
