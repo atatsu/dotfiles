@@ -4,9 +4,12 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 --local menubar = require("menubar")
 
 local config = require("prefs.config")
+local icons = require("prefs.icons")
 local utils = require("utils")
+local widgets = require("widgets")
 
 local is_setup = false
+local widget_cache = {}
 
 local M = {
 	init = function ()
@@ -41,6 +44,22 @@ M.mainmenu_launcher = awful.widget.launcher({
 M.termleaf = utils.leaf("termite")
 
 M.keyboard_layout = awful.widget.keyboardlayout()
+
+function M.virshcontrol ()
+	if widget_cache.virshcontrol then
+		return widget_cache.virshcontrol
+	end
+
+	widget_cache.virshcontrol = widgets.virshcontrol{
+		icon_glyph = icons.virt_manager, 
+		icon_color_normal = beautiful.widget_icon_color,
+		icon_margins = {
+			left = 2,
+			right = 5,
+		}
+	}
+	return widget_cache.virshcontrol
+end
 
 --menubar.utils.terminal = .config.terminal -- Set the terminal for applications that require it
 

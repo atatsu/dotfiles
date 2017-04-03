@@ -52,6 +52,14 @@ function M.notify_normal (title, text)
 	})
 end
 
+function M.notify_error (title, text)
+	naughty.notify({
+		preset = naughty.config.presets.critical,
+		title = title,
+		text = text
+	})
+end
+
 function M.set_wallpaper (s)
 	-- Wallpaper
 	if beautiful.wallpaper then

@@ -104,7 +104,7 @@ awful.screen.connect_for_each_screen(function(s)
 		nil, 
 		prefs.taglist.remove_shape_from_text_tags
 	)
-	s.mydynamictag = widgets.dynamictag{ icon_add = "", glyph_window_glyphs = glyphassets }
+	s.mydynamictag = widgets.dynamictag{ icon_add = prefs.icons.add, glyph_window_glyphs = glyphassets }
 
 	-- Create a tasklist widget
 	s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, prefs.buttons.tasklist)
@@ -128,6 +128,7 @@ awful.screen.connect_for_each_screen(function(s)
 			--widgets.volumecontrol(),
 			widgetutils.pacman(),
 			widgetutils.volume(),
+			prefs.widgets.virshcontrol(),
 			prefs.widgets.keyboard_layout,
 			widgetutils.clock(),
 			widgetutils.systray(),
