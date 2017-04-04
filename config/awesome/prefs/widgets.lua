@@ -56,6 +56,16 @@ function M.virshcontrol ()
 		icon_margins = {
 			left = 2,
 			right = 5,
+		},
+		virsh_config = {
+			{
+				network = "default",
+				domain = "gaming"
+			},
+			{
+				network = "default",
+				domain = "gaming"
+			},
 		}
 	}
 	return widget_cache.virshcontrol

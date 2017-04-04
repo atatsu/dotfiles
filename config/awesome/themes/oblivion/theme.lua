@@ -153,6 +153,14 @@ theme.tasklist_fg_minimize = xrdb.color14
 
 -- {{{ Widgets
 theme.widget_icon_color = xrdb.color3
+
+-- VirshControl
+theme.virshcontrol_row_height = dpi(15)
+theme.virshcontrol_row_margins = dpi(4)
+theme.virshcontrol_checkbox_props = {
+	border_color = theme.fg_urgent,
+	check_color = theme.fg_urgent,
+}
 -- }}}
 
 local background_color = theme_assets.lighten_up(theme.bg_normal, 5)
