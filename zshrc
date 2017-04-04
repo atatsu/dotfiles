@@ -7,9 +7,9 @@ if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
 }
-if [[ -d /usr/local/progress-dlc ]] {
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/progress-dlc/odbc
-}
+
+# virsh
+export LIBVIRT_DEFAULT_URI=qemu:///system
 
 # add all ruby gem bin folders to path
 if [[ -d $HOME/.gem/ruby ]] {
