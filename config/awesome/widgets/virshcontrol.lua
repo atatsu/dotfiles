@@ -18,6 +18,13 @@ local util = require("awful.util")
 local wibox = require("wibox")
 
 local widgetutil = require("widgets.util")
+local helperutils = require("utils.helper")
+
+local easy_async = awful.spawn.easy_async
+
+local notify = function (message)
+	helperutils.notify_normal("VirshControl", message)
+end
 
 local VirshControl = {}
 VirshControl.__index = VirshControl
@@ -64,8 +71,121 @@ function _get_buttons (vc)
 	)
 end
 
-function _setup_widgets (vc)
+function _easy_async_cb (cb)
+	return function (stdout, stderr, reason, code)
+		cb({ stdout = stdout, stderr = stderr, reason = reason, code = code })
+	end
 end
+
+-- {{{ Helpers that I didn't want to pollute the instance with
+local _signal_handlers
+local _commands
+
+-- Simply consolidating all the signal handlers here so they aren't spattered
+-- everywhere throughout the file.
+function init_signal_handlers (virshcontrol)
+	if _signal_handlers then
+		return _signal_handlers
+	end
+
+	_signal_handlers = {
+		checkbox_pressed = function (cb)
+			cb.checked = not cb.checked
+			if cb.checked then
+				_commands.start_vm(cb._domain, cb._network, cb._monitor)
+			else
+				_commands.stop_vm()
+			end
+		end
+	}
+
+	return _signal_handlers
+end
+
+function init_commands (virshcontrol)
+	if _commands then
+		return _commands
+	end
+
+	_commands = {
+		start_vm = function (domain, network, monitor)
+			local markup
+			-- first check if we need to attempt to startup a network
+			if network then
+				easy_async("bash -c 'virsh net-list | grep " .. network .. "'", _easy_async_cb(function (result)
+					if result.code == 0 then
+						markup = widgetutil.markup(network, virshcontrol:get_icon_color_normal())
+						notify("network <b>" .. markup .. "</b> is already running")
+					end
+				end))
+			end
+
+			-- first check if the vm is already running
+			easy_async("bash -c 'virsh list | grep " .. domain .. "'", _easy_async_cb(function (result)
+				if result.code == 0 then
+					markup = widgetutil.markup(domain, virshcontrol:get_icon_color_normal())
+					notify("domain <b>" .. markup .. "</b> is already running")
+					return
+				end
+			end))
+		end,
+
+		stop_vm = function (domain, network)
+		end
+	}
+
+	return _commands
+end
+-- }}}
+
+-- Another collection of related functions to prevent random
+-- shit from appearing everywhere.
+local _calculate = {
+	-- Calculates height for the main wibox based on the number of 
+	-- rows needed and the configured row height. Broken out into 
+	-- its own standalone function mainly so VirshControl:toggle_domain_list 
+	-- wasn't so bulky... even though its still pretty bulky.
+	wibox_height = function (vc)
+		local row_height = vc:get_row_height()
+		local row_margins = vc:get_row_margins()
+		local base_height = row_height * #vc._private.virsh_config
+
+		local top, bottom
+		if type(row_margins) == "table" then
+			top, bottom = row_margins.top or 0, row_margins.bottom or 0
+		else
+			top, bottom = row_margins, row_margins
+		end
+
+		local margin_adjustment = top * #vc._private.virsh_config + bottom * #vc._private.virsh_config
+		return base_height + margin_adjustment
+	end,
+
+	-- Calculates the margins for a given row and ensures that no double 
+	-- padding shit takes place. You know, when you say an item has margins of 4, 
+	-- the first item has clean 4 on top, the last item has a clean 4 on bottom,
+	-- and everything in between has 8 due to the items' bottom and top margins
+	-- combininig.
+	harmonious_margins = function (current_row_idx, total_rows, margins)
+		local left, right, top, bottom
+		if type(margins) == "table" then
+			left, right, top, bottom = margins.left, margins.right, margins.top, margins.bottom
+		else
+			left, right, top, bottom = margins, margins, margins, margins
+		end
+
+		if current_row_idx == 1 then
+			bottom = bottom / 2
+		elseif current_row_idx ~= total_rows then
+			bottom = bottom / 2
+			top = top / 2
+		else
+			top = top / 2
+		end
+
+		return left, right, top, bottom
+	end
+}
 
 --- Create a new virsch control widget.
 -- @treturn VirshControl A new VirshControl instance.
@@ -82,6 +202,10 @@ function VirshControl.new (args)
 	local self = setmetatable(w, VirshControl)
 	util.table.crush(self._private, args or {})
 	self._private.virsh_config = virsh_config
+
+	-- initialize all the helper shit that isn't attached to our instance
+	init_signal_handlers(self)
+	init_commands(self)
 
 	local margins = self:get_icon_margins() or {}
 	self:setup{
@@ -109,26 +233,6 @@ function VirshControl.new (args)
 	return self
 end
 
-function _checkbox_pressed (cb)
-	cb.checked = not cb.checked
-end
-
-function _calculate_wibox_height (vc)
-	local row_height = vc:get_row_height()
-	local row_margins = vc:get_row_margins()
-	local base_height = row_height * #vc._private.virsh_config
-
-	local top, bottom
-	if type(row_margins) == "table" then
-		top, bottom = row_margins.top or 0, row_margins.bottom or 0
-	else
-		top, bottom = row_margins, row_margins
-	end
-
-	local margin_adjustment = top * #vc._private.virsh_config + bottom * #vc._private.virsh_config
-	return base_height + margin_adjustment
-end
-
 function VirshControl:toggle_domain_list ()
 	if self._domain_list then
 		self._domain_list.visible = not self._domain_list.visible
@@ -136,7 +240,7 @@ function VirshControl:toggle_domain_list ()
 	end
 
 	local instance = wibox{
-		height = _calculate_wibox_height(self),
+		height = _calculate.wibox_height(self),
 		width = 150,
 		ontop = true,
 		visible = false,
@@ -147,13 +251,6 @@ function VirshControl:toggle_domain_list ()
 	}
 
 	local checkbox_props = self:get_checkbox_props()
-	local row_margins = self:get_row_margins()
-	local left, right, top, bottom
-	if type(row_margins) == "table" then
-		left, right, top, bottom = row_margins.left, row_margins.right, row_margins.top, row_margins.bottom
-	else
-		left, right, top, bottom = row_margins, row_margins, row_margins, row_margins
-	end
 	for i, v in ipairs(self._private.virsh_config) do
 		local row = wibox.layout.fixed.horizontal()
 		local checkbox = wibox.widget{
@@ -165,7 +262,10 @@ function VirshControl:toggle_domain_list ()
 			border_color = checkbox_props.border_color,
 			check_color = checkbox_props.check_color,
 		}
-		checkbox:connect_signal("button::press", _checkbox_pressed)
+		checkbox:connect_signal("button::press", _signal_handlers.checkbox_pressed)
+		checkbox._domain = v.domain
+		checkbox._network = v.network
+		checkbox._monitor = v.monitor
 		row:add(checkbox)
 
 		local label = wibox.widget{
@@ -174,26 +274,15 @@ function VirshControl:toggle_domain_list ()
 			widget = wibox.widget.textbox,
 			valign = "center",
 		}
+		label:connect_signal("button::press", function () _signal_handlers.checkbox_pressed(checkbox) end)
 		row:add(wibox.container.margin(label, 5))
 
-		-- prevent double padding in between rows
-		local prevent_double_padding_bottom, prevent_double_padding_top = bottom, top
-		if i == 1 then
-			prevent_double_padding_top = top
-			prevent_double_padding_bottom = bottom / 2
-		--elseif i == (#self._private.virsh_config - 1) then
-		--  prevent_double_padding_top = top / 2
-		--  prevent_double_padding_bottom = bottom
-		elseif i ~= #self._private.virsh_config then
-			prevent_double_padding_bottom = bottom / 2
-			prevent_double_padding_top = top / 2
-		else
-			prevent_double_padding_top = top / 2
-			prevent_double_padding_bottom = bottom
-		end
-		instance.outer:add(wibox.container.margin(row, left, right, prevent_double_padding_top, prevent_double_padding_bottom))
+		local left, right, top, bottom = _calculate.harmonious_margins(i, #self._private.virsh_config, self:get_row_margins())
+		instance.outer:add(wibox.container.margin(row, left, right, top, bottom))
 	end
 
+	-- position the wibox
+	-- TODO: place near mouse rather than corner
 	awful.placement.top_right(instance)
 	awful.placement.no_offscreen(instance)
 	instance:connect_signal("mouse::leave", function () self:toggle_domain_list() end)

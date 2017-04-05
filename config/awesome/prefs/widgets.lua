@@ -60,11 +60,13 @@ function M.virshcontrol ()
 		virsh_config = {
 			{
 				network = "default",
-				domain = "gaming"
+				domain = "gaming",
+				monitor = 17,
 			},
 			{
 				network = "default",
-				domain = "gaming"
+				domain = "gaming",
+				monitor = 17,
 			},
 		}
 	}
