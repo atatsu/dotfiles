@@ -63,11 +63,6 @@ function M.virshcontrol ()
 				domain = "gaming",
 				monitor = 17,
 			},
-			{
-				network = "default",
-				domain = "gaming",
-				monitor = 17,
-			},
 		}
 	}
 	return widget_cache.virshcontrol
