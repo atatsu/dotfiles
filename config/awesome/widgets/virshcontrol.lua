@@ -77,115 +77,136 @@ function _easy_async_cb (cb)
 	end
 end
 
--- {{{ Helpers that I didn't want to pollute the instance with
-local _signal_handlers
-local _commands
+-- {{{ Helpers that I didn't want to pollute the instance with.
+-- Think of them as honorary private members.
+local _helpers
+_helpers = (function ()
 
--- Simply consolidating all the signal handlers here so they aren't spattered
--- everywhere throughout the file.
-function init_signal_handlers (virshcontrol)
-	if _signal_handlers then
-		return _signal_handlers
-	end
-
-	_signal_handlers = {
-		checkbox_pressed = function (cb)
-			cb.checked = not cb.checked
-			if cb.checked then
-				_commands.start_vm(cb._domain, cb._network, cb._monitor)
-			else
-				_commands.stop_vm()
-			end
+	-- Collection of signal handler callbacks
+	function init_signal_handlers (virshcontrol)
+		if _helpers.signal_handlers then
+			return _helpers.signal_handlers
 		end
-	}
 
-	return _signal_handlers
-end
-
-function init_commands (virshcontrol)
-	if _commands then
-		return _commands
+		return {
+			checkbox_pressed = function (cb)
+				cb.checked = not cb.checked
+				if cb.checked then
+					_helpers.commands.start_vm(cb._domain, cb._network, cb._monitor)
+				else
+					_helpers.commands.stop_vm()
+				end
+			end
+		}
 	end
 
-	_commands = {
-		start_vm = function (domain, network, monitor)
-			local markup
-			-- first check if we need to attempt to startup a network
-			if network then
-				easy_async("bash -c 'virsh net-list | grep " .. network .. "'", _easy_async_cb(function (result)
+	-- Collection of commands that get executed through the shell
+	function init_commands (virshcontrol)
+		if _helpers.commands then
+			return _helpers.commands
+		end
+
+		return {
+			start_vm = function (domain, network, monitor)
+				local markup
+				-- first check if we need to attempt to startup a network
+				if network then
+					easy_async("bash -c 'virsh net-list | grep " .. network .. "'", _easy_async_cb(function (result)
+						if result.code == 0 then
+							markup = widgetutil.markup(network, virshcontrol:get_icon_color_normal())
+							notify("network <b>" .. markup .. "</b> is already running")
+						end
+					end))
+				end
+
+				-- first check if the vm is already running
+				easy_async("bash -c 'virsh list | grep " .. domain .. "'", _easy_async_cb(function (result)
 					if result.code == 0 then
-						markup = widgetutil.markup(network, virshcontrol:get_icon_color_normal())
-						notify("network <b>" .. markup .. "</b> is already running")
+						markup = widgetutil.markup(domain, virshcontrol:get_icon_color_normal())
+						notify("domain <b>" .. markup .. "</b> is already running")
+						return
 					end
 				end))
+			end,
+
+			stop_vm = function (domain, network)
 			end
+		}
+	end
 
-			-- first check if the vm is already running
-			easy_async("bash -c 'virsh list | grep " .. domain .. "'", _easy_async_cb(function (result)
-				if result.code == 0 then
-					markup = widgetutil.markup(domain, virshcontrol:get_icon_color_normal())
-					notify("domain <b>" .. markup .. "</b> is already running")
-					return
+	-- Collection of functions used for calculating measurements for various widgets/components
+	function init_calculate (virshcontrol)
+		if _helpers.calculate then
+			return _helpers.calculate
+		end
+
+		 return {
+			-- Calculates height for the main wibox based on the number of 
+			-- rows needed and the configured row height. Broken out into 
+			-- its own standalone function mainly so VirshControl:toggle_domain_list 
+			-- wasn't so bulky... even though its still pretty bulky.
+			wibox_height = function ()
+				local vc = virshcontrol
+				local row_height = vc:get_row_height()
+				local row_margins = vc:get_row_margins()
+				local base_height = row_height * #vc._private.virsh_config
+
+				local top, bottom
+				if type(row_margins) == "table" then
+					top, bottom = row_margins.top or 0, row_margins.bottom or 0
+				else
+					top, bottom = row_margins, row_margins
 				end
-			end))
-		end,
 
-		stop_vm = function (domain, network)
+				local margin_adjustment = top * #vc._private.virsh_config + bottom * #vc._private.virsh_config
+				return base_height + margin_adjustment
+			end,
+
+			-- Calculates the margins for a given row and ensures that no double 
+			-- padding shit takes place. You know, when you say an item has margins of 4, 
+			-- the first item has clean 4 on top, the last item has a clean 4 on bottom,
+			-- and everything in between has 8 due to the items' bottom and top margins
+			-- combininig.
+			harmonious_margins = function (current_row_idx)
+				local vc = virshcontrol
+				local margins = vc:get_row_margins()
+				local num_rows = #vc._private.virsh_config
+
+				local left, right, top, bottom
+				if type(margins) == "table" then
+					left, right, top, bottom = margins.left, margins.right, margins.top, margins.bottom
+				else
+					left, right, top, bottom = margins, margins, margins, margins
+				end
+
+				if current_row_idx == 1 then
+					bottom = bottom / 2
+				elseif current_row_idx ~= num_rows then
+					bottom = bottom / 2
+					top = top / 2
+				else
+					top = top / 2
+				end
+
+				return left, right, top, bottom
+			end
+		}
+	end
+
+	return {
+		signal_handlers = nil,
+		commands = nil,
+		calculate = nil,
+		init = function (virshcontrol)
+			_helpers.signal_handlers = init_signal_handlers(virshcontrol)
+			_helpers.commands = init_commands(virshcontrol)
+			_helpers.calculate = init_calculate(virshcontrol)
 		end
 	}
+end)()
 
-	return _commands
-end
 -- }}}
 
--- Another collection of related functions to prevent random
--- shit from appearing everywhere.
-local _calculate = {
-	-- Calculates height for the main wibox based on the number of 
-	-- rows needed and the configured row height. Broken out into 
-	-- its own standalone function mainly so VirshControl:toggle_domain_list 
-	-- wasn't so bulky... even though its still pretty bulky.
-	wibox_height = function (vc)
-		local row_height = vc:get_row_height()
-		local row_margins = vc:get_row_margins()
-		local base_height = row_height * #vc._private.virsh_config
-
-		local top, bottom
-		if type(row_margins) == "table" then
-			top, bottom = row_margins.top or 0, row_margins.bottom or 0
-		else
-			top, bottom = row_margins, row_margins
-		end
-
-		local margin_adjustment = top * #vc._private.virsh_config + bottom * #vc._private.virsh_config
-		return base_height + margin_adjustment
-	end,
-
-	-- Calculates the margins for a given row and ensures that no double 
-	-- padding shit takes place. You know, when you say an item has margins of 4, 
-	-- the first item has clean 4 on top, the last item has a clean 4 on bottom,
-	-- and everything in between has 8 due to the items' bottom and top margins
-	-- combininig.
-	harmonious_margins = function (current_row_idx, total_rows, margins)
-		local left, right, top, bottom
-		if type(margins) == "table" then
-			left, right, top, bottom = margins.left, margins.right, margins.top, margins.bottom
-		else
-			left, right, top, bottom = margins, margins, margins, margins
-		end
-
-		if current_row_idx == 1 then
-			bottom = bottom / 2
-		elseif current_row_idx ~= total_rows then
-			bottom = bottom / 2
-			top = top / 2
-		else
-			top = top / 2
-		end
-
-		return left, right, top, bottom
-	end
-}
 
 --- Create a new virsch control widget.
 -- @treturn VirshControl A new VirshControl instance.
@@ -204,8 +225,8 @@ function VirshControl.new (args)
 	self._private.virsh_config = virsh_config
 
 	-- initialize all the helper shit that isn't attached to our instance
-	init_signal_handlers(self)
-	init_commands(self)
+	-- but needs to be able to access members on the instance
+	_helpers.init(self)
 
 	local margins = self:get_icon_margins() or {}
 	self:setup{
@@ -240,7 +261,7 @@ function VirshControl:toggle_domain_list ()
 	end
 
 	local instance = wibox{
-		height = _calculate.wibox_height(self),
+		height = _helpers.calculate.wibox_height(),
 		width = 150,
 		ontop = true,
 		visible = false,
@@ -262,7 +283,7 @@ function VirshControl:toggle_domain_list ()
 			border_color = checkbox_props.border_color,
 			check_color = checkbox_props.check_color,
 		}
-		checkbox:connect_signal("button::press", _signal_handlers.checkbox_pressed)
+		checkbox:connect_signal("button::press", _helpers.signal_handlers.checkbox_pressed)
 		checkbox._domain = v.domain
 		checkbox._network = v.network
 		checkbox._monitor = v.monitor
@@ -274,10 +295,10 @@ function VirshControl:toggle_domain_list ()
 			widget = wibox.widget.textbox,
 			valign = "center",
 		}
-		label:connect_signal("button::press", function () _signal_handlers.checkbox_pressed(checkbox) end)
+		label:connect_signal("button::press", function () _helpers.signal_handlers.checkbox_pressed(checkbox) end)
 		row:add(wibox.container.margin(label, 5))
 
-		local left, right, top, bottom = _calculate.harmonious_margins(i, #self._private.virsh_config, self:get_row_margins())
+		local left, right, top, bottom = _helpers.calculate.harmonious_margins(i)
 		instance.outer:add(wibox.container.margin(row, left, right, top, bottom))
 	end
 
