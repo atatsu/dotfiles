@@ -20,6 +20,10 @@ local wibox = require("wibox")
 local widgetutil = require("widgets.util")
 local helperutils = require("utils.helper")
 
+local capi = {
+	mouse = mouse,
+}
+
 local function notify (message)
 	helperutils.notify_normal("VirshControl", message)
 end
@@ -29,7 +33,7 @@ local function notifyerr (message)
 end
 
 local function easy_async (cmd, cb)
-	awful.spawn.easy_async(cmd, function (stdout, stderr, reason, code)
+	awful.spawn.easy_async(awful.util.shell .. " -c '" .. cmd .. "'", function (stdout, stderr, reason, code)
 		if stderr and stderr ~= "" then
 			print(stderr)
 		end
@@ -43,6 +47,8 @@ VirshControl.__index = VirshControl
 local properties 
 properties = {
 	checkbox_props = beautiful.virshcontrol_checkbox_props or {},
+
+	domain_list_width = beautiful.virshcontrol_domain_list_width or 150,
 
 	icon_glyph = beautiful.virshcontrol_icon_glyph or "vc",
 	icon_color_normal = beautiful.virshcontrol_icon_color_normal or beautiful.fg_normal or "#ff0000",
@@ -73,9 +79,89 @@ for prop in pairs(properties) do
 	end
 end
 
+-- Place holder for the helpers/private-ish functions that are after
+-- VirshControl and it's public methods.
+local _helpers
+
+--- Create a new virsch control widget.
+-- @treturn VirshControl A new VirshControl instance.
+function VirshControl.new (args)
+	local virsh_config = args.virsh_config or {}
+	args.virsh_config = nil
+
+	local w = base.make_widget(nil, nil, { enable_properties = true })
+	util.table.crush(w._private, args or {})
+
+	local widget = wibox.layout.fixed.horizontal()
+	util.table.crush(w, widget, false)
+
+	local self = setmetatable(w, VirshControl)
+	util.table.crush(self._private, args or {})
+	self._private.virsh_config = virsh_config
+
+	-- placeholders for shit that will eventually be used everywhere
+	-- or rather... putting it here so I don't forget about them
+	self._domain_list = nil
+	self._is_watching = false
+
+	-- initialize all the helper shit that isn't attached to our instance
+	-- but needs to be able to access members on the instance
+	_helpers.init(self)
+
+	local margins = self:get_icon_margins() or {}
+	self:setup{
+		id = "row",
+		layout = wibox.layout.fixed.horizontal,
+		{
+			id = "margin",
+			layout = wibox.container.margin,
+			left = margins.left or 0,
+			right = margins.right or 0,
+			{
+				id = "icon",
+				align = "center",
+				--text = self:get_icon_glyph(),
+				markup = widgetutil.markup(self:get_icon_glyph(), self:get_icon_color_normal()),
+				valign = "center",
+				widget = wibox.widget.textbox
+			}
+		}
+	}
+
+	local icon = self.row.margin.icon
+	icon:buttons(awful.util.table.join(
+		-- left-click
+		awful.button({ }, 1, function ()
+			self:toggle_domain_list()
+		end)
+	))
+
+	_helpers.mutators.setup_domain_list()
+	return self
+end
+
+function VirshControl:toggle_domain_list ()
+	if not self._domain_list then
+		_helpers.mutators.setup_domain_list()
+	end
+
+	if not self._domain_list.visible then
+		-- reposition the wibox and assign it to whatever screen
+		-- the click-event happened on
+		self._domain_list.screen = capi.mouse.screen
+		-- The first top_right actually puts it in the top-right, but it will be covering the wibar
+		-- (assuming there is a top wibar), no_offscreen fixed the overlap (again, if there was a
+		-- top wibar), but ends up placing it in the top-left with its correction. Finally, 
+		-- second top_right actually places it in the top-right, with no overlap over the (if present)
+		-- wibar.
+		local f = (awful.placement.top_right + awful.placement.no_offscreen + awful.placement.top_right)
+		f(self._domain_list, { honor_workarea = true })
+	end
+	self._domain_list.visible = not self._domain_list.visible
+end
+
 -- {{{ Helpers that I didn't want to pollute the instance with.
 --     Think of them as honorary private members.
-local _helpers
 _helpers = (function ()
 
 	-- {{{ Collection of signal handler callbacks
@@ -127,14 +213,14 @@ _helpers = (function ()
 
 				-- first check if we need to attempt to startup a network
 				if network and not status_check then
-					_helpers.commands._start_network(network, status)
+					_helpers.commands.start_network(network, status)
 				else
 					if not status_check then
 						status.network.started = true
 					end
 				end
 
-				_helpers.commands._start_domain(domain, status)
+				_helpers.commands.start_domain(domain, status, network)
 
 				local timer
 				timer = gears.timer{
@@ -170,18 +256,16 @@ _helpers = (function ()
 
 			end,
 
-			_start_network = function (network, status)
-				local markup
-				easy_async("bash -c 'virsh net-list | grep " .. network .. "'", function (result)
+			start_network = function (network, status)
+				local markup = "<b>" .. widgetutil.markup(network, self:get_notification_accent_color()) .. "</b>"
+				easy_async("virsh net-list | grep " .. network, function (result)
 					if result.code == 0 then
-						markup = widgetutil.markup(network, self:get_notification_accent_color())
-						notify("network <b>" .. markup .. "</b> is already running")
+						notify("network " .. markup .. " is already running")
 						status.network.started = true
 					else
-						easy_async("bash -c 'virsh net-start " .. network .. "'", function (result)
+						easy_async("virsh net-start " .. network, function (result)
 							if result.code == 0 then
-								markup = widgetutil.markup(network, self:get_notification_accent_color())
-								notify("network <b>" .. markup .. "</b> started")
+								notify("network " .. markup .. " started")
 								status.network.started = true
 							else
 								notifyerr(stderr)
@@ -193,29 +277,34 @@ _helpers = (function ()
 				end)
 			end,
 
-			_start_domain = function (domain, status)
-				local markup
-				easy_async("bash -c 'virsh list | grep " .. domain .. "'", function (result)
+			start_domain = function (domain, status, network)
+				local markup = "<b>" .. widgetutil.markup(domain, self:get_notification_accent_color()) .. "</b>"
+				easy_async("virsh list | grep " .. domain, function (result)
 					if result.code == 0 then
 						if status.was_checked == nil then
-							markup = widgetutil.markup(domain, self:get_notification_accent_color())
-							notify("domain <b>" .. markup .. "</b> is already running")
+							-- current invocation is a status check only
+							notify("domain " .. markup .. " is already running")
 							status.domain.started = true
 						else
+							-- actually starting the domain
 							status.was_checked = true
 							status.is_running = true
+							-- monitor the guest process so we know when it exits
+							if not self._is_watching then _helpers.commands.watch_for_domain_shutdown(domain, network) end
 						end
 					else
 						if status.was_checked ~= nil then
+							-- status check
 							status.was_checked = true
 							return
 						end
 
-						easy_async("bash -c 'virsh start " .. domain .. "'", function (result)
+						easy_async("virsh start " .. domain, function (result)
 							if result.code == 0 then
-								markup = widgetutil.markup(domain, self:get_notification_accent_color())
-								notify("domain <b>" .. markup .. "</b> started")
+								notify("domain " .. markup .. " started")
 								status.domain.started = true
+								-- monitor the guest process so we know when it exits
+								_helpers.commands.watch_for_domain_shutdown(domain, network)
 							else
 								notifyerr(stderr)
 								status.domain.started = true
@@ -226,8 +315,58 @@ _helpers = (function ()
 				end)
 			end,
 
+			watch_for_domain_shutdown = function (domain, network)
+				-- first we need the pid of the guest
+				local markup = "<b>" .. widgetutil.markup(domain, self:get_notification_accent_color()) .. "</b>"
+				-- need to escape the single quote used for awk as this command will be executed within
+				-- single quotes
+				local escaped = "'\"'\"'"
+				local cmd = "ps aux | grep -v grep | grep qemu-system | grep -- \"-name guest=" .. domain 
+					.. "\" | awk {" .. escaped .. "print $2" .. escaped .. "}"
+				easy_async(cmd, function (result)
+					if result.code ~= 0 then
+						notify("unable to obtain pid for " .. markup .. ", monitor not active")
+						return
+					end
+
+					notify("monitoring " .. markup .. " for shutdown")
+					local pid = result.stdout
+					local cmd = awful.util.shell .. " -c 'while [[ -e /proc/" .. pid .. " ]]; do sleep 10; done'"
+					awful.spawn.with_line_callback(cmd, { 
+						exit = function (reason, code)
+							notify(markup .. " domain has shut down")
+							-- guest shutdown, now destroy the network (if using a virsh controlled one that is)
+							if not network then
+								_helpers.mutators.deactivate_icon()
+								return
+							end
+
+							_helpers.commands.destroy_network(network)
+						end,
+						stderr = function (line)
+							notifyerr(line)
+							print("stderr: " .. line)
+						end,
+					})
+				end)
+			end,
+
+			destroy_network = function (network)
+				local markup = "<b>" .. widgetutil.markup(network, self:get_notification_accent_color()) .. "</b>"
+				easy_async("virsh net-destroy " .. network, function(result)
+					if result.code ~= 0 then
+						notify("unable to destroy " .. markup .. " network")
+						_helpers.mutators.deactivate_icon()
+						return
+					end
+
+					notify(markup .. " network destroyed")
+					_helpers.mutators.deactivate_icon()
+				end)
+			end,
+
 			stop_vm = function (checkbox)
-			end
+			end,
 		}
 	end
 	-- }}}
@@ -297,16 +436,22 @@ _helpers = (function ()
 		end
 
 		return {
-			activate_icon = function (self)
+			activate_icon = function ()
 				local icon = self.row.margin.icon
 				markup = widgetutil.markup(self:get_icon_glyph(), self:get_icon_color_active())
 				icon:set_markup(markup)
 			end,
 
-			setup_domain_list = function (self)
+			deactivate_icon = function ()
+				local icon = self.row.margin.icon
+				markup = widgetutil.markup(self:get_icon_glyph(), self:get_icon_color_normal())
+				icon:set_markup(markup)
+			end,
+
+			setup_domain_list = function ()
 				local instance = wibox{
 					height = _helpers.calculate.wibox_height(),
-					width = 150,
+					width = self:get_domain_list_width(),
 					ontop = true,
 					visible = false,
 				}
@@ -315,6 +460,7 @@ _helpers = (function ()
 					widget = wibox.layout.flex.vertical,
 				}
 
+				-- TODO: add hover effects to the checkbox and label
 				local checkbox_props = self:get_checkbox_props()
 				for i, v in ipairs(self._private.virsh_config) do
 					local row = wibox.layout.fixed.horizontal()
@@ -332,7 +478,6 @@ _helpers = (function ()
 					checkbox._network = v.network
 					checkbox._monitor = v.monitor
 					row:add(checkbox)
-
 					_helpers.commands.check_vm_status(checkbox)
 
 					local label = wibox.widget{
@@ -348,10 +493,6 @@ _helpers = (function ()
 					instance.outer:add(wibox.container.margin(row, left, right, top, bottom))
 				end
 
-				-- position the wibox
-				-- TODO: place near mouse rather than corner
-				awful.placement.top_right(instance)
-				awful.placement.no_offscreen(instance)
 				instance:connect_signal("mouse::leave", function () self:toggle_domain_list() end)
 				self._domain_list = instance
 			end
@@ -371,69 +512,7 @@ _helpers = (function ()
 		end
 	}
 end)()
-
 -- }}}
-
-
---- Create a new virsch control widget.
--- @treturn VirshControl A new VirshControl instance.
-function VirshControl.new (args)
-	local virsh_config = args.virsh_config or {}
-	args.virsh_config = nil
-
-	local w = base.make_widget(nil, nil, { enable_properties = true })
-	util.table.crush(w._private, args or {})
-
-	local widget = wibox.layout.fixed.horizontal()
-	util.table.crush(w, widget, false)
-
-	local self = setmetatable(w, VirshControl)
-	util.table.crush(self._private, args or {})
-	self._private.virsh_config = virsh_config
-
-	-- initialize all the helper shit that isn't attached to our instance
-	-- but needs to be able to access members on the instance
-	_helpers.init(self)
-
-	local margins = self:get_icon_margins() or {}
-	self:setup{
-		id = "row",
-		layout = wibox.layout.fixed.horizontal,
-		{
-			id = "margin",
-			layout = wibox.container.margin,
-			left = margins.left or 0,
-			right = margins.right or 0,
-			{
-				id = "icon",
-				align = "center",
-				--text = self:get_icon_glyph(),
-				markup = widgetutil.markup(self:get_icon_glyph(), self:get_icon_color_normal()),
-				valign = "center",
-				widget = wibox.widget.textbox
-			}
-		}
-	}
-
-	local icon = self.row.margin.icon
-	icon:buttons(awful.util.table.join(
-		-- left-click
-		awful.button({ }, 1, function ()
-			self:toggle_domain_list()
-		end)
-	))
-
-	_helpers.mutators.setup_domain_list(self)
-	return self
-end
-
-function VirshControl:toggle_domain_list ()
-	if not self._domain_list then
-		_helpers.mutators.setup_domain_list(self)
-	end
-
-	self._domain_list.visible = not self._domain_list.visible
-end
 
 return setmetatable(VirshControl, {
 	__call = function (cls, ...)

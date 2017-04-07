@@ -161,6 +161,7 @@ theme.virshcontrol_checkbox_props = {
 	border_color = theme.fg_urgent,
 	check_color = theme.fg_urgent,
 }
+theme.virshcontrol_domain_list_width = dpi(250)
 -- }}}
 
 local background_color = theme_assets.lighten_up(theme.bg_normal, 5)
