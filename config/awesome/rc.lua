@@ -80,7 +80,6 @@ awful.layout.layouts = {
 -- {{{ Wibar
 
 -- Create a wibox for each screen and add it
-
 awful.screen.connect_for_each_screen(function(s)
 	-- Wallpaper
 	helperutils.set_wallpaper(s)
@@ -126,6 +125,7 @@ awful.screen.connect_for_each_screen(function(s)
 		{-- Right widgets
 			layout = wibox.layout.fixed.horizontal,
 			--widgets.volumecontrol(),
+			prefs.widgets.virshcontrol2(),
 			widgetutils.pacman(),
 			widgetutils.volume(),
 			prefs.widgets.virshcontrol(),

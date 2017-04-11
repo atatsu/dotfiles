@@ -11,6 +11,7 @@ local util = require("awful.util")
 local wibox = require("wibox")
 
 local brazenutils = require("brazen.utils")
+local truthy = brazenutils.truthy
 
 local VirshDomain = {}
 VirshDomain.__index = VirshDomain
@@ -31,20 +32,24 @@ local checkbox_props = {
 
 function create_label_text (args)
 	args = args or {}
+	local label_network_text = args.label_network_text or ""
+	local network = args.network or ""
+	local domain = args.domain or ""
 	local markup
-	if args.network then
+
+	if network then
 		markup = brazenutils.markup{
-			text = "[ network: " .. args.network .. " ]",
+			text = "[ " .. label_network_text .. network .. " ]",
 			small = true,
 		}
 		markup = brazenutils.markup{
-			text = args.domain .. " " .. markup,
+			text = domain .. " " .. markup,
 			color = args.color,
 		}
 		return markup
 	end
 
-	return brazenutils.markup{ text = args.domain, color = args.color }
+	return brazenutils.markup{ text = domain, color = args.color }
 end
 
 function VirshDomain.new (conf, args)
@@ -63,8 +68,9 @@ function VirshDomain.new (conf, args)
 	local self = setmetatable(w, VirshDomain)
 	util.table.crush(self._private, args)
 
-	self._private.domain = conf.domain
-	self._private.network = conf.network
+	local _p = self._private
+	_p.domain = conf.domain
+	_p.network = conf.network
 
 	-- TODO: add hover effects to the checkbox and label
 	self:setup{
@@ -85,29 +91,24 @@ function VirshDomain.new (conf, args)
 				id = "domain_label",
 				align = "center",
 				--text = label.text,
-				markup = create_label_text{ domain = conf.domain, network = conf.network, color = args.label_color },
+				markup = create_label_text{ 
+					domain = _p.domain, network = _p.network, color = _p.label_color, label_network_text = _p.label_network_text,
+				},
 				valign = "center",
 				widget = wibox.widget.textbox,
 			}
 		}
 	}
 
+	-- apply all custom checkbox properties 
 	local checkbox = self.widgets.checkbox
 	for _, v in ipairs(checkbox_props) do
-		if self._private.checkbox_props[v] ~= nil then
-			checkbox["set_" .. v](checkbox, self._private.checkbox_props[v])
+		if _p.checkbox_props[v] ~= nil then
+			checkbox["set_" .. v](checkbox, _p.checkbox_props[v])
 		end
 	end
 
-	checkbox:connect_signal("button::press", function ()
-		local activate = not checkbox.checked
-		if activate then
-			self:emit_signal("domain::start", self)
-			return
-		end
-
-		self:emit_signal("domain::destroy", self)
-	end)
+	connect_signals(self)
 
 	return self
 end
@@ -121,28 +122,31 @@ function VirshDomain:get_network ()
 end
 
 function VirshDomain:check ()
-	local _ = self._private
+	disconnect_signals(self)
+	local _p = self._private
 	local checkbox = self.widgets.checkbox
 	checkbox:set_checked(true)
-	for i, v in ipairs(checkbox_props) do
-		if _.checkbox_props_active[v] ~= nil then
-			checkbox["set_" .. v](checkbox, _.checkbox_props_active[v])
+	for _, v in ipairs(checkbox_props) do
+		if _p.checkbox_props_active[v] ~= nil then
+			checkbox["set_" .. v](checkbox, _p.checkbox_props_active[v])
 		end
 	end
 
 	-- don't forget about the label!
-	local markup = create_label_text{ domain = _.domain, network = _.network, color = _.label_color_active }
+	local markup = create_label_text{ 
+		domain = _p.domain, network = _p.network, color = _p.label_color_active, label_network_text = _p.label_network_text
+	}
 	self.widgets.domain_label_margin.domain_label:set_markup(markup)
 end
 
 function VirshDomain:uncheck ()
-	local _ = self._private
+	local _p = self._private
 	local checkbox = self.widgets.checkbox
 	checkbox:set_checked(false)
-	for i, v in ipairs(checkbox_props) do
-		if _.checkbox_props[v] ~= nil then
-			checkbox["set_" .. v](checkbox, _.checkbox_props[v])
-		elseif _.checkbox_props_active[v] ~= nil then
+	for _, v in ipairs(checkbox_props) do
+		if _p.checkbox_props[v] ~= nil then
+			checkbox["set_" .. v](checkbox, _p.checkbox_props[v])
+		elseif _p.checkbox_props_active[v] ~= nil then
 			-- handle the use case where checked props are set, but no unchecked
 			-- props are, in which case default styling is implicit, so we need
 			-- to unset the changes we applied when the checkbox was checked
@@ -151,8 +155,79 @@ function VirshDomain:uncheck ()
 	end
 
 	-- restore label
-	local markup = create_label_text{ domain = _.domain, network = _.network, color = _.label_color }
+	local markup = create_label_text{ 
+		domain = _p.domain, network = _p.network, color = _p.label_color, label_network_text = _p.label_network_text
+	}
 	self.widgets.domain_label_margin.domain_label:set_markup(markup)
+end
+
+function connect_signals (self)
+	local _p = self._private
+	if not _p.signals then _p.signals = {} end
+	local restore_props
+	local restore_markup
+	local checkbox = self.widgets.checkbox
+
+	if not _p.mouse_enter then
+		function _p.mouse_enter ()
+			for _, v in ipairs(checkbox_props) do
+				if _p.checkbox_props_hover[v] ~= nil then
+					checkbox["set_" .. v](checkbox, _p.checkbox_props_hover[v])
+				end
+			end
+			local markup = create_label_text{
+				domain = _p.domain, network = _p.network, color = _p.label_color_hover, label_network_text = _p.label_network_text
+			}
+			self.widgets.domain_label_margin.domain_label:set_markup(markup)
+		end
+	end
+
+	if not _p.mouse_leave then
+		function _p.mouse_leave ()
+			for _, v in ipairs(checkbox_props) do
+				checkbox["set_" .. v](checkbox, restore_props[v])
+			end
+			local markup = create_label_text{
+				domain = _p.domain, network = _p.network, color = _p.label_color, label_network_text = _p.label_network_text
+			}
+			self.widgets.domain_label_margin.domain_label:set_markup(restore_markup)
+		end
+	end
+
+	if not _p.signals.button_press then
+		function _p.button_press ()
+			local activate = not checkbox.checked
+			if activate then
+				self:emit_signal("domain::start", self)
+				return
+			end
+
+			self:emit_signal("domain::destroy", self)
+		end
+	end
+
+	if truthy(_p.checkbox_props_hover) or truthy(_p.label_color_hover) then
+		restore_props = {}
+		restore_markup = self.widgets.domain_label_margin.domain_label:get_markup()
+		for _, v in ipairs(checkbox_props) do
+			restore_props[v] = checkbox["get_" .. v](checkbox)
+		end
+
+		self.widgets:connect_signal("mouse::enter", _p.mouse_enter)
+		self.widgets:connect_signal("mouse::leave", _p.mouse_leave)
+		_p.signals.mouse_enter = mouse_enter
+		_p.signals.mouse_leave = mouse_leave
+	end
+
+	self.widgets:connect_signal("button::press", _p.button_press)
+end
+
+function disconnect_signals (self)
+	local _p = self._private
+
+	self.widgets:disconnect_signal("mouse::enter", _p.mouse_enter)
+	self.widgets:disconnect_signal("mouse::leave", _p.mouse_leave)
+	self.widgets:disconnect_signal("button::press", _p.button_press)
 end
 
 return setmetatable(VirshDomain, {

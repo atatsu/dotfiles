@@ -161,11 +161,17 @@ theme.virshcontrol_checkbox_props_active = {
 	border_color = theme.fg_urgent,
 	check_color = theme.fg_urgent,
 }
-theme.virshcontrol_checkbox_props = {
+theme.virshcontrol_checkbox_props_hover = {
 	border_color = xrdb.color11,
+	check_color = xrdb.color11,
 }
-theme.virshcontrol_label_color = xrdb.color11
+theme.virshcontrol_checkbox_props = {
+	--border_color = xrdb.color11,
+}
+--theme.virshcontrol_label_color = xrdb.color11
+theme.virshcontrol_label_color_hover = xrdb.color11
 theme.virshcontrol_label_color_active = theme.fg_urgent
+theme.virshcontrol_label_network_text = icons.network .. ": "
 -- TODO: delete this when v2 done
 theme.virshcontrol_domain_list_width = dpi(250)
 theme.virshcontrol_domain_window_width = dpi(250)

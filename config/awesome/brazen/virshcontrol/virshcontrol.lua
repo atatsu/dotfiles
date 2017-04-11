@@ -32,6 +32,7 @@ VirshControl.__index = VirshControl
 local properties = {
 	checkbox_props = beautiful.virshcontrol_checkbox_props or {},
 	checkbox_props_active = beautiful.virshcontrol_checkbox_props_active or {},
+	checkbox_props_hover = beautiful.virshcontrol_checkbox_props_hover or {},
 
 	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
 
@@ -40,8 +41,10 @@ local properties = {
 	icon_color_active = beautiful.virshcontrol_icon_color_active or beautiful.fg_urgent or "#ff0000",
 	icon_margins = beautiful.virshcontrol_icon_margins or { left = 1, right = 1 },
 
-	label_color = beautiful.virshcontrol_label_color or {},
-	label_color_active = beautiful.virshcontrol_label_color_active or {},
+	label_color = beautiful.virshcontrol_label_color or "",
+	label_color_active = beautiful.virshcontrol_label_color_active or "",
+	label_color_hover = beautiful.virshcontrol_label_color_hover or "",
+	label_network_text = beautiful.virshcontrol_label_network_text or "network: ",
 
 	notification_accent_color = beautiful.virshcontrol_notification_accent_color or beautiful.taglist_bg_focus or "#ff0000",
 
@@ -190,10 +193,12 @@ _ = (function ()
 		-- Create/add all the widgets that will serve as representations
 		-- for our vms/domains. Also wire up signal handling.
 		function populate_domain_window ()
-			if _[self].store.domain_window then return end
+			local _p = _[self]
+
+			if _p.store.domain_window then return end
 
 			local instance = wibox{
-				height = _[self].calc.domain_window_height(),
+				height = _p.calc.domain_window_height(),
 				width = self:get_domain_window_width(),
 				ontop = true,
 				visible = false
@@ -203,13 +208,16 @@ _ = (function ()
 				widget = wibox.layout.flex.vertical,
 			}
 
-			for i, v in ipairs(_[self].store.virsh_config) do
-				local left, right, top, bottom = _[self].calc.harmonious_margins(i)
+			for i, v in ipairs(_p.store.virsh_config) do
+				local left, right, top, bottom = _p.calc.harmonious_margins(i)
 				local domain = virshdomain(v, {
 					checkbox_props = self:get_checkbox_props(),
 					checkbox_props_active = self:get_checkbox_props_active(),
+					checkbox_props_hover = self:get_checkbox_props_hover(),
 					label_color = self:get_label_color(),
 					label_color_active = self:get_label_color_active(),
+					label_color_hover = self:get_label_color_hover(),
+					label_network_text = self:get_label_network_text(),
 				})
 				domain:connect_signal("domain::start", function (d)
 					print("starting domain " .. d:get_domain())
@@ -223,7 +231,7 @@ _ = (function ()
 			end
 
 			instance:connect_signal("mouse::leave", function () self:toggle_domain_window() end)
-			_[self].store.domain_window = instance
+			_p.store.domain_window = instance
 		end
 
 		_[self] = {

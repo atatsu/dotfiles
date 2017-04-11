@@ -2,6 +2,30 @@ local naughty = require("naughty")
 
 local M = {}
 
+function M.truthy (obj)
+	if obj == nil then return false end
+
+	local truthy
+
+	if type(obj) == "string" then
+		truthy = obj ~= "" 
+	end
+
+	if type(obj) == "number" then
+		truthy = obj ~= 0
+	end
+
+	if type(obj) == "table" then
+		truthy = #obj > 0
+	end
+
+	return truthy
+end
+
+function M.falsy (obj)
+	return not M.truthy(obj)
+end
+
 function M.notify_normal (title, text)
 	naughty.notify({
 		preset = naughty.config.presets.normal,
@@ -30,17 +54,17 @@ function easy_async (cmd, cb, notify_err)
 end
 
 function M.markup (args)
-	if not args.text then 
+	if M.falsy(args.text) then 
 		print("brazen.utils.markup called with no text argument, mistake?")
 		return "" 
 	end
 
 	local markup = "<span"
-	if args.color then
+	if M.truthy(args.color) then
 		markup = markup .. " foreground=\"" .. args.color .. "\""
 	end
 
-	if args.bold then
+	if M.truthy(args.bold) then
 		local bold = "bold"
 		if type(args.bold) == "string" then
 			bold = args.bold
@@ -52,7 +76,7 @@ function M.markup (args)
 		markup = markup .. " font_style=\"italic\""
 	end
 
-	if args.underline then
+	if M.truthy(args.underline) then
 		local underline = "single"
 		if type(args.underline) == "string" then
 			underline = args.underline

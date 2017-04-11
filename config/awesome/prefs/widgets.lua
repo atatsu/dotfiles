@@ -8,6 +8,8 @@ local icons = require("prefs.icons")
 local utils = require("utils")
 local widgets = require("widgets")
 
+local brazen = require("brazen")
+
 local is_setup = false
 local widget_cache = {}
 
@@ -66,6 +68,34 @@ function M.virshcontrol ()
 		}
 	}
 	return widget_cache.virshcontrol
+end
+
+function M.virshcontrol2 ()
+	if widget_cache.virshcontrol2 then
+		return widget_cache.virshcontrol2
+	end
+
+	widget_cache.virshcontrol2 = brazen.virshcontrol{
+		icon_glyph = icons.virt_manager, 
+		icon_color_normal = beautiful.widget_icon_color,
+		icon_margins = {
+			left = 2,
+			right = 5,
+		},
+		virsh_config = {
+			{
+				network = "default",
+				domain = "gaming",
+				monitor = 17,
+			},
+			{
+				network = "default",
+				domain = "imposter",
+				monitor = 17,
+			},
+		}
+	}
+	return widget_cache.virshcontrol2
 end
 
 --menubar.utils.terminal = .config.terminal -- Set the terminal for applications that require it
