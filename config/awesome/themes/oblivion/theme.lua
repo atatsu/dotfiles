@@ -157,11 +157,18 @@ theme.widget_icon_color = xrdb.color3
 -- VirshControl
 theme.virshcontrol_row_height = dpi(15)
 theme.virshcontrol_row_margins = dpi(4)
-theme.virshcontrol_checkbox_props = {
+theme.virshcontrol_checkbox_props_active = {
 	border_color = theme.fg_urgent,
 	check_color = theme.fg_urgent,
 }
+theme.virshcontrol_checkbox_props = {
+	border_color = xrdb.color11,
+}
+theme.virshcontrol_label_color = xrdb.color11
+theme.virshcontrol_label_color_active = theme.fg_urgent
+-- TODO: delete this when v2 done
 theme.virshcontrol_domain_list_width = dpi(250)
+theme.virshcontrol_domain_window_width = dpi(250)
 -- }}}
 
 local background_color = theme_assets.lighten_up(theme.bg_normal, 5)

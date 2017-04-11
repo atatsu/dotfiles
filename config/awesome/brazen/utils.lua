@@ -70,12 +70,16 @@ function M.markup (args)
 		markup = "<sub>" .. markup .. "</sub>"
 	end
 
-	if args.sup then
+	if args.superscript then
 		markup = "<sup>" .. markup .. "</sup>"
 	end
 
 	if args.mono then
 		markup = "<tt>" .. markup .. "</tt>"
+	end
+
+	if args.small then
+		markup = "<small>" .. markup .. "</small>"
 	end
 
 	return markup
