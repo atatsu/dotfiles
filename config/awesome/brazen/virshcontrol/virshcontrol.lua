@@ -21,6 +21,10 @@ local brazenutils = require("brazen.utils")
 
 local virshdomain = require(path .. "virshdomain")
 
+local function notify (message)
+	brazenutils.notify_normal("VirshControl", message)
+end
+
 local capi = {
 	mouse = mouse,
 }
@@ -34,6 +38,9 @@ local properties = {
 	checkbox_props_active = beautiful.virshcontrol_checkbox_props_active or {},
 	checkbox_props_hover = beautiful.virshcontrol_checkbox_props_hover or {},
 
+	destroy_confirm_glyph = beautiful.virshcontrol_destroy_confirm_glyph or "o",
+	destroy_confirm_timeout = beautiful.virshcontrol_destroy_confirm_timeout or 5,
+
 	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
 
 	icon_glyph = beautiful.virshcontrol_icon_glyph or "vc",
@@ -44,7 +51,7 @@ local properties = {
 	label_color = beautiful.virshcontrol_label_color or "",
 	label_color_active = beautiful.virshcontrol_label_color_active or "",
 	label_color_hover = beautiful.virshcontrol_label_color_hover or "",
-	label_network_text = beautiful.virshcontrol_label_network_text or "network: ",
+	label_network_glyph = beautiful.virshcontrol_label_network_glyph or "network: ",
 
 	notification_accent_color = beautiful.virshcontrol_notification_accent_color or beautiful.taglist_bg_focus or "#ff0000",
 
@@ -214,10 +221,12 @@ _ = (function ()
 					checkbox_props = self:get_checkbox_props(),
 					checkbox_props_active = self:get_checkbox_props_active(),
 					checkbox_props_hover = self:get_checkbox_props_hover(),
+					destroy_confirm_glyph = self:get_destroy_confirm_glyph(),
+					destroy_confirm_timeout = self:get_destroy_confirm_timeout(),
 					label_color = self:get_label_color(),
 					label_color_active = self:get_label_color_active(),
 					label_color_hover = self:get_label_color_hover(),
-					label_network_text = self:get_label_network_text(),
+					label_network_glyph = self:get_label_network_glyph(),
 				})
 				domain:connect_signal("domain::start", function (d)
 					print("starting domain " .. d:get_domain())
@@ -226,6 +235,12 @@ _ = (function ()
 				domain:connect_signal("domain::destroy", function (d)
 					print("stopping domain " .. d:get_domain())
 					d:uncheck()
+				end)
+				domain:connect_signal("network::running", function (d)
+					print("network " .. d:get_network() .. " is running")
+					local msg = "network " .. brazenutils.markup({ text = d:get_network(), color = self:get_notification_accent_color() }) ..
+						" is running"
+					notify(msg)
 				end)
 				instance.widget:add(wibox.container.margin(domain, left, right, top, bottom))
 			end
