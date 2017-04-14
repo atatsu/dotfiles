@@ -116,8 +116,7 @@ function VirshDomain.new (conf, args)
 			{
 				widget = wibox.container.place,
 				fill_horizontal = true,
-				align = "right",
-				content_fill_horizontal = true,
+				halign = "right",
 				{
 					id = "destroy_confirm",
 					align = "right",
@@ -320,8 +319,15 @@ function _reconnect_hover_signals (self)
 	self.widgets:connect_signal("mouse::leave", _p.signals.mouse_leave)
 end
 
+-- After having attempted to uncheck a domain to shut it down this handler
+-- will display a power off glyph on the far right of the domain list row.
+-- An actual destroy won't be issued unless this power off glyph is clicked.
+-- But, what if you accidentally "unchecked" the domain? Now you have this 
+-- power off glyph eye sore present. No worries! It'll fade in style 
+-- over a configurable number of seconds.
 function _confirm_destroy (self)
 	local _p = self._private
+	local _w = self.widgets
 	-- Display the destroy confirm widget and set a timer on it,
 	-- if no action taken within X seconds rehide widget and
 	-- leave active widgets in active state.
@@ -329,28 +335,52 @@ function _confirm_destroy (self)
 	_disconnect_click_signals(self)
 	self.widgets["destroy_confirm"]:set_visible(true)
 
+	-- Show in full for 1 whole second, then use the rest of the configured
+	-- time to fade out. Sanitize that shit first.
+	local destroy_confirm_timeout = _p.destroy_confirm_timeout > 0 and math.ceil(_p.destroy_confirm_timeout) or 1
+	--local fade_increment = (1 / (destroy_confirm_timeout - 1 > 0 and destroy_confirm_timeout - 1 or 1)) * .01
+	local fade_increment = (1 / ((destroy_confirm_timeout - 1 > 0 and destroy_confirm_timeout - 1 or 1) * 1000))
 	local timer
-	local destroy_confirmed
-	destroy_confirmed = function (confirmed)
-		if confirmed then timer:stop() end
+	local destroy_confirmed_check
+	destroy_confirmed_check = function (confirmed)
+		if timer and timer.started then timer:stop() end
+		-- We know at this point that even if this is the first go around we've elapsed
+		-- at least a second, so go ahead and start fading, but first speed up our timer.
+		-- Fire every millisecond.
+		if timer then timer.timeout = .001 end
+		local opacity = _w.destroy_confirm:get_opacity()
+		_w.destroy_confirm:set_opacity(opacity - fade_increment)
+		_w:emit_signal("widget::redraw_needed")
 
-		self.widgets["destroy_confirm"]:set_visible(false)
-		self.widgets["destroy_confirm"]:disconnect_signal("button::press", destroy_confirmed)
-		_reconnect_click_signals(self)
-		
-		if confirmed then
-			print("destroy confirmed")
-			self:emit_signal("domain::destroy", self)
+		-- If our opacity is at 0 it's time to end this charade
+		if _w.destroy_confirm:get_opacity() <= 0 then
+			-- cleanup
+			_w.destroy_confirm:set_visible(false)
+			-- restore opacity for next time
+			_w.destroy_confirm:set_opacity(1)
+			_w:disconnect_signal("button::press", destroy_confirmed_check)
+			_reconnect_click_signals(self)
+			timer = nil
 		end
+
+		if confirmed then
+			_w.destroy_confirm:set_visible(false)
+			_w.destroy_confirm:set_opacity(1)
+			_reconnect_click_signals(self)
+			self:emit_signal("domain::destroy", self)
+			return
+		end
+
+		-- again?
+		if timer then timer:again() end
 	end
 
-	self.widgets["destroy_confirm"]:connect_signal("button::press", function () destroy_confirmed(true) end)
+	self.widgets["destroy_confirm"]:connect_signal("button::press", function () destroy_confirmed_check(true) end)
 
 	timer = gears.timer{ 
-		timeout = _p.destroy_confirm_timeout, 
+		timeout = 1,
 		autostart = true, 
-		single_shot = true, 
-		callback = function () destroy_confirmed(false) end,
+		callback = function () destroy_confirmed_check(false) end,
 	}
 end
 

@@ -39,6 +39,7 @@ local properties = {
 	checkbox_props_hover = beautiful.virshcontrol_checkbox_props_hover or {},
 
 	destroy_confirm_glyph = beautiful.virshcontrol_destroy_confirm_glyph or "o",
+	destroy_confirm_glyph_color = beautiful.virshcontrol_destroy_confirm_glyph_color or beautiful.fg_urgent or "#ff0000",
 	destroy_confirm_timeout = beautiful.virshcontrol_destroy_confirm_timeout or 5,
 
 	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
@@ -222,6 +223,7 @@ _ = (function ()
 					checkbox_props_active = self:get_checkbox_props_active(),
 					checkbox_props_hover = self:get_checkbox_props_hover(),
 					destroy_confirm_glyph = self:get_destroy_confirm_glyph(),
+					destroy_confirm_glyph_color = self:get_destroy_confirm_glyph_color(),
 					destroy_confirm_timeout = self:get_destroy_confirm_timeout(),
 					label_color = self:get_label_color(),
 					label_color_active = self:get_label_color_active(),
