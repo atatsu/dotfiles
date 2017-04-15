@@ -1,3 +1,4 @@
+----------------------------------------------------------------------------
 -- A widget for starting/stopping virtual machines via virsh.
 --
 -- @usage
@@ -18,6 +19,8 @@ local util = require("awful.util")
 local wibox = require("wibox")
 
 local brazenutils = require("brazen.utils")
+local markup = brazenutils.markup
+local falsy = brazenutils.falsy
 
 local virshdomain = require(path .. "virshdomain")
 
@@ -110,7 +113,7 @@ function VirshControl.new (args)
 				id = "icon",
 				align = "center",
 				--text = self:get_icon_glyph(),
-				markup = brazenutils.markup{ text = self:get_icon_glyph(), color = self:get_icon_color_normal() },
+				markup = markup{ text = self:get_icon_glyph(), color = self:get_icon_color_normal() },
 				valign = "center",
 				widget = wibox.widget.textbox
 			}
@@ -233,15 +236,27 @@ _ = (function ()
 				domain:connect_signal("domain::start", function (d)
 					print("starting domain " .. d:get_domain())
 					d:check()
+					d:start_network()
 				end)
 				domain:connect_signal("domain::destroy", function (d)
 					print("stopping domain " .. d:get_domain())
 					d:uncheck()
 				end)
 				domain:connect_signal("network::running", function (d)
+					d:network_started()
 					print("network " .. d:get_network() .. " is running")
-					local msg = "network " .. brazenutils.markup({ text = d:get_network(), color = self:get_notification_accent_color() }) ..
+					local msg = "network " .. markup{ text = d:get_network(), color = self:get_notification_accent_color() } ..
 						" is running"
+					notify(msg)
+				end)
+				domain:connect_signal("network::started", function (d)
+					if falsy(d:get_network()) then
+						return
+					end
+					d:network_started()
+					print("network " .. d:get_network() .. " started")
+					local msg = "network " .. markup{ text = d:get_network(), color = self:get_notification_accent_color() } ..
+						" started"
 					notify(msg)
 				end)
 				instance.widget:add(wibox.container.margin(domain, left, right, top, bottom))

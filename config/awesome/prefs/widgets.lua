@@ -89,7 +89,6 @@ function M.virshcontrol2 ()
 				monitor = 17,
 			},
 			{
-				network = "default",
 				domain = "imposter",
 				monitor = 17,
 			},

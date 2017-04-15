@@ -16,6 +16,7 @@ local commands = require(path .. "commands")
 
 local truthy = brazenutils.truthy
 local falsy = brazenutils.falsy
+local markup = brazenutils.markup
 
 local VirshDomain = {}
 VirshDomain.__index = VirshDomain
@@ -34,26 +35,13 @@ local checkbox_props = {
 	"opacity",
 }
 
-function create_label_text (args)
-	args = args or {}
-	local label_network_glyph = args.label_network_glyph or ""
+function _get_network_markup (args, active)
 	local network = args.network or ""
-	local domain = args.domain or ""
-	local markup
+	if falsy(network) then return nil end
 
-	if network then
-		markup = brazenutils.markup{
-			text = "[ " .. label_network_glyph .. network .. " ]",
-			small = true,
-		}
-		markup = brazenutils.markup{
-			text = domain .. " " .. markup,
-			color = args.color,
-		}
-		return markup
-	end
-
-	return brazenutils.markup{ text = domain, color = args.color }
+	local glyph = args.label_network_glyph or ""
+	local combined = glyph .. network
+	return markup{ text = combined, color = active and args.label_color_active or args.label_color }
 end
 
 function VirshDomain.new (conf, args)
@@ -101,7 +89,7 @@ function VirshDomain.new (conf, args)
 						id = "domain",
 						widget = wibox.widget.textbox,
 						align = "left",
-						markup = brazenutils.markup{ text = _p.domain, color = _p.label_color },
+						markup = markup{ text = _p.domain, color = _p.label_color },
 						valign = "center",
 					},
 				}
@@ -110,7 +98,7 @@ function VirshDomain.new (conf, args)
 				id = "network",
 				widget = wibox.widget.textbox,
 				align = "left",
-				markup = brazenutils.markup{ text = _p.label_network_glyph .. _p.network, color = _p.label_color },
+				markup = _get_network_markup(_p),
 				valign = "center",
 			},
 			{
@@ -121,7 +109,7 @@ function VirshDomain.new (conf, args)
 					id = "destroy_confirm",
 					align = "right",
 					valign = "center",
-					markup = brazenutils.markup{ text = _p.destroy_confirm_glyph, color = _p.label_color },
+					markup = markup{ text = _p.destroy_confirm_glyph, color = _p.label_color },
 					visible = false,
 					widget = wibox.widget.textbox,
 				},
@@ -131,7 +119,7 @@ function VirshDomain.new (conf, args)
 
 	-- hide the network shit if there isn't actually a network configured
 	if falsy(_p.network) then
-		self.widgets["network"]:set_visible(false)
+		--self.widgets["network"]:set_visible(false)
 	end
 
 	-- make it so we can just key into our first level widget
@@ -183,12 +171,16 @@ function VirshDomain:check ()
 	end
 
 	-- don't forget about the label!
-	local markup = brazenutils.markup{ text = _p.domain, color = _p.label_color_active }
-	self.widgets["domain"]:set_markup(markup)
-	if truthy(_p.network) then
-		markup = brazenutils.markup{ text = _p.label_network_glyph .. _p.network, color = _p.label_color_active }
-		self.widgets["network"]:set_markup(markup)
-	end
+	--local _markup = markup{ text = _p.domain, color = _p.label_color_active }
+	--self.widgets["domain"]:set_markup(_markup)
+	--if truthy(_p.network) then
+	--  _markup = markup{ text = _p.label_network_glyph .. _p.network, color = _p.label_color_active }
+	--  self.widgets["network"]:set_markup(_markup)
+	--end
+end
+
+function VirshDomain:start_network ()
+	commands[self].start_network()
 end
 
 function VirshDomain:uncheck ()
@@ -199,6 +191,13 @@ function VirshDomain:uncheck ()
 
 	if _p.restore then _p.restore() end
 	_reconnect_hover_signals(self)
+end
+
+function VirshDomain:network_started ()
+	local _p = self._private
+	local _w = self.widgets
+	local _markup = _get_network_markup(_p, true)
+	_w.network:set_markup(_markup)
 end
 
 -- When changing properties of widgets we need to first collect
@@ -253,11 +252,11 @@ function _connect_signals (self)
 					checkbox["set_" .. v](checkbox, _p.checkbox_props_hover[v])
 				end
 			end
-			local markup = brazenutils.markup{ text = _p.domain, color = _p.label_color_hover }
-			self.widgets["domain"]:set_markup(markup)
+			local _markup = markup{ text = _p.domain, color = _p.label_color_hover }
+			self.widgets["domain"]:set_markup(_markup)
 			if truthy(_p.network) then
-				markup = brazenutils.markup{ text = _p.label_network_glyph .. _p.network, color = _p.label_color_hover }
-				self.widgets["network"]:set_markup(markup)
+				_markup = markup{ text = _p.label_network_glyph .. _p.network, color = _p.label_color_hover }
+				self.widgets["network"]:set_markup(_markup)
 			end
 		end
 		-- }}}
