@@ -38,8 +38,10 @@ local properties = {
 	checkbox_props_active = beautiful.virshcontrol_checkbox_props_active or {},
 	checkbox_props_hover = beautiful.virshcontrol_checkbox_props_hover or {},
 
-	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
 	domain_window_close_on_mouse_leave = beautiful.virshcontrol_domain_window_close_on_leave or true,
+	domain_window_row_height = beautiful.virshcontrol_domain_window_row_height or 24,
+	domain_window_row_margins = beautiful.virshcontrol_domain_window_row_margins or 5,  -- left, right, top, bottom
+	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
 
 	icon_glyph = beautiful.virshcontrol_icon_glyph or "vc",
 	icon_color_normal = beautiful.virshcontrol_icon_color_normal or beautiful.fg_normal or "#ff0000",
@@ -52,9 +54,6 @@ local properties = {
 	label_network_glyph = beautiful.virshcontrol_label_network_glyph or "network: ",
 
 	notification_accent_color = beautiful.virshcontrol_notification_accent_color or beautiful.taglist_bg_focus or "#ff0000",
-
-	row_height = beautiful.virshcontrol_row_height or 24,
-	row_margins = beautiful.virshcontrol_row_margins or 5,  -- left, right, top, bottom
 
 	start_destroy_confirm_glyph = beautiful.virshcontrol_start_destroy_confirm_glyph or "o",
 	start_destroy_confirm_glyph_color = beautiful.virshcontrol_start_destroy_confirm_glyph_color or beautiful.fg_urgent or "#ff0000",
@@ -204,15 +203,15 @@ _ = (function ()
 		-- rows needed and the configured row height.
 		function calculate_domain_window_height ()
 			local conf = _[self].store.virsh_config
-			local row_height = self:get_row_height()
-			local row_margins = self:get_row_margins()
-			local base_height = row_height * #conf
+			local domain_window_row_height = self:get_domain_window_row_height()
+			local domain_window_row_margins = self:get_domain_window_row_margins()
+			local base_height = domain_window_row_height * #conf
 
 			local top, bottom
-			if type(row_margins) == "table" then
-				top, bottom = row_margins.top or 0, row_margins.bottom or 0
+			if type(domain_window_row_margins) == "table" then
+				top, bottom = domain_window_row_margins.top or 0, domain_window_row_margins.bottom or 0
 			else
-				top, bottom = row_margins, row_margins
+				top, bottom = domain_window_row_margins, domain_window_row_margins
 			end
 
 			local margin_adjustment = top * #conf + bottom * #conf
@@ -225,7 +224,7 @@ _ = (function ()
 			-- and everything in between has 8 due to the items' bottom and top margins
 			-- combininig.
 		function calculate_harmonious_margins (current_row_index)
-				local margins = self:get_row_margins()
+				local margins = self:get_domain_window_row_margins()
 				local num_rows = #_[self].store.virsh_config
 
 				local left, right, top, bottom
