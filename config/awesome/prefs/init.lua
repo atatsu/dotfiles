@@ -1,9 +1,11 @@
 local beautiful = require("beautiful")
 local naughty = require("naughty")
 
+local brazenutils = require("brazen.utils")
+
 local config = require("prefs.config")
 
-local M = { }
+local M = {}
 
 local mods = {}
 
@@ -17,19 +19,18 @@ setmetatable(M, {
 		end
 
 		local mod
-		if pcall(function () 
+		local status, err = pcall(function ()
 			mod = require("prefs." .. key)
-		end) then
+		end)
+		if status then
 			if mod.init then mod.init() end
 			mods[key] = mod
 			return mod
+		else
+			brazenutils.notify_error("import error", err)
 		end
 
-		naughty.notify({
-			preset = naughty.config.presets.critical,
-			title = "prefs import failure",
-			text = "unable to import prefs." .. key
-		})
+		brazenutils.notify_normal("prefs import failure", "unable to import prefs." .. key)
 	end
 })
 

@@ -1,3 +1,4 @@
+----------------------------------------------------------------------------
 -- Internal widget used by VirshControl the display/control
 -- of configured domains.
 --
@@ -22,7 +23,7 @@ local VirshDomain = {}
 VirshDomain.__index = VirshDomain
 VirshDomain.__tostring = function () return "virshdomain" end
 
-local checkbox_props = {
+local CHECKBOX_PROPS = {
 	"border_width",
 	"bg",
 	"border_color",
@@ -34,6 +35,11 @@ local checkbox_props = {
 	"paddings",
 	"color",
 	"opacity",
+}
+
+local CONFIRM = {
+	START = 100,
+	DESTROY = 101,
 }
 
 -- helper for generating the markup used for the network display
@@ -108,10 +114,10 @@ function VirshDomain.new (conf, args)
 				fill_horizontal = true,
 				halign = "right",
 				{
-					id = "destroy_confirm",
+					id = "start_destroy_confirm",
 					align = "right",
 					valign = "center",
-					markup = markup{ text = _p.destroy_confirm_glyph, color = _p.label_color },
+					markup = markup{ text = _p.start_destroy_confirm_glyph, color = _p.label_color },
 					visible = false,
 					widget = wibox.widget.textbox,
 				},
@@ -137,7 +143,7 @@ function VirshDomain.new (conf, args)
 
 	-- apply all custom checkbox properties 
 	local checkbox = self.widgets.checkbox
-	for _, v in ipairs(checkbox_props) do
+	for _, v in ipairs(CHECKBOX_PROPS) do
 		if _p.checkbox_props[v] ~= nil then
 			checkbox["set_" .. v](checkbox, _p.checkbox_props[v])
 		end
@@ -176,19 +182,11 @@ function VirshDomain:check ()
 	_disconnect_hover_signals(self)
 
 	checkbox:set_checked(true)
-	for _, v in ipairs(checkbox_props) do
+	for _, v in ipairs(CHECKBOX_PROPS) do
 		if _p.checkbox_props_active[v] ~= nil then
 			checkbox["set_" .. v](checkbox, _p.checkbox_props_active[v])
 		end
 	end
-
-	-- don't forget about the label!
-	--local _markup = markup{ text = _p.domain, color = _p.label_color_active }
-	--self.widgets["domain"]:set_markup(_markup)
-	--if truthy(_p.network) then
-	--  _markup = markup{ text = _p.label_network_glyph .. _p.network, color = _p.label_color_active }
-	--  self.widgets["network"]:set_markup(_markup)
-	--end
 end
 
 -- Issue the command to start the network.
@@ -257,6 +255,14 @@ function VirshDomain:update_network_stopped ()
 	_w.network:set_markup(_markup)
 end
 
+function VirshDomain:confirm_start ()
+	_confirm(self, CONFIRM.START)
+end
+
+function VirshDomain:confirm_destroy ()
+	_confirm(self, CONFIRM.DESTROY)
+end
+
 -- When changing properties of widgets we need to first collect
 -- their current properties/settings in case their current
 -- styling is based on defaults. If so, attempting to use the default
@@ -272,7 +278,7 @@ function _restore_widgets_cb (self)
 	local checkbox_restore_props = {}
 	local checkbox = self.widgets["checkbox"]
 	checkbox:emit_signal("mouse::leave")
-	for _, v in ipairs(checkbox_props) do
+	for _, v in ipairs(CHECKBOX_PROPS) do
 		checkbox_restore_props[v] = checkbox["get_" .. v](checkbox)
 	end
 
@@ -283,7 +289,7 @@ function _restore_widgets_cb (self)
 	end
 
 	return function ()
-		for _, v in ipairs(checkbox_props) do
+		for _, v in ipairs(CHECKBOX_PROPS) do
 			checkbox["set_" .. v](checkbox, checkbox_restore_props[v])
 		end
 		self.widgets["domain"]:set_markup(domain_restore_markup)
@@ -304,7 +310,7 @@ function _connect_signals (self)
 			-- capture our restore settings before applying any hover effects
 			_p.restore = _restore_widgets_cb(self)
 
-			for _, v in ipairs(checkbox_props) do
+			for _, v in ipairs(CHECKBOX_PROPS) do
 				if _p.checkbox_props_hover[v] ~= nil then
 					checkbox["set_" .. v](checkbox, _p.checkbox_props_hover[v])
 				end
@@ -335,11 +341,12 @@ function _connect_signals (self)
 
 			local activate = not checkbox.checked
 			if activate then
-				self:emit_signal("domain::action::start", self)
+				--self:emit_signal("domain::action::start", self)
+				self:confirm_start()
 				return
 			end
 
-			_confirm_destroy(self)
+			self:confirm_destroy()
 			--self:emit_signal("domain::action::destroy", self)
 		end
 		-- }}}
@@ -381,7 +388,7 @@ end
 -- But, what if you accidentally "unchecked" the domain? Now you have this 
 -- power off glyph eye sore present. No worries! It'll fade in style 
 -- over a configurable number of seconds.
-function _confirm_destroy (self)
+function _confirm (self, action)
 	local _p = self._private
 	local _w = self.widgets
 	-- Display the destroy confirm widget and set a timer on it,
@@ -389,41 +396,48 @@ function _confirm_destroy (self)
 	-- leave active widgets in active state.
 	-- Also disable the click event so it can't be spammed.
 	_disconnect_click_signals(self)
-	self.widgets["destroy_confirm"]:set_visible(true)
+	self.widgets.start_destroy_confirm:set_visible(true)
 
 	-- Show in full for 1 whole second, then use the rest of the configured
 	-- time to fade out. Sanitize that shit first.
-	local destroy_confirm_timeout = _p.destroy_confirm_timeout > 0 and math.ceil(_p.destroy_confirm_timeout) or 1
-	--local fade_increment = (1 / (destroy_confirm_timeout - 1 > 0 and destroy_confirm_timeout - 1 or 1)) * .01
-	local fade_increment = (1 / ((destroy_confirm_timeout - 1 > 0 and destroy_confirm_timeout - 1 or 1) * 1000))
+	local start_destroy_confirm_timeout = _p.start_destroy_confirm_timeout > 0 and math.ceil(_p.start_destroy_confirm_timeout) or 1
+	local fade_increment = (1 / ((start_destroy_confirm_timeout - 1 > 0 and start_destroy_confirm_timeout - 1 or 1) * 1000))
 	local timer
-	local destroy_confirmed_check
-	destroy_confirmed_check = function (confirmed)
+	local start_destroy_confirmed_check
+	start_destroy_confirmed_check = function (confirmed)
 		if timer and timer.started then timer:stop() end
 		-- We know at this point that even if this is the first go around we've elapsed
 		-- at least a second, so go ahead and start fading, but first speed up our timer.
 		-- Fire every millisecond.
 		if timer then timer.timeout = .001 end
-		local opacity = _w.destroy_confirm:get_opacity()
-		_w.destroy_confirm:set_opacity(opacity - fade_increment)
+		local opacity = _w.start_destroy_confirm:get_opacity()
+		_w.start_destroy_confirm:set_opacity(opacity - fade_increment)
 		_w:emit_signal("widget::redraw_needed")
 
 		-- If our opacity is at 0 it's time to end this charade
-		if _w.destroy_confirm:get_opacity() <= 0 then
+		if _w.start_destroy_confirm:get_opacity() <= 0 then
 			-- cleanup
-			_w.destroy_confirm:set_visible(false)
+			_w.start_destroy_confirm:set_visible(false)
 			-- restore opacity for next time
-			_w.destroy_confirm:set_opacity(1)
-			_w:disconnect_signal("button::press", destroy_confirmed_check)
+			_w.start_destroy_confirm:set_opacity(1)
+			_w:disconnect_signal("button::press", start_destroy_confirmed_check)
 			_reconnect_click_signals(self)
 			timer = nil
 		end
 
 		if confirmed then
-			_w.destroy_confirm:set_visible(false)
-			_w.destroy_confirm:set_opacity(1)
+			_w.start_destroy_confirm:set_visible(false)
+			_w.start_destroy_confirm:set_opacity(1)
 			_reconnect_click_signals(self)
-			self:emit_signal("domain::destroy", self)
+
+			if action == CONFIRM.DESTROY then
+				self:emit_signal("domain::action::destroy", self)
+			elseif action == CONFIRM.START then
+				self:emit_signal("domain::action::start", self)
+			else
+				brazenutils.notify_error("VirshControl", "Invalid action " .. action)
+			end
+
 			return
 		end
 
@@ -431,12 +445,12 @@ function _confirm_destroy (self)
 		if timer then timer:again() end
 	end
 
-	self.widgets["destroy_confirm"]:connect_signal("button::press", function () destroy_confirmed_check(true) end)
+	self.widgets.start_destroy_confirm:connect_signal("button::press", function () start_destroy_confirmed_check(true) end)
 
 	timer = gears.timer{ 
 		timeout = 1,
 		autostart = true, 
-		callback = function () destroy_confirmed_check(false) end,
+		callback = function () start_destroy_confirmed_check(false) end,
 	}
 end
 

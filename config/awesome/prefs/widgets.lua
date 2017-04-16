@@ -47,11 +47,12 @@ M.termleaf = utils.leaf("termite")
 M.keyboard_layout = awful.widget.keyboardlayout()
 
 function M.virshcontrol ()
-	if widget_cache.virshcontrol2 then
-		return widget_cache.virshcontrol2
+	if widget_cache.virshcontrol then
+		return widget_cache.virshcontrol
 	end
 
-	widget_cache.virshcontrol2 = brazen.virshcontrol{
+	widget_cache.virshcontrol = brazen.virshcontrol{
+		domain_window_close_on_mouse_leave = false,
 		icon_glyph = icons.virt_manager, 
 		icon_color_normal = beautiful.widget_icon_color,
 		icon_margins = {
@@ -66,7 +67,7 @@ function M.virshcontrol ()
 			},
 		}
 	}
-	return widget_cache.virshcontrol2
+	return widget_cache.virshcontrol
 end
 
 --menubar.utils.terminal = .config.terminal -- Set the terminal for applications that require it

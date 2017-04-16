@@ -38,11 +38,8 @@ local properties = {
 	checkbox_props_active = beautiful.virshcontrol_checkbox_props_active or {},
 	checkbox_props_hover = beautiful.virshcontrol_checkbox_props_hover or {},
 
-	destroy_confirm_glyph = beautiful.virshcontrol_destroy_confirm_glyph or "o",
-	destroy_confirm_glyph_color = beautiful.virshcontrol_destroy_confirm_glyph_color or beautiful.fg_urgent or "#ff0000",
-	destroy_confirm_timeout = beautiful.virshcontrol_destroy_confirm_timeout or 3,
-
 	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
+	domain_window_close_on_mouse_leave = beautiful.virshcontrol_domain_window_close_on_leave or true,
 
 	icon_glyph = beautiful.virshcontrol_icon_glyph or "vc",
 	icon_color_normal = beautiful.virshcontrol_icon_color_normal or beautiful.fg_normal or "#ff0000",
@@ -58,6 +55,10 @@ local properties = {
 
 	row_height = beautiful.virshcontrol_row_height or 24,
 	row_margins = beautiful.virshcontrol_row_margins or 5,  -- left, right, top, bottom
+
+	start_destroy_confirm_glyph = beautiful.virshcontrol_start_destroy_confirm_glyph or "o",
+	start_destroy_confirm_glyph_color = beautiful.virshcontrol_start_destroy_confirm_glyph_color or beautiful.fg_urgent or "#ff0000",
+	start_destroy_confirm_timeout = beautiful.virshcontrol_start_destroy_confirm_timeout or 3,
 }
 
 -- Create the accessors
@@ -271,13 +272,13 @@ _ = (function ()
 					checkbox_props = self:get_checkbox_props(),
 					checkbox_props_active = self:get_checkbox_props_active(),
 					checkbox_props_hover = self:get_checkbox_props_hover(),
-					destroy_confirm_glyph = self:get_destroy_confirm_glyph(),
-					destroy_confirm_glyph_color = self:get_destroy_confirm_glyph_color(),
-					destroy_confirm_timeout = self:get_destroy_confirm_timeout(),
 					label_color = self:get_label_color(),
 					label_color_active = self:get_label_color_active(),
 					label_color_hover = self:get_label_color_hover(),
 					label_network_glyph = self:get_label_network_glyph(),
+					start_destroy_confirm_glyph = self:get_start_destroy_confirm_glyph(),
+					start_destroy_confirm_glyph_color = self:get_start_destroy_confirm_glyph_color(),
+					start_destroy_confirm_timeout = self:get_start_destroy_confirm_timeout(),
 				})
 				-- connect to the domain's signals so we can respond to 
 				-- user input and status updates
@@ -286,7 +287,9 @@ _ = (function ()
 				instance.widget:add(wibox.container.margin(domain, left, right, top, bottom))
 			end
 
-			instance:connect_signal("mouse::leave", function () self:toggle_domain_window() end)
+			if self:get_domain_window_close_on_mouse_leave() then
+				instance:connect_signal("mouse::leave", function () self:toggle_domain_window() end)
+			end
 			_p.store.domain_window = instance
 		end
 

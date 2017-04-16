@@ -168,13 +168,11 @@ theme.virshcontrol_checkbox_props_hover = {
 theme.virshcontrol_checkbox_props = {
 	--border_color = xrdb.color11,
 }
-theme.virshcontrol_destroy_confirm_glyph = icons.power
+theme.virshcontrol_start_destroy_confirm_glyph = icons.power
 --theme.virshcontrol_label_color = xrdb.color11
 theme.virshcontrol_label_color_hover = xrdb.color11
 theme.virshcontrol_label_color_active = theme.fg_urgent
 theme.virshcontrol_label_network_glyph = icons.network .. ": "
--- TODO: delete this when v2 done
-theme.virshcontrol_domain_list_width = dpi(250)
 theme.virshcontrol_domain_window_width = dpi(250)
 -- }}}
 
