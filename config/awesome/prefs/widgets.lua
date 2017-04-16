@@ -6,7 +6,6 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 local config = require("prefs.config")
 local icons = require("prefs.icons")
 local utils = require("utils")
-local widgets = require("widgets")
 
 local brazen = require("brazen")
 
@@ -48,29 +47,6 @@ M.termleaf = utils.leaf("termite")
 M.keyboard_layout = awful.widget.keyboardlayout()
 
 function M.virshcontrol ()
-	if widget_cache.virshcontrol then
-		return widget_cache.virshcontrol
-	end
-
-	widget_cache.virshcontrol = widgets.virshcontrol{
-		icon_glyph = icons.virt_manager, 
-		icon_color_normal = beautiful.widget_icon_color,
-		icon_margins = {
-			left = 2,
-			right = 5,
-		},
-		virsh_config = {
-			{
-				network = "default",
-				domain = "gaming",
-				monitor = 17,
-			},
-		}
-	}
-	return widget_cache.virshcontrol
-end
-
-function M.virshcontrol2 ()
 	if widget_cache.virshcontrol2 then
 		return widget_cache.virshcontrol2
 	end
@@ -86,10 +62,6 @@ function M.virshcontrol2 ()
 			{
 				network = "default",
 				domain = "gaming",
-				monitor = 17,
-			},
-			{
-				domain = "imposter",
 				monitor = 17,
 			},
 		}

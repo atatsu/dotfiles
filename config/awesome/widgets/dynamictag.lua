@@ -17,6 +17,7 @@ local util = require("awful.util")
 local wibox = require("wibox")
 
 local widgetutil = require("widgets.util")
+local helperutils = require("utils.helper")
 
 local capi = {
 	tag = tag,
@@ -155,6 +156,12 @@ function DynamicTag:new_text_tag ()
 		end
 
 		local props = self:get_tag_props() or {}
+		local s = awful.screen.focused()
+
+		if s == nil then
+			helperutils.notify_error("nil screen", "DynamicTag:new_text_tag()")
+		end
+
 		props.screen = awful.screen.focused()
 		if self:get_tag_position() == "end" then
 			props.index = capi.tag:instances() + 1
@@ -177,9 +184,20 @@ function DynamicTag:new_text_tag ()
 	}
 end
 
-function _create_icon_tag (w)
+function _create_icon_tag (w, lx, ly, button)
+	-- ignore any button but left-click
+	if button ~= 1 then
+		return
+	end
+
 	local props = w._dt:get_tag_props() or {}
-	props.screen = awful.screen.focused()
+	local s = awful.screen.focused()
+
+	if s == nil then
+		helperutils.notify_error("nil screen", "DynamicTag:new_glyph_tag()")
+	end
+
+	props.screen = s
 	if w._dt:get_tag_position() == "end" then
 		props.index = capi.tag:instances() + 1
 	else
@@ -194,6 +212,8 @@ function _create_icon_tag (w)
 end
 
 function _highlight_icon (w)
+	-- TODO: `beautiful.widget_icon_color` references my shit, make it specific to 
+	--       this particular widget (i.e. `beautiful.dynamictag_glyph_window_icon_highlight_color`)
 	w.markup = widgetutil.markup(w.text, beautiful.widget_icon_color or beautiful.fg_focus)
 end
 
@@ -202,9 +222,19 @@ function _restore_icon (w)
 	w.markup = nil
 end
 
+local cached_windows = 0
 function DynamicTag:new_glyph_tag ()
+	if cached_windows > 1 then
+		helperutils.notify_error("multiple cached windows!", tostring(cached_windows))
+	end
+
 	if self:get_glyph_window_keep_cache() and self._glyph_window ~= nil then 
 		self._glyph_window.visible = not self._glyph_window.visible
+		if self._glyph_window.visible then
+			self._glyph_window.screen = awful.screen.focused()
+			local p = (awful.placement.scale + awful.placement.centered)
+			p(instance, { to_percent = 0.5 })
+		end
 		return 
 	end
 
@@ -222,9 +252,6 @@ function DynamicTag:new_glyph_tag ()
 			layout = wibox.layout.flex.vertical
 		}
 	}
-
-	local s = (awful.placement.scale + awful.placement.centered)
-	s(instance, { to_percent = 0.5 })
 
 	local row = wibox.layout.flex.horizontal()
 	local glyphs = self:get_glyph_window_glyphs()
@@ -275,11 +302,25 @@ function DynamicTag:new_glyph_tag ()
 			end
 		end
 	)
-	instance.visible = true
+	instance:buttons(awful.util.table.join(
+		-- right-click
+		awful.button({ }, 3, function ()
+			instance.visible = false
+			if not self:get_glyph_window_keep_cache() then
+				instance = nil
+			end
+		end)
+	))
 
 	if self:get_glyph_window_keep_cache() then
 		self._glyph_window = instance
 	end
+
+	instance.visible = true
+	self._glyph_window.screen = awful.screen.focused()
+	local p = (awful.placement.scale + awful.placement.centered)
+	p(instance, { to_percent = 0.5 })
+	cached_windows = cached_windows + 1
 end
 
 return setmetatable(DynamicTag, {
