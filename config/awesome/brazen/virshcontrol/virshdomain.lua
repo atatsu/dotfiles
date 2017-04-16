@@ -197,7 +197,7 @@ function VirshDomain:command_start_network ()
 end
 
 function VirshDomain:command_start_domain ()
-	print("I'm starting the domain")
+	commands[self].start_domain()
 end
 
 function VirshDomain:command_monitor ()

@@ -132,7 +132,14 @@ function start_domain (self)
 	local _p = self._private
 	local domain = _p.domain
 
-	easy_async("")
+	easy_async("virsh start " .. domain, function (result)
+		if result.code == 0 then
+			self:emit_signal("domain::status::started")
+			return
+		end
+
+		self:emit_signal("domain::status::error", result.stderr)
+	end)
 end
 
 return setmetatable(M, {

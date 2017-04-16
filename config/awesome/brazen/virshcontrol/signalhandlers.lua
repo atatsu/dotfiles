@@ -48,6 +48,11 @@ function M.connect_domain (virshcontrol, domain)
 				domain:uncheck()
 			end,
 		},
+		["domain::status::error"] = {
+			function (domain, err)
+				notifyerr(domain:get_domain() .. ": " .. err)
+			end,
+		},
 		-- fired when a domain status check finds that the domain is already
 		-- running
 		["domain::status::running"] = {
@@ -67,7 +72,6 @@ function M.connect_domain (virshcontrol, domain)
 		["domain::action::start"] = {
 			function (domain)
 				print("starting domain " .. domain:get_domain())
-				domain:check()
 				domain:command_start_network()
 			end,
 		},
@@ -75,6 +79,20 @@ function M.connect_domain (virshcontrol, domain)
 		-- a domain item, will occur after a `network::started` if configuration
 		-- contains network details
 		["domain::status::started"] = {
+			function (domain)
+				if falsy(domain:get_network()) then
+					-- we didn't actually have a network start (as there isn't one)
+					-- which means we aren't checked yet, so do it
+					domain:check()
+				end
+
+				domain:update_domain_started()
+				print("domain " .. domain:get_domain() .. " started")
+				local msg = "domain " .. markup{ text = domain:get_domain(), color = virshcontrol:get_notification_accent_color() }
+					.. " started"
+				notify(msg)
+				domain:command_monitor()
+			end,
 		},
 		-- something went wrong while attempting to get the pid
 		-- for the running domain
@@ -125,7 +143,7 @@ function M.connect_domain (virshcontrol, domain)
 		-- something went wrong while trying to start the network
 		["network::status::error"] = {
 			function (domain, err)
-				notifyerr(err)
+				notifyerr(domain:get_network() .. ": " .. err)
 			end,
 		},
 		-- fired when a domain status check finds that a domain's network is already
@@ -151,6 +169,7 @@ function M.connect_domain (virshcontrol, domain)
 				if falsy(domain:get_network()) then
 					return
 				end
+				domain:check()
 				domain:update_network_started()
 				print("network " .. domain:get_network() .. " started")
 				local msg = "network " .. markup{ text = domain:get_network(), color = virshcontrol:get_notification_accent_color() } ..
