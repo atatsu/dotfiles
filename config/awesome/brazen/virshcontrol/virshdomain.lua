@@ -20,9 +20,7 @@ local markup = brazenutils.markup
 
 local VirshDomain = {}
 VirshDomain.__index = VirshDomain
-VirshDomain.__tostring = function ()
-	return "virshdomain"
-end
+VirshDomain.__tostring = function () return "virshdomain" end
 
 local checkbox_props = {
 	"border_width",
@@ -165,12 +163,18 @@ end
 -- for creating hover effects.
 function VirshDomain:check ()
 	local _p = self._private
+	local checkbox = self.widgets.checkbox
+
+	if checkbox:get_checked() then 
+		-- we've already checked the checkbox, don't do this shit again
+		-- as it's likely to not end well
+		return
+	end
 	-- make sure we can restore our shit
 	_p.restore = _restore_widgets_cb(self)
 
 	_disconnect_hover_signals(self)
 
-	local checkbox = self.widgets.checkbox
 	checkbox:set_checked(true)
 	for _, v in ipairs(checkbox_props) do
 		if _p.checkbox_props_active[v] ~= nil then
@@ -196,6 +200,19 @@ function VirshDomain:command_start_domain ()
 	print("I'm starting the domain")
 end
 
+function VirshDomain:command_monitor ()
+	commands[self].monitor_domain_for_shutdown()
+end
+
+function VirshDomain:command_destroy_network ()
+	if falsy(self._private.network) then
+		self:emit_signal("network::status::destroyed")
+		return
+	end
+
+	commands[self].destroy_network()
+end
+
 -- Uncheck the checkbox widget and also reconnect signals used
 -- for creating hover effects.
 function VirshDomain:uncheck ()
@@ -208,12 +225,35 @@ function VirshDomain:uncheck ()
 	_reconnect_hover_signals(self)
 end
 
+-- Update the domain related widgets to reflect that the domain has
+-- been started/was already running.
+function VirshDomain:update_domain_started ()
+	local _p = self._private
+	local _w = self.widgets
+	local _markup = markup{ text = self:get_domain(), color = _p.label_color_active }
+	_w.domain:set_markup(_markup)
+end
+
+function VirshDomain:update_domain_stopped()
+	local _p = self._private
+	local _w = self.widgets
+	local _markup = markup{ text = _p.domain, color = _p.label_color }
+	_w.domain:set_markup(_markup)
+end
+
 -- Update the network-related widgets to reflect that the network has
--- been started.
+-- been started/was already running.
 function VirshDomain:update_network_started ()
 	local _p = self._private
 	local _w = self.widgets
 	local _markup = _get_network_markup(_p, true)
+	_w.network:set_markup(_markup)
+end
+
+function VirshDomain:update_network_stopped ()
+	local _p = self._private
+	local _w = self.widgets
+	local _markup = _get_network_markup(_p, false)
 	_w.network:set_markup(_markup)
 end
 
@@ -295,12 +335,12 @@ function _connect_signals (self)
 
 			local activate = not checkbox.checked
 			if activate then
-				self:emit_signal("domain::start", self)
+				self:emit_signal("domain::action::start", self)
 				return
 			end
 
 			_confirm_destroy(self)
-			--self:emit_signal("domain::destroy", self)
+			--self:emit_signal("domain::action::destroy", self)
 		end
 		-- }}}
 	end

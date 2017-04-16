@@ -125,10 +125,10 @@ awful.screen.connect_for_each_screen(function(s)
 		{-- Right widgets
 			layout = wibox.layout.fixed.horizontal,
 			--widgets.volumecontrol(),
-			prefs.widgets.virshcontrol2(),
 			widgetutils.pacman(),
 			widgetutils.volume(),
-			prefs.widgets.virshcontrol(),
+			--prefs.widgets.virshcontrol(),
+			prefs.widgets.virshcontrol2(),
 			prefs.widgets.keyboard_layout,
 			widgetutils.clock(),
 			widgetutils.systray(),

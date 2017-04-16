@@ -30,6 +30,7 @@ local capi = {
 
 local VirshControl = {}
 VirshControl.__index = VirshControl
+VirshControl.__tostring = function () return "virshcontrol" end
 
 -- {{{ Properties
 local properties = {
@@ -39,7 +40,7 @@ local properties = {
 
 	destroy_confirm_glyph = beautiful.virshcontrol_destroy_confirm_glyph or "o",
 	destroy_confirm_glyph_color = beautiful.virshcontrol_destroy_confirm_glyph_color or beautiful.fg_urgent or "#ff0000",
-	destroy_confirm_timeout = beautiful.virshcontrol_destroy_confirm_timeout or 5,
+	destroy_confirm_timeout = beautiful.virshcontrol_destroy_confirm_timeout or 3,
 
 	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
 
@@ -95,13 +96,13 @@ function VirshControl.new (args)
 	local virsh_config = args.virsh_config or {}
 	args.virsh_config = nil
 	_[self].store.virsh_config = virsh_config
+	_[self].store.active_domains = {}
 
 	local margins = self:get_icon_margins() or {}
 	self:setup{
-		id = "row",
+		id = "widgets",
 		layout = wibox.layout.fixed.horizontal,
 		{
-			id = "margin",
 			layout = wibox.container.margin,
 			left = margins.left or 0,
 			right = margins.right or 0,
@@ -116,7 +117,18 @@ function VirshControl.new (args)
 		}
 	}
 
-	local icon = self.row.margin.icon
+	-- make it so we can just key into our first level widget
+	-- to query for any child, no matter how deeply nested
+	setmetatable(self.widgets, {
+		__index = function (table, key)
+			local children = self:get_children_by_id(key)
+			if #children > 0 then
+				return children[1]
+			end
+		end
+	})
+
+	local icon = self.widgets["icon"]
 	icon:buttons(awful.util.table.join(
 		-- left-click
 		awful.button({ }, 1, function ()
@@ -125,7 +137,45 @@ function VirshControl.new (args)
 	))
 
 	_[self].setup.domain_window()
+	signalhandlers.connect_own(self)
 	return self
+end
+
+function VirshControl:activate_icon ()
+	local glyph = self:get_icon_glyph()
+	local color = self:get_icon_color_active()
+	local _markup = markup{ text = glyph, color = color }
+	self.widgets["icon"]:set_markup(_markup)
+end
+
+function VirshControl:deactivate_icon ()
+	local glyph = self:get_icon_glyph()
+	local color = self:get_icon_color_normal()
+	local _markup = markup{ text = glyph, color = color }
+	self.widgets["icon"]:set_markup(_markup)
+end
+
+function VirshControl:add_active_domain (domain)
+	local active_domains = _[self].store.active_domains
+	active_domains[#active_domains + 1] = domain
+	self:emit_signal("domain::count::changed", #active_domains)
+end
+
+function VirshControl:remove_active_domain (domain)
+	local active_domains = _[self].store.active_domains
+	local index
+	for i, v in ipairs(active_domains) do
+		if v == domain then
+			index = i
+		end
+	end
+	if not index then
+		print("attempted to remove active domain but domain didn't match any in store")
+		return
+	end
+
+	table.remove(active_domains, index)
+	self:emit_signal("domain::count::changed", #active_domains)
 end
 
 function VirshControl:toggle_domain_window ()
