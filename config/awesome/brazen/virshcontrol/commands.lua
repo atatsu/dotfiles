@@ -16,10 +16,13 @@ local function easy_async (cmd, cb)
 end
 
 function M.init (self)
-	_[self] = {
-		check_vm_status = function () return check_vm_status(self) end,
-		start_network = function () return start_network(self) end,
-	}
+	if tostring(self) == "virshdomain" then
+		_[self] = {
+			check_vm_status = function () return check_vm_status(self) end,
+			start_network = function () return start_network(self) end,
+			start_domain = function () return start_domain(self) end,
+		}
+	end
 end
 
 function check_vm_status (self)
@@ -60,8 +63,11 @@ function start_network (self)
 	end)
 end
 
+function start_domain (self)
+end
+
 return setmetatable(M, {
 	__index = function (table, key)
 		return _[key]
-	end
+	end,
 })

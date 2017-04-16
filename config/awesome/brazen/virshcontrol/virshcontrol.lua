@@ -20,13 +20,9 @@ local wibox = require("wibox")
 
 local brazenutils = require("brazen.utils")
 local markup = brazenutils.markup
-local falsy = brazenutils.falsy
 
+local signalhandlers = require(path .. "signalhandlers")
 local virshdomain = require(path .. "virshdomain")
-
-local function notify (message)
-	brazenutils.notify_normal("VirshControl", message)
-end
 
 local capi = {
 	mouse = mouse,
@@ -233,32 +229,10 @@ _ = (function ()
 					label_color_hover = self:get_label_color_hover(),
 					label_network_glyph = self:get_label_network_glyph(),
 				})
-				domain:connect_signal("domain::start", function (d)
-					print("starting domain " .. d:get_domain())
-					d:check()
-					d:start_network()
-				end)
-				domain:connect_signal("domain::destroy", function (d)
-					print("stopping domain " .. d:get_domain())
-					d:uncheck()
-				end)
-				domain:connect_signal("network::running", function (d)
-					d:network_started()
-					print("network " .. d:get_network() .. " is running")
-					local msg = "network " .. markup{ text = d:get_network(), color = self:get_notification_accent_color() } ..
-						" is running"
-					notify(msg)
-				end)
-				domain:connect_signal("network::started", function (d)
-					if falsy(d:get_network()) then
-						return
-					end
-					d:network_started()
-					print("network " .. d:get_network() .. " started")
-					local msg = "network " .. markup{ text = d:get_network(), color = self:get_notification_accent_color() } ..
-						" started"
-					notify(msg)
-				end)
+				-- connect to the domain's signals so we can respond to 
+				-- user input and status updates
+				signalhandlers.connect_domain(self, domain)
+
 				instance.widget:add(wibox.container.margin(domain, left, right, top, bottom))
 			end
 

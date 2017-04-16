@@ -20,6 +20,9 @@ local markup = brazenutils.markup
 
 local VirshDomain = {}
 VirshDomain.__index = VirshDomain
+VirshDomain.__tostring = function ()
+	return "virshdomain"
+end
 
 local checkbox_props = {
 	"border_width",
@@ -35,6 +38,7 @@ local checkbox_props = {
 	"opacity",
 }
 
+-- helper for generating the markup used for the network display
 function _get_network_markup (args, active)
 	local network = args.network or ""
 	if falsy(network) then return nil end
@@ -147,14 +151,18 @@ function VirshDomain.new (conf, args)
 	return self
 end
 
+-- Getter for the domain name.
 function VirshDomain:get_domain ()
 	return self._private.domain
 end
 
+-- Getter for the network name.
 function VirshDomain:get_network ()
 	return self._private.network
 end
 
+-- Check the checkbox widget while disconnecting signals used
+-- for creating hover effects.
 function VirshDomain:check ()
 	local _p = self._private
 	-- make sure we can restore our shit
@@ -179,10 +187,17 @@ function VirshDomain:check ()
 	--end
 end
 
-function VirshDomain:start_network ()
+-- Issue the command to start the network.
+function VirshDomain:command_start_network ()
 	commands[self].start_network()
 end
 
+function VirshDomain:command_start_domain ()
+	print("I'm starting the domain")
+end
+
+-- Uncheck the checkbox widget and also reconnect signals used
+-- for creating hover effects.
 function VirshDomain:uncheck ()
 	local _p = self._private
 
@@ -193,7 +208,9 @@ function VirshDomain:uncheck ()
 	_reconnect_hover_signals(self)
 end
 
-function VirshDomain:network_started ()
+-- Update the network-related widgets to reflect that the network has
+-- been started.
+function VirshDomain:update_network_started ()
 	local _p = self._private
 	local _w = self.widgets
 	local _markup = _get_network_markup(_p, true)
@@ -386,5 +403,5 @@ end
 return setmetatable(VirshDomain, {
 	__call = function (cls, ...)
 		return cls.new(...)
-	end
+	end,
 })
