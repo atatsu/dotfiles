@@ -403,8 +403,8 @@ function _confirm (self, action)
 	local start_destroy_confirm_timeout = _p.start_destroy_confirm_timeout > 0 and math.ceil(_p.start_destroy_confirm_timeout) or 1
 	local fade_increment = (1 / ((start_destroy_confirm_timeout - 1 > 0 and start_destroy_confirm_timeout - 1 or 1) * 1000))
 	local timer
-	local start_destroy_confirmed_check
-	start_destroy_confirmed_check = function (confirmed)
+	local confirm_clicked
+	local function start_destroy_confirmed_check (confirmed)
 		if timer and timer.started then timer:stop() end
 		-- We know at this point that even if this is the first go around we've elapsed
 		-- at least a second, so go ahead and start fading, but first speed up our timer.
@@ -420,7 +420,9 @@ function _confirm (self, action)
 			_w.start_destroy_confirm:set_visible(false)
 			-- restore opacity for next time
 			_w.start_destroy_confirm:set_opacity(1)
-			_w:disconnect_signal("button::press", start_destroy_confirmed_check)
+			-- don't forget to disconnect handler or else we'll add a new one to the stack
+			-- every time the domain row is clicked
+			_w.start_destroy_confirm:disconnect_signal("button::press", confirm_clicked)
 			_reconnect_click_signals(self)
 			timer = nil
 		end
@@ -445,7 +447,13 @@ function _confirm (self, action)
 		if timer then timer:again() end
 	end
 
-	self.widgets.start_destroy_confirm:connect_signal("button::press", function () start_destroy_confirmed_check(true) end)
+	confirm_clicked = function () 
+		-- don't forget to disconnect handler or else we'll add a new one to the stack
+		-- every time the domain row is clicked
+		_w.start_destroy_confirm:disconnect_signal("button::press", confirm_clicked)
+		start_destroy_confirmed_check(true) 
+	end
+	_w.start_destroy_confirm:connect_signal("button::press", confirm_clicked)
 
 	timer = gears.timer{ 
 		timeout = 1,
