@@ -5,6 +5,7 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 
 local config = require("prefs.config")
 local icons = require("prefs.icons")
+local glyphassets = require("assets").glyphs
 local utils = require("utils")
 
 local brazen = require("brazen")
@@ -68,6 +69,19 @@ function M.virshcontrol ()
 		}
 	}
 	return widget_cache.virshcontrol
+end
+
+function M.dynamictag ()
+	if widget_cache.dynamictag then
+		return widget_cache.dynamictag
+	end
+
+	widget_cache.dynamictag = brazen.dynamictag{
+		icon_glyph = icons.add, 
+		glyph_window_glyphs = glyphassets, 
+		glyph_window_per_row =  22,
+	}
+	return widget_cache.dynamictag
 end
 
 --menubar.utils.terminal = .config.terminal -- Set the terminal for applications that require it

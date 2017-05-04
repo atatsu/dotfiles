@@ -28,7 +28,12 @@ DynamicTag.__tostring = function () return "dynamictag" end
 
 -- {{{ Properties
 local properties = {
-	cache_glyph_window = beautiful.dynamictag_glyph_window_cache or false,
+	cache_glyph_window = (function () 
+		if beautiful.dynamictag_glyph_window_cache ~= nil then
+			return beautiful.dynamictag_glyph_window_cache
+		end
+		return true
+	end)(),
 
 	glyph_window_font = beautiful.dynamictag_glyph_window_font or beautiful.font or "sans 8",
 	glyph_window_glyphs = beautiful.dynamictag_glyph_window_glyphs or { "a", "b", "c" },
@@ -42,12 +47,17 @@ local properties = {
 	icon_opacity = beautiful.dynamictag_icon_opacity or 0.5,
 	icon_always_visible = beautiful.dynamictag_icon_always_visible or false,
 
-	tag_position = "end",
-	tag_props = {
+	tag_position = beautiful.dynamictag_tag_position or "end",
+	tag_props = beautiful.dynamictag_tag_props or {
 		layout = awful.layout.suit.tile,
 		volatile = true,
 	},
-	tag_switch_to = true,
+	tag_switch_to = (function ()
+		if beautiful.dynamictag_tag_switch_to ~= nil then 
+			return beautiful.dynamic_tag_switch_to
+		end
+		return true
+	end)(),
 }
 
 -- Create the accessors
@@ -93,7 +103,6 @@ function DynamicTag.new (args)
 			{
 				id = "icon",
 				align = "center",
-				--markup = markup{ text = self:get_icon_glyph(), color = self:get_icon_color_normal() },
 				opacity = self:get_icon_opacity(),
 				text = self:get_icon_glyph(),
 				valign = "center",
@@ -141,10 +150,10 @@ function DynamicTag:new_glyph_tag (glyph)
 	local glyph_window = self._private.glyph_window
 
 	if glyph_window then
-		glyph_window:set_visible(not glyph_window:get_visible())
+		glyph_window.visible = not glyph_window.visible
 
-		if glyph_window:get_visible() then
-			glyph_window:set_screen(awful.screen.focused())
+		if glyph_window.visible then
+			glyph_window.screen = awful.screen.focused()
 			local p = (awful.placement.scale + awful.placement.centered)
 			p(glyph_window, { to_percent = 0.5 })
 		end
@@ -191,7 +200,7 @@ function DynamicTag:new_glyph_tag (glyph)
 		if i % glyphs_per_row == 0 then
 			-- we're on our last icon for the row, add the horizontal layout
 			-- to our main layout and then create a new one
-			glyph_window.rows:add(row)
+			glyph_window.widgets.rows:add(row)
 			row = wibox.layout.flex.horizontal()
 		end
 	end
@@ -262,7 +271,7 @@ _ = (function ()
 
 			props.screen = s
 			if self:get_tag_position() == "end" then
-				props.index = capi.tag:instances() + 1
+				props.index = #awful.screen.focused().tags + 1
 			else
 				props.index = -1
 			end
@@ -290,7 +299,7 @@ _ = (function ()
 
 			props.screen = s
 			if self:get_tag_position() == "end" then
-				props.index = capi.tag:instances() + 1
+				props.index = #awful.screen.focused().tags + 1
 			else
 				props.index = -1
 			end

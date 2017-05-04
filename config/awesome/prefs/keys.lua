@@ -154,14 +154,14 @@ M.global = (function ()
 		awful.key(
 			{ modkey }, 
 			"r", 
-			function () awful.screen.focused().mydynamictag:new_text_tag() end,
+			function () awful.screen.focused().dynamictag:new_text_tag() end,
 			{ description = "dynamic text tag", group = "awesome" }
 		),
 		awful.key(
 			{ modkey, "Control" },
 			"r",
 			function () 
-				awful.screen.focused().mydynamictag:new_glyph_tag() 
+				awful.screen.focused().dynamictag:new_glyph_tag() 
 			end,
 			{ description = "dynamic glyph tag", group = "awesome" }
 		),

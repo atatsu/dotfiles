@@ -3,6 +3,8 @@ local beautiful = require("beautiful")
 local common = require("awful.widget.common")
 local util = require("awful.util")
 
+local brazenutils = require("brazen.utils")
+
 local is_setup = false
 
 local M = {
@@ -37,8 +39,7 @@ function M.remove_shape_from_text_tags (w, buttons, label, data, objects)
 	local font = beautiful.taglist_font or beautiful.font or ""
 	for i, v in ipairs(w.children[t.index]:get_all_children()) do
 		if v.markup or v.text then
-			v.markup = "<span font_desc='" .. font .. "'><span color='" .. util.ensure_pango_color(beautiful.taglist_bg_focus) ..
-				"'>" .. (util.escape(v.text) or "") .. "</span></span>"
+			v.markup = brazenutils.markup{ text = v.text, color = beautiful.taglist_bg_focus, font = font }
 		end
 	end
 end

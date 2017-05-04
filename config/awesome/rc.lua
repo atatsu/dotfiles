@@ -55,7 +55,6 @@ prefs.init()
 local widgets = require("widgets")
 local helperutils = require("utils").helper
 local widgetutils = require("utils").widget
-local glyphassets = require("assets").glyphs
 
 -- }}}
 
@@ -95,7 +94,7 @@ awful.screen.connect_for_each_screen(function(s)
 
 	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
 	-- We need one layoutbox per screen.
-	s.dynamictag = dynamictag()
+	s.dynamictag = prefs.widgets.dynamictag()
 	s.mylayoutbox = awful.widget.layoutbox(s)
 	s.mylayoutbox:buttons(prefs.buttons.layout)
 	-- Create a taglist widget
@@ -106,7 +105,6 @@ awful.screen.connect_for_each_screen(function(s)
 		nil, 
 		prefs.taglist.remove_shape_from_text_tags
 	)
-	--s.mydynamictag = widgets.dynamictag{ icon_add = prefs.icons.add, glyph_window_glyphs = glyphassets }
 
 	-- Create a tasklist widget
 	s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, prefs.buttons.tasklist)
@@ -122,7 +120,6 @@ awful.screen.connect_for_each_screen(function(s)
 			layout = wibox.layout.fixed.horizontal,
 			s == capi.screen.primary and prefs.widgets.mainmenu_launcher or nil,
 			s.mytaglist,
-			--s.mydynamictag,
 			s.dynamictag,
 		},
 		s.mytasklist, -- Middle widget

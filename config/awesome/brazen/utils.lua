@@ -1,4 +1,5 @@
 local naughty = require("naughty")
+local util = require("awful.util")
 
 local M = {}
 
@@ -61,7 +62,11 @@ function M.markup (args)
 
 	local markup = "<span"
 	if M.truthy(args.color) then
-		markup = markup .. " foreground=\"" .. args.color .. "\""
+		markup = markup .. " foreground=\"" .. util.ensure_pango_color(args.color) .. "\""
+	end
+
+	if M.truthy(args.font) then
+		markup = markup .. " font_desc=\"" .. args.font .. "\""
 	end
 
 	if M.truthy(args.bold) then
@@ -88,7 +93,7 @@ function M.markup (args)
 		markup = " strikethrough=\"true\""
 	end
 
-	markup = markup .. ">" .. args.text .. "</span>"
+	markup = markup .. ">" .. (util.escape(args.text) or "") .. "</span>"
 
 	if args.subscript then
 		markup = "<sub>" .. markup .. "</sub>"
