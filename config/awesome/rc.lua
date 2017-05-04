@@ -13,8 +13,6 @@ local naughty = require("naughty")
 local wibox = require("wibox")
 require("awful.autofocus")
 
-local dynamictag = require("brazen").dynamictag
-
 local capi = {
 	screen = screen,
 }

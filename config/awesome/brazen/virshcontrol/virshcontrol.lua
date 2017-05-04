@@ -38,7 +38,12 @@ local properties = {
 	checkbox_props_active = beautiful.virshcontrol_checkbox_props_active or {},
 	checkbox_props_hover = beautiful.virshcontrol_checkbox_props_hover or {},
 
-	domain_window_close_on_mouse_leave = beautiful.virshcontrol_domain_window_close_on_leave or true,
+	domain_window_close_on_mouse_leave = (function ()
+		if beautiful.virshcontrol_domain_window_close_on_leave ~= nil then
+			return beautiful.virshcontrol_domain_window_close_on_leave
+		end
+		return true
+	end)(),
 	domain_window_row_height = beautiful.virshcontrol_domain_window_row_height or 24,
 	domain_window_row_margins = beautiful.virshcontrol_domain_window_row_margins or 5,  -- left, right, top, bottom
 	domain_window_width = beautiful.virshcontrol_domain_window_width or 150,
