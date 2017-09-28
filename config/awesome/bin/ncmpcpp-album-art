@@ -2,21 +2,42 @@
 
 pkill feh
 
-[[ -e /tmp/setting-album-art ]] && rm /tmp/setting-album-art && exit 1
+if [[ -e /tmp/setting-album-art ]] {
+	rm /tmp/setting-album-art 
+	exit 1
+}
 
 touch /tmp/setting-album-art
 
-music_dir=/copy/Copy/music
+music_dir=~/music
+logfile=/tmp/album-art.log
+artpathfile=/tmp/album-art-path
 
 album="$(mpc -f %album% current)"
 file="$(mpc -f %file% current)"
 album_dir="${file%/*}"
-[[ -z "$album_dir" ]] && echo 'album_dir is empty' && exit 1
+
+if [[ -z "${album_dir}" ]] {
+	msg="$(date) - album_dir is empty"
+	echo $msg >> $logfile
+	exit 1
+}
+
 album_dir="$music_dir/$album_dir"
-
 art="$(find "$album_dir" -type d -exec find {} -maxdepth 1 -type f -iregex ".*/.*\(${album}\|cover\|folder\|artwork\|front\).*[.]\(jpe?g\|png\|gif\|bmp\)" \;)"
-echo -e $art > /tmp/album-art-path
 
-[[ ! -s /tmp/album-art-path ]] && echo 'album-art-path file is empty' && exit 1
+if [[ -z $art ]] {
+	msg="$(date) - no album art found"
+	echo $msg >> $logfile
+	exit 1
+}
 
-cat "$(cat /tmp/album-art-path)" | feh -. -s -Z -g 100x100 -B black -^ album-art - &
+echo -e $art > $artpathfile
+
+if [[ ! -s $artpathfile ]] {
+	msg="$(date) - album-art-path file is empty"
+	echo $msg >> $logfile
+	exit 1
+}
+
+cat "$(cat /tmp/album-art-path)" | feh -. -Z -B black -^ album-art - &
