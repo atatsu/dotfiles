@@ -8,6 +8,7 @@ endif
 
 " {{{ stock options
 "scriptencoding utf-8
+set mouse=a
 set encoding=utf-8
 " source .vimrc or .exrc from any directory vim is run from
 set exrc
@@ -63,20 +64,20 @@ set wildmenu
 " displays the statusline always
 set laststatus=2
 " paste mode toggle
-nnoremap <F2> :set invpaste paste?<CR>
-set pastetoggle=<F2>
+nnoremap <F12> :set invpaste paste?<CR>
+set pastetoggle=<F12>
 set showmode
 " refresh syntax highlighting
 autocmd BufEnter,InsertLeave * :syntax sync fromstart
 """" completion menu tweaks
 " vim's popup menu doesn't select the first completion item, but rather just
 " inserts the longest common text of all matches
-set completeopt=longest,menuone
+set completeopt=longest,menuone,preview
 " changes behavior of the <Enter> key when the popup is visible in that the
 " Enter key will simply select the highlighted menu item, just as <C-Y> does
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-" Makes <C-N> work the way it normally does, howver when the mneu appears the
-" <Down> key is simulated. Keeps a menu item alwyas highlighted which results
+" Makes <C-N> work the way it normally does, however when the menu appears the
+" <Down> key is simulated. Keeps a menu item always highlighted which results
 " in the ability to keep typing characters to narrow the matches and the
 " nearest match will be selected so that Enter can be hit at anytime to insert
 " it.
@@ -85,6 +86,8 @@ inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
 
 inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
   \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+inoremap <expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+"inoremap <expr> <s-tab> pumvisible() ? "\<c-p>" : "\<s-tab>" -- error
 set background=dark
 " }}}
 
@@ -117,10 +120,10 @@ else
 	map <silent> ¬ <C-w><
 endif 
 " buffer navigation
-map <silent> <C-h> <C-w>h
-map <silent> <C-k> <C-w>k
-map <silent> <C-l> <C-w>l
-map <silent> <C-j> <C-w>j
+map <silent> <C-h> <C-w>h <C-w>_
+map <silent> <C-k> <C-w>k <C-w>_
+map <silent> <C-l> <C-w>l <C-w>_
+map <silent> <C-j> <C-w>j <C-w>_
 " reformat file
 map <F7> mzgg=G`z
 " display a list of buffers prompting for the number to switch to
@@ -163,10 +166,14 @@ endif
 
 " {{{ plugins
 " SuperTab
-let g:SuperTabDefaultCompletionType = 'context'
+"let g:SuperTabDefaultCompletionType = 'context'
+let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
 
-" Tagbar
-map <leader>tb :TagbarToggle<CR>
+" tagbar
+"map <leader>tb :TagbarToggle<CR>
+map <leader>tb :TagbarOpenAutoClose<CR>
+map <leader>Tb :TagbarToggle<CR>
+
 
 " fzf
 map <leader>c :FZF<CR>
@@ -185,16 +192,19 @@ map <leader>j :RopeGotoDefinition<CR>
 map <leader>r :RopeRename<CR>
 
 " pymode
-let g:pymode_options_max_line_length = 95
+let g:pymode_options_max_line_length = 120
+let g:pymode_options_colorcolumn = 1
 "let g:pymode_virtualenv = 1
 "let g:pymode_virtualenv_path = './virtualenv'
 let g:pymode_rope = 0
-let g:pymode_lint_checkers = ['pep8', 'pylint', 'pyflakes']
+let g:pymode_lint_checkers = ['pylint', 'pyflakes', 'mccabe']
 let g:pymode_lint_options_pep8 = {'max_line_length': g:pymode_options_max_line_length}
+let g:pymode_lint_options_pylint = {'max-line-length': g:pymode_options_max_line_length}
 let g:pymode_lint_ignore = 'W191'
 
 " buffergator
-map <leader>bg :BuffergatorToggle<CR>
+map <F2> :BuffergatorToggle<CR>
+map <leader><F2> :BuffergatorTabsOpen<CR>
 "map <leader>bn :BuffergatorMruCycleNext<CR>
 "map <leader>bp :BuffergatorMruCyclePrev<CR>
 let g:buffergator_viewport_split_policy = "T"
@@ -224,13 +234,18 @@ let g:used_javascript_libs = 'angularjs'
 
 " deoplete
 let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources = {}
+let g:deoplete#sources._ = ['buffer', 'tag', 'file', 'ultisnips']
+
+" ultisnips
+let g:UltiSnipsExpandTrigger = "<c-j>"
 
 " airline
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 
 " YCM
-let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
+"let g:ycm_global_ycm_extra_conf = "~/.vim/ycm_extra_conf.py"
 
 " vCooler (color picker)
 " alt-c activates
@@ -256,6 +271,10 @@ autocmd FileType python call overrides#pymode()
 
 " {{{ vim-plug
 call plug#begin('~/.vim/plugged')
+" html5 omnicomplete, indent, and syntax
+Plug 'othree/html5.vim'
+" pairs of handy bracket mappings
+Plug 'tpope/vim-unimpaired'
 " plugin to toggle, display and navigate marks
 Plug 'kshenoy/vim-signature'
 " shows git diff in the gutter
@@ -266,7 +285,7 @@ Plug 'qpkorr/vim-bufkill'
 Plug 'ap/vim-css-color'
 " color picker
 Plug 'KabbAmine/vCoolor.vim'
-Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+" Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 " additional c++ syntax highlighting
 Plug 'octol/vim-cpp-enhanced-highlight'
 " vastly improved javascript indentation and syntax support
@@ -285,6 +304,9 @@ Plug 'vim-scripts/HTML-AutoCloseTag'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " deoplete and jedi
 Plug 'zchee/deoplete-jedi'
+" snippets
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 " git wrapper
 Plug 'tpope/vim-fugitive'
 " syntax checking
@@ -354,4 +376,8 @@ colorscheme monokai-phoenix
 " [=           Jump to prev line having a marker of any type
 " m?           Open location list and display markers from current buffer
 " m<BS>        Remove all markers
+" }}}
+
+" {{{ Resources
+" deoplete and ultisnips - https://gregjs.com/vim/2016/neovim-deoplete-jspc-ultisnips-and-tern-a-config-for-kickass-autocompletion/
 " }}}
