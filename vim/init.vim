@@ -271,6 +271,8 @@ autocmd FileType python call overrides#pymode()
 
 " {{{ vim-plug
 call plug#begin('~/.vim/plugged')
+" color scheme collection
+Plug 'flazz/vim-colorschemes'
 " html5 omnicomplete, indent, and syntax
 Plug 'othree/html5.vim'
 " pairs of handy bracket mappings
@@ -348,7 +350,7 @@ Plug 'mhinz/vim-startify'
 call plug#end()
 " }}}
 
-colorscheme monokai-phoenix
+colorscheme Benokai
 
 " {{{ vim-signature keybindings
 " mx           Toggle mark 'x' and display it in the leftmost column
