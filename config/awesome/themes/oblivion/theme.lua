@@ -176,6 +176,13 @@ theme.virshcontrol_label_color_active = theme.fg_urgent
 theme.virshcontrol_label_network_glyph = icons.network .. ": "
 -- }}}
 
+-- DynamicTag {{{
+theme.dynamictag_tag_props = {
+	layout = awful.layout.suit.floating,
+	volatile = true
+}
+-- }}}
+
 local background_color = theme_assets.lighten_up(theme.bg_normal, 5)
 theme.wallpaper = function (s)
 	return theme_assets.share.wallpaper(background_color, xrdb.color8, xrdb.color7)

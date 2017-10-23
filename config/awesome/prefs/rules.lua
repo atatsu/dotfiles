@@ -178,7 +178,7 @@ M.steam = {
 				c.floating = true
 			end
 		end,
-		{ layout = awful.layout.suit.tile.left, master_width_factor = 0.75 },
+		{ layout = awful.layout.suit.floating, master_width_factor = 0.75 },
 		{ before = icons.misc }
 	)
 }
