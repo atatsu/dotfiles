@@ -248,7 +248,8 @@ function M.pacman ()
 		local buttons = awful.button(
 			{},
 			1,
-			function () sexec("pacman -Qu | xmessage -file - -nearmouse") end
+			--function () sexec("pacman -Qu | xmessage -file - -nearmouse") end
+			function () sexec("xbps-install -un | awk '{print $1}' | xmessage -file - -nearmouse") end
 		)
 
 		local icon = M.color_text(icons.tux .. " ", beautiful.widget_icon_color)
@@ -262,7 +263,8 @@ function M.pacman ()
 		status:buttons(buttons)
 
 		local function update_status ()
-			easy_async("zsh -c 'pacman -Qu | wc -l'", function (stdout, stderr, exitreason, exitcode) 
+			--easy_async("zsh -c 'pacman -Qu | wc -l'", function (stdout, stderr, exitreason, exitcode) 
+			easy_async("zsh -c 'xbps-install -un | wc -l'", function (stdout, stderr, exitreason, exitcode) 
 				if exitcode > 0 then
 					status.text = ":("
 					return
