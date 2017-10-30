@@ -26,3 +26,6 @@ c.url.searchengines = dict(
 	voidwiki='https://wiki.voidlinux.eu/index.php?search={}&title=Special%3ASearch&go=Go',
 	voidforum='https://forum.voidlinux.eu/search?q={}',
 )
+
+config.bind('<', 'tab-move -')
+config.bind('>', 'tab-move +')
