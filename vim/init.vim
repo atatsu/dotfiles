@@ -222,11 +222,11 @@ map <leader>tb :TagbarOpenAutoClose<CR>
 map <leader>Tb :TagbarToggle<CR>
 
 " supertab
-autocmd FileType *
-  \ if &omnifunc != '' |
-  \   call SuperTabChain(&omnifunc, "<c-p>") |
-  \   call SuperTabSetDefaultCompletionType("<c-x><c-u>") |
-  \ endif
+"autocmd FileType *
+"  \ if &omnifunc != '' |
+"  \   call SuperTabChain(&omnifunc, "<c-p>") |
+"  \   call SuperTabSetDefaultCompletionType("<c-x><c-u>") |
+"  \ endif
 
 " }}}
 
@@ -248,8 +248,8 @@ Plug 'flazz/vim-colorschemes'
 " html5 omnicomplete, indent, and syntax
 Plug 'othree/html5.vim'
 " syntax checking
-Plug 'scrooloose/syntastic'
-" git wrapper
+"Plug 'scrooloose/syntastic' 
+" git wrapper 
 Plug 'tpope/vim-fugitive'
 " automatically closes html tags (and positions cursor center of tags
 Plug 'vim-scripts/HTML-AutoCloseTag'
@@ -296,7 +296,7 @@ Plug 'mhinz/vim-startify'
 " tagbar
 Plug 'majutsushi/tagbar'
 " tab completion
-"Plug 'ervandew/supertab'
+Plug 'ervandew/supertab'
 " surround
 Plug 'tpope/vim-surround'
 " TODO: don't forget to learn this one
