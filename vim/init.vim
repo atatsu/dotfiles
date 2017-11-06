@@ -271,6 +271,8 @@ Plug 'Raimondi/delimitMate'
 Plug 'ap/vim-css-color'
 " color picker
 Plug 'KabbAmine/vCoolor.vim'
+" preserves splits when closing buffers
+Plug 'qpkorr/vim-bufkill'
 " shows git diff in the gutter
 Plug 'airblade/vim-gitgutter'
 " pairs of handy bracket mappings
