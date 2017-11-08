@@ -85,10 +85,18 @@ alias fm='pcmanfm ~/'
 alias ivim='ps aux | grep vim'
 alias cdd='source cd.sh'
 alias vimhelp='vim -c "call pathogen#helptags()|q"'
-alias note='vim ~/docs/notes/`date +%Y%m%d_%H:%M`'
+alias note='$EDITOR ~/docs/notes/`date +%Y%m%d_%H:%M`'
 alias vim='~/bin/launch-vim'
 alias pynvim='set_venv_nvim'
 alias nvim='ssh_add_if_empty && `which -a nvim | tail -n 1`'
+alias python='ptpython'
+
+# xbps
+alias xbpsq='xbps-query'
+alias xbpsql='xbps-query -s'
+alias xbpsqr='xbps-query -Rs'
+alias xbpsqf='xbps-query -Rf'
+alias xbpsi='sudo xbps-install -S'
 # }}}
 
 # {{{ SSH
@@ -121,26 +129,37 @@ ssh_add_if_empty () {
 		ssh-add
 	}
 }
+
 # }}}
 
 # {{{ virtualenv
+# searches for the existence of a virtualenv and if found activates it
+# will traverse upwards through the filesystem until either one is found
+# or root is reached
 set_venv_nvim () {
-	if [[ (-e virtualenv/bin/activate) ]] {
-		local cwd=`pwd`
-		#VIRTUAL_ENV_PY="$cwd/virtualenv/bin/python" nvim $@
-		source "$cwd/virtualenv/bin/activate" && nvim $@ && deactivate
-	} else {
-		nvim $@
-	}
+	if virt; then 
+		nvim $@ && deactivate; 
+	else 
+		nvim $@; 
+	fi
 }
 
 virt () {
-    if [[ (-e virtualenv/bin/activate) ]] {
-        local activate=virtualenv/bin/activate
-        source ${activate}
-    } else {
-        echo 'no dice'
-    }
+	local start_dir=`pwd`
+	while [[ `pwd` != '/' ]] {
+		if [[ (-e virtualenv/bin/activate) ]] {
+			local cwd=`pwd`
+			#VIRTUAL_ENV_PY="$cwd/virtualenv/bin/python" nvim $@
+			echo "virtualenv found in $cwd, activating"
+			source "$cwd/virtualenv/bin/activate" 
+			cd $start_dir
+			return 0
+		} 
+		cd ../
+	}
+	cd $start_dir
+	echo 'no virtualenv found'
+	return 1
 }
 # }}}
 
