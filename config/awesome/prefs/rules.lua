@@ -184,12 +184,13 @@ M.steam = {
 }
 -- }}}
 
--- {{{ Send chromium and qutebrowser to a newly created, volatile tag
+-- {{{ Send chromium, qutebrowser, and vivaldi to a newly created, volatile tag
 M.web = {
 	rule_any = {
 		class = {
 			"qutebrowser",
-			"Chromium"
+			"Chromium",
+			"Vivaldi-stable"
 		},
 		instance = {
 			"qutebrowser",

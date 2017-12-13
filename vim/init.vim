@@ -140,6 +140,7 @@ if has('nvim')
 	autocmd BufWinEnter,WinEnter term://* startinsert
 	" don't display whitespace characters in the terminal
 	autocmd TermOpen term://* set nolist
+	autocmd BufWinEnter,WinEnter term://* set nolist
 	" need this so that whitespace chars are displayed if a file is opened
 	" via ranger
 	autocmd BufAdd * set list
@@ -148,9 +149,8 @@ if has('nvim')
 	" remove whitespace chars from NERDTree
 	autocmd BufWinEnter,WinEnter *NERD* set nolist
 	" exclude terminal from buffer list
-	autocmd TermOpen * set nobuflisted
-	" zsh
-	nnoremap <silent> <F3> :terminal zsh<CR>
+	"autocmd TermOpen * set nobuflisted zsh nnoremap <silent> <F3> :terminal zsh<CR>
+	noremap <silent> <F3> :terminal zsh<CR>
 	" zsh - but split the window first
 	nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
 	" ranger
@@ -168,8 +168,6 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 
 " buffergator
-map <F2> :BuffergatorToggle<CR>
-map <leader><F2> :BuffergatorTabsOpen<CR>
 "map <leader>bn :BuffergatorMruCycleNext<CR>
 "map <leader>bp :BuffergatorMruCyclePrev<CR>
 let g:buffergator_viewport_split_policy = "T"
@@ -181,10 +179,11 @@ let g:buffergator_suppress_keymaps = 1
 " NERDCommenter
 let g:NERDDefaultAlign = 'left'
 
-"NERDTree
+"nerdtree
 let NERDTreeQuitOnOpen = 1
 let NERDTreeWinSize = 50
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
+let NERDTreeHijackNetrw=1
 
 " pymode
 let g:pymode_options_max_line_length = 120
@@ -210,8 +209,16 @@ let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
 
 " {{{ plugin mappings
 
+" buffergator
+map <F2> :BuffergatorToggle<CR>
+map <leader><F2> :BuffergatorTabsOpen<CR>
+
 " fzf
-map <leader>c :FZF<CR>
+map <leader>f :FZF<CR>
+
+" goyo / limelight
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
 
 " nerdtree
 map <leader>N :NERDTreeToggle<CR>
@@ -251,6 +258,21 @@ Plug 'othree/html5.vim'
 "Plug 'scrooloose/syntastic' 
 " git wrapper 
 Plug 'tpope/vim-fugitive'
+
+" a git commit browser 
+" `:GV` to open commit browser
+" `:GV!` only commits pertaining to current file
+" `:GV?` fills location list with revisions of current file
+" `:GV` or :GV? can be used in visual mode to track selected lines
+" `o` or `<cr>` on commit to display contents
+" `o` or `<cr>` on commits to display diff
+" `O` opens new tab
+" `gb` for `:Gbrowse`
+" `]]` and `[[` to move between commits
+" `.` to start command-line with `:Git [CURSOR] SHA`
+" `q` to close
+Plug 'junegunn/gv.vim'
+
 " automatically closes html tags (and positions cursor center of tags
 Plug 'vim-scripts/HTML-AutoCloseTag'
 " additional c++ syntax highlighting
@@ -279,11 +301,17 @@ Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-unimpaired'
 " plugin to toggle, display and navigate marks
 Plug 'kshenoy/vim-signature'
+
 " cli fuzzy finder
+" note: don't forget to also install `the_silver_searcher`
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
 " tree explorer 
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+" nerdtree git status
+Plug 'Xuyuanp/nerdtree-git-plugin'
 " buffergator
+"
 Plug 'jeetsukumaran/vim-buffergator'
 " plugin for intensely orgasmic commenting
 Plug 'scrooloose/nerdcommenter'
@@ -303,8 +331,6 @@ Plug 'ervandew/supertab'
 Plug 'tpope/vim-surround'
 " TODO: don't forget to learn this one
 Plug 'mattn/emmet-vim'
-" nerdtree git status
-Plug 'Xuyuanp/nerdtree-git-plugin'
 " snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -316,10 +342,15 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " deoplete and jedi
 Plug 'zchee/deoplete-jedi' 
 
+" distraction-free writing in vim
+Plug 'junegunn/goyo.vim'
+" hyperfocus-writing in vim
+Plug 'junegunn/limelight.vim'
+
 call plug#end()
 " }}}
 
-colorscheme Benokai
+colorscheme monokai
 
 " {{{ vim-signature keybindings
 " mx           Toggle mark 'x' and display it in the leftmost column

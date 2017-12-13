@@ -183,6 +183,7 @@ theme.dynamictag_tag_props = {
 }
 -- }}}
 
+
 local background_color = theme_assets.lighten_up(theme.bg_normal, 5)
 theme.wallpaper = function (s)
 	return theme_assets.share.wallpaper(background_color, xrdb.color8, xrdb.color7)
