@@ -30,6 +30,8 @@ fi;
 #xcompmgr -c -t-5 -l-5 -r4.2 -o.55 -f -D5 &
 compton &
 start-pulseaudio-x11 &
+# touchpad shit, so obviously uncomment when a touchpad is present
+#syndaemon -i -0.5 -t -K -R -d
 #xscreensaver -nosplash &
 
 #if [[ `xrandr | grep -c "1280x1024"` -gt 1 ]]
