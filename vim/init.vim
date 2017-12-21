@@ -7,8 +7,7 @@ endif
 
 " {{{ General shit
 set encoding=utf-8 
-" enable mouse support
-set mouse=a
+set t_Co=256 " enable mouse support set mouse=a
 
 " display whitespace characters
 setlocal listchars=tab:»·,trail:·,eol:¬,space:␣
@@ -75,8 +74,6 @@ set showmode
 
 " refresh syntax highlighting
 autocmd BufEnter,InsertLeave * :syntax sync fromstart
-
-set background=dark
 " }}}
 
 
@@ -203,6 +200,9 @@ let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
 "let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
 "let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-o>"]
 
+" vim-colors-pencil 
+let g:pencil_higher_contrast_ui = 1 
+
 " }}}
 
 
@@ -252,16 +252,14 @@ call plug#begin('~/.vim/plugged')
 
 " color scheme collection
 Plug 'flazz/vim-colorschemes'
-" html5 omnicomplete, indent, and syntax
-Plug 'othree/html5.vim'
-" syntax checking
-"Plug 'scrooloose/syntastic' 
-" git wrapper 
-Plug 'tpope/vim-fugitive'
-
-" a git commit browser 
-" `:GV` to open commit browser
-" `:GV!` only commits pertaining to current file
+" color scheme
+Plug 'reedes/vim-colors-pencil' " html5 omnicomplete, indent, and syntax Plug 'othree/html5.vim'
+" color scheme
+Plug 'morhetz/gruvbox' " git wrapper Plug 'tpope/vim-fugitive'
+" color scheme 
+Plug 'NLKNguyen/papercolor-theme' " a git commit browser 
+" color scheme
+Plug 'dracula/vim' " `:GV` to open commit browser `:GV!` only commits pertaining to current file
 " `:GV?` fills location list with revisions of current file
 " `:GV` or :GV? can be used in visual mode to track selected lines
 " `o` or `<cr>` on commit to display contents
@@ -350,7 +348,8 @@ Plug 'junegunn/limelight.vim'
 call plug#end()
 " }}}
 
-colorscheme monokai
+set background=dark
+colorscheme PaperColor
 
 " {{{ vim-signature keybindings
 " mx           Toggle mark 'x' and display it in the leftmost column

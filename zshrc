@@ -30,7 +30,7 @@ export LESSHISTFILE="-"
 export PAGER="less"
 export VISUAL="nvim"
 export EDITOR=$VISUAL
-export BROWSER="qutebrowser"
+export BROWSER="vivaldi"
 export XTERM="xterm"
 export FZF_DEFAULT_COMMAND='ag -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -89,7 +89,7 @@ alias note='$EDITOR ~/docs/notes/`date +%Y%m%d_%H:%M`'
 alias vim='~/bin/launch-vim'
 alias pynvim='set_venv_nvim'
 alias nvim='ssh_add_if_empty && `which -a nvim | tail -n 1`'
-alias python='ptpython'
+#alias python='ptpython'
 
 # xbps
 alias xbpsq='xbps-query'

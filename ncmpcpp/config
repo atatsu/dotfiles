@@ -30,9 +30,9 @@
 #
 ## Needed for tag editor and file operations to work.
 ##
-#mpd_music_dir = ~/music
+mpd_music_dir = ~/music
 #
-#mpd_crossfade_time = 5
+mpd_crossfade_time = 5
 #
 ##### music visualizer #####
 ##
@@ -318,6 +318,8 @@ execute_on_song_change = "~/bin/ncmpcpp-album-art"
 ## part of progressbar.
 ##
 #progressbar_look = =>
+#progressbar_look = ▬▶▭
+progressbar_look = ▬▭
 #
 ## Available values: database, playlist.
 ##
@@ -508,7 +510,7 @@ execute_on_song_change = "~/bin/ncmpcpp-album-art"
 ## are used there is a possibility that you'll be able to use only colors with
 ## transparent background.
 #
-#colors_enabled = yes
+colors_enabled = yes
 #
 #empty_tag_color = cyan
 #
