@@ -74,14 +74,32 @@ set showmode
 
 " refresh syntax highlighting
 autocmd BufEnter,InsertLeave * :syntax sync fromstart
+
+" use ag over grep
+if executable('ag')
+	set grepprg=ag\ --nogroup\ --nocolor
+endif
 " }}}
 
 
 
 " {{{ Mappings
 
-" display a list of buffers prompting for the number to switch to
+" ag prompt
+command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!  
+nnoremap <leader>G :Ag<space> 
+" grep for word under cursor 
+nnoremap <leader>K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR> 
+
+" display a list of buffers prompting for the number to switch to 
 nnoremap <F5> :buffers<CR>:buffer<Space>
+
+" code folding toggle
+nmap <CR> za
+" the following prevents the mapped <CR> from interfering
+" with selection of history items and jumping to errors
+"":autocmd CmdwinEnter * nnoremap <CR> <CR>
+:autocmd BufReadPost quickfix nnoremap <CR> <CR>
 
 " toggle whitespace
 nnoremap <F10> :<C-U>setlocal list! list? <CR>
@@ -145,13 +163,13 @@ if has('nvim')
 	autocmd BufWinEnter,WinEnter */.git/* set nolist
 	" remove whitespace chars from NERDTree
 	autocmd BufWinEnter,WinEnter *NERD* set nolist
-	" exclude terminal from buffer list
-	"autocmd TermOpen * set nobuflisted zsh nnoremap <silent> <F3> :terminal zsh<CR>
-	noremap <silent> <F3> :terminal zsh<CR>
+	" exclude terminal from buffer list autocmd TermOpen * set nobuflisted zsh 
+	" nnoremap <silent> <F3> :terminal zsh<CR> 
+	noremap <silent> <F3> :terminal zsh<CR>i
 	" zsh - but split the window first
 	nnoremap <silent> <leader><F3> :split<CR> :terminal zsh<CR>
 	" ranger
-	nnoremap <silent> <F4> :terminal ranger<CR>
+	nnoremap <silent> <F4> :terminal ranger<CR>i
 endif
 
 " }}}
@@ -228,9 +246,7 @@ map <leader>N :NERDTreeToggle<CR>
 map <leader>tb :TagbarOpenAutoClose<CR>
 map <leader>Tb :TagbarToggle<CR>
 
-" supertab
-"autocmd FileType *
-"  \ if &omnifunc != '' |
+" supertab autocmd FileType * \ if &omnifunc != '' |
 "  \   call SuperTabChain(&omnifunc, "<c-p>") |
 "  \   call SuperTabSetDefaultCompletionType("<c-x><c-u>") |
 "  \ endif
@@ -253,13 +269,18 @@ call plug#begin('~/.vim/plugged')
 " color scheme collection
 Plug 'flazz/vim-colorschemes'
 " color scheme
-Plug 'reedes/vim-colors-pencil' " html5 omnicomplete, indent, and syntax Plug 'othree/html5.vim'
+Plug 'reedes/vim-colors-pencil' 
 " color scheme
-Plug 'morhetz/gruvbox' " git wrapper Plug 'tpope/vim-fugitive'
+Plug 'morhetz/gruvbox' 
 " color scheme 
-Plug 'NLKNguyen/papercolor-theme' " a git commit browser 
+Plug 'NLKNguyen/papercolor-theme' 
 " color scheme
-Plug 'dracula/vim' " `:GV` to open commit browser `:GV!` only commits pertaining to current file
+Plug 'dracula/vim' 
+" html5 omnicomplete, indent, and syntax 
+Plug 'othree/html5.vim'
+" git wrapper 
+Plug 'tpope/vim-fugitive'
+" a git commit browser `:GV` to open commit browser `:GV!` only commits pertaining to current file
 " `:GV?` fills location list with revisions of current file
 " `:GV` or :GV? can be used in visual mode to track selected lines
 " `o` or `<cr>` on commit to display contents
@@ -349,7 +370,7 @@ call plug#end()
 " }}}
 
 set background=dark
-colorscheme PaperColor
+colorscheme Benokai
 
 " {{{ vim-signature keybindings
 " mx           Toggle mark 'x' and display it in the leftmost column
