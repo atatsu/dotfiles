@@ -1,4 +1,4 @@
-<domain type='kvm' id='4'>
+<domain type='kvm' id='18'>
   <name>gaming</name>
   <uuid>53d6ecc8-d72d-4b07-bdbc-138418b0aff7</uuid>
   <memory unit='KiB'>16777216</memory>
@@ -118,21 +118,21 @@
     </controller>
     <interface type='bridge'>
       <mac address='52:54:00:cb:e9:2c'/>
-      <source bridge='br0'/>
+      <source bridge='virbr0'/>
       <target dev='vnet0'/>
       <model type='virtio'/>
       <alias name='net0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <serial type='pty'>
-      <source path='/dev/pts/14'/>
+      <source path='/dev/pts/6'/>
       <target type='isa-serial' port='0'>
         <model name='isa-serial'/>
       </target>
       <alias name='serial0'/>
     </serial>
-    <console type='pty' tty='/dev/pts/14'>
-      <source path='/dev/pts/14'/>
+    <console type='pty' tty='/dev/pts/6'>
+      <source path='/dev/pts/6'/>
       <target type='serial' port='0'/>
       <alias name='serial0'/>
     </console>
