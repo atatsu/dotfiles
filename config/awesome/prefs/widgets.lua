@@ -19,6 +19,8 @@ local M = {
 	end
 }
 
+-- {{{ Menu
+
 local awesome_menuitems = {
 	{ "syela", {
 		{ " tmnt", "chromium https://www.youtube.com/results?search_query=teenage+mutant+ninja+turtles&page=&utm_source=opensearch" },
@@ -43,9 +45,19 @@ M.mainmenu_launcher = awful.widget.launcher({
 	menu = M.mainmenu 
 })
 
+-- }}}
+
+
+-- {{{ termleaf
+
 M.termleaf = utils.leaf("termite")
 
-M.keyboard_layout = awful.widget.keyboardlayout()
+-- }}}
+
+-- M.keyboard_layout = awful.widget.keyboardlayout()
+
+
+-- {{{ virshcontrol
 
 function M.virshcontrol ()
 	if widget_cache.virshcontrol then
@@ -71,6 +83,11 @@ function M.virshcontrol ()
 	return widget_cache.virshcontrol
 end
 
+-- }}}
+
+
+-- {{{ dynamictag
+
 function M.dynamictag ()
 	if widget_cache.dynamictag then
 		return widget_cache.dynamictag
@@ -83,6 +100,8 @@ function M.dynamictag ()
 	}
 	return widget_cache.dynamictag
 end
+
+-- }}}
 
 --menubar.utils.terminal = .config.terminal -- Set the terminal for applications that require it
 

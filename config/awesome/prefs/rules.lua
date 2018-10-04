@@ -16,6 +16,10 @@ local clientbuttons = buttons.client
 
 local is_setup = false
 
+local capi = {
+	screen = screen,
+}
+
 local M
 M = {
 	init = function ()
@@ -253,6 +257,54 @@ M.music = {
 		{ gap = 5, master_width_factor = 0.7, layout = awful.layout.suit.tile.bottom },
 		{ before = icons.misc }
 	)
+}
+-- }}}
+
+-- {{{ Place cava on all tags, positioned at the bottom of the screen, in the back
+M.cava = {
+	rule = {
+		class = "URxvt",
+		instance = "urxvt",
+		name = "cava"
+	},
+	callback = function (c)
+		local geometry = {}
+
+		local repos = function ()
+			if c.x == geometry.x and c.y == geometry.y and c.width == geometry.w and c.height == geometry.h then
+				return
+			end
+
+			awful.titlebar.hide(c)
+			c.floating = true
+			c.focusable = false
+			c.dockable = true
+			c.modal = true
+			c.sticky = true
+			c.skip_taskbar = true
+			c.below = true
+
+			awful.placement.scale(c, { to_percent = 1, direction = "left" })
+			awful.placement.scale(c, { to_percent = 0.07, direction = "down" })
+			local f = (awful.placement.bottom)
+			f(c)
+		end
+
+		c:connect_signal("property::size", repos)
+		-- performing the above `repos` in a "property::position" signal handler causes an overflow
+		-- so instead performing on mouse movement
+		c:connect_signal("mouse::move", repos)
+		c:connect_signal("mouse::enter", repos)
+		c:connect_signal("mouse::leave", repos)
+
+		repos()
+		geometry = {
+			x = c.x,
+			y = c.y,
+			w = c.width,
+			h = c.height
+		}
+	end
 }
 -- }}}
 

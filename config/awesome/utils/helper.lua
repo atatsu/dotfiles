@@ -30,7 +30,7 @@ function M.client_menu_toggle ()
 			local hidden = c.hidden and prefsicons.eyeclosed or ""
 			local minimized = c.minimized and prefsicons.minimized or ""
 			clients[i] = {
-				hidden .. " " .. minimized .. " " .. c.name,
+				hidden .. " " .. minimized .. " " .. (c.name or c.class or c.instance or "(not available)"),
 				function ()
 					c.first_tag:view_only()
 					c.hidden = false

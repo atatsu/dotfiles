@@ -135,3 +135,9 @@ awful.screen.connect_for_each_screen(function(s)
 	}
 end)
 -- }}}
+
+-- check if we've set our background using feh before and if so eval it
+if awful.util.file_readable("~/.fehbg") then 
+	awful.spawn("~/.fehbg")
+end
+
