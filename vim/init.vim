@@ -85,6 +85,10 @@ endif
 
 " {{{ Mappings
 
+" copy register easy mode
+noremap <leader>y "+y
+vnoremap <leader>y "+y
+
 " ag prompt
 command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!  
 nnoremap <leader>G :Ag<space> 
@@ -251,6 +255,12 @@ map <leader>Tb :TagbarToggle<CR>
 "  \   call SuperTabSetDefaultCompletionType("<c-x><c-u>") |
 "  \ endif
 
+" semantic-highlight
+"let g:semanticTermColors = [28,1,2,3,4,5,6,7,25,9,10,34,12,13,14,15,16,125,124,19]
+"let g:semanticGUIColors = ['#d52ble', '#859900', '#cb4b16', '#268bd2', '#a3e9a4','#ac206f', '#306860', '#c54b8c', '#3e3e3e', '#5b2527', '#03396c','#005b96', '#008744', '#d62d20']
+
+" python-syntax
+"let python_highlight_all = 1
 " }}}
 
 
@@ -321,6 +331,9 @@ Plug 'tpope/vim-unimpaired'
 " plugin to toggle, display and navigate marks
 Plug 'kshenoy/vim-signature'
 
+"Plug 'hdima/python-syntax'
+" semantic highlighting for vim
+"Plug 'jaxbot/semantic-highlight.vim'
 " cli fuzzy finder
 " note: don't forget to also install `the_silver_searcher`
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -353,6 +366,8 @@ Plug 'mattn/emmet-vim'
 " snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+" linter
+Plug 'nvie/vim-flake8'
 
 " jedi
 Plug 'davidhalter/jedi-vim'
