@@ -2,7 +2,7 @@
 
 # {{{ Environment
 # Purposefully stomping over /usr/bin with ~/bin
-export PATH=~/bin:~/.config/awesome/bin:$PATH:~/games/bin
+export PATH=~/bin:~/.config/awesome/bin:$PATH:/games/bin
 if [[ -d ~/.luarocks ]] {
     PATH=$PATH:~/.luarocks/bin
     eval `luarocks path`
@@ -20,6 +20,16 @@ if [[ -d $HOME/.gem/ruby ]] {
 
 # for luakit
 export LUA_CPATH="/usr/lib/lua/5.1/?.so;$LUA_CPATH"
+
+# node/npm
+if [[ ! -d ~/.npm-packages ]] {
+	mkdir ~/.npm-packages
+}
+export NPM_PACKAGES=~/.npm-packages
+# `echo "prefix = $NPM_PACKAGES" >> ~/.npmrc
+export PATH=$NPM_PACKAGES/bin:$PATH
+#export MANPATH=$NPM_PACKAGES/share/man:$(manpath)
+export NODE_PATH=$NPM_PACKAGES/lib/node_modules:$NODE_PATH
 
 # {{{ Set the appropriate paths for lua5.1 and lua5.2
 # }}}
