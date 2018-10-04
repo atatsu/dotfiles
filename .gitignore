@@ -1,5 +1,6 @@
 *.pyc
 *.swp
 *.swo
+*.uuid
 vim/plugged/
 config/ranger/history
