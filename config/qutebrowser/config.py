@@ -1,8 +1,8 @@
 c.downloads.location.directory = '~/downloads/qutebrowser/'
 
-c.fonts.web.size.default = 12
+c.fonts.web.size.default = 10
 
-c.fonts.web.size.default_fixed = 12
+c.fonts.web.size.default_fixed = 10
 
 # ignore-case (IgnoreCase):
 #     Whether to find text on a page case-insensitively.
@@ -10,7 +10,7 @@ c.fonts.web.size.default_fixed = 12
 #         false: Search case-sensitively
 #         smart: Search case-sensitively if there are capital chars
 #     Default: smart
-c.ignore_case = 'smart'
+c.search.ignore_case = 'smart'
 
 # Definitions of search engines which can be used via the address bar.
 # The searchengine named `DEFAULT` is used when `general -> auto-search`
