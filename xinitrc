@@ -18,11 +18,12 @@ xrdb -merge "${HOME}/.Xresources"
 #fetchmail
 
 # {{{ Display settings
-if [ `xrandr | grep -c ' connected'` -eq 3 ]; then
-		echo 'yes'
-		xrandr --output DVI-I-1 --primary --auto --output DVI-D-0 --auto --right-of DVI-I-1 --rotate left --output HDMI-0 --auto --left-of DVI-I-1
+if [ `xrandr | grep -c ' connected'` -eq 2 ]; then
+		# xrandr --output DP-0 --primary --auto --output DVI-I-1 --auto --left-of DP-0
+		xrandr --output HDMI-0 --primary --auto --output DVI-I-1 --auto --left-of HDMI-0
 else
-    xrandr --output DVI-1 --primary --mode 1680x1050
+    # xrandr --output DP-0 --primary --auto
+		xrandr --output HDMI-0 --primary --auto
 fi;
 # }}}
 
@@ -40,6 +41,6 @@ start-pulseaudio-x11 &
 
 #start awesome
 wm_bin=${1:-awesome}
-#eval $(cat ~/.fehbg)
+~/.fehbg &
 export LC_ALL=en_US.UTF-8
 exec ssh-agent $wm_bin
