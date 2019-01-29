@@ -1,0 +1,4 @@
+#!/usr/bin/zsh -f
+
+pushd ~/apps/discord-canary
+./DiscordCanary

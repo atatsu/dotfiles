@@ -1,0 +1,5 @@
+#!/usr/bin/zsh -f
+
+cd ~/apps/gdrivefs
+source virtualenv/bin/activate
+sudo gdfs -o big_writes,allow_other /var/cache/gdfs.creds /gdrive

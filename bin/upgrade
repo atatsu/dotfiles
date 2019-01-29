@@ -1,0 +1,10 @@
+#!/bin/zsh -f
+
+timestamp=$(date +%Y%m%d-%H%M%S)
+#pacman -Qu > ~/backups/${timestamp}.packages
+#sudo tar -cvzf ~/backups/${timestamp}-etc.tar.gz /etc
+#sudo pacman -Syyu
+
+xbps-install -un > ~/backups/${timestamp}.packages
+sudo tar -cvzf ~/backups/${timestamp}-etc.tar.gz /etc
+sudo xbps-install -Syu

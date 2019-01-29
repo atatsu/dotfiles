@@ -1,0 +1,3 @@
+#!/usr/bin/zsh -f
+
+lxsudo _bridge-teardown

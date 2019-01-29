@@ -1,0 +1,6 @@
+#!/usr/bin/zsh -f
+
+echo "Don't forget to export your display!"
+echo "export DISPLAY=:1.0"
+
+Xephyr :1 -screen 1280x960

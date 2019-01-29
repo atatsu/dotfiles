@@ -1,0 +1,25 @@
+#!/usr/bin/zsh -f
+
+#sudo ip link set enp6s0 nomaster
+#sudo ip link delete br0 type bridge
+##sudo dhclient -r virbr0
+##sudo ip link set virbr0 down
+#sudo dhclient -r enp6s0
+#sudo dhclient enp6s0
+
+#sudo ip link set br0 down
+#sudo ip link set enp6s0 nomaster
+#sudo ip link set tap0 nomaster
+#sudo ip link delete br0 type bridge
+#sudo ip tuntap del tap0 mode tap
+#sudo dhclient -r enp6s0
+#sudo dhclient enp6s0
+
+
+sudo ip link set br0 down
+sudo ip link set enp6s0 nomaster
+sudo ip link set tap0 nomaster
+sudo ip link delete br0 type bridge
+sudo ip tuntap del tap0 mode tap
+sudo dhclient -r enp6s0
+sudo dhclient enp6s0
