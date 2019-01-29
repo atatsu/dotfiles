@@ -322,7 +322,7 @@ M.chat = {
 	},
 	--callback = ruleutils.chat_rule_callback
 	callback = ruleutils.dynamic_tag(
-		screenutils.get_by_index(3), 
+		screenutils.get_by_index(2), 
 		icons.chat, 
 		function (c, tag, s)
 			-- ignore the mumble connection dialog
