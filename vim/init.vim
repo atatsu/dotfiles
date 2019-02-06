@@ -81,6 +81,12 @@ if executable('ag')
 endif
 " }}}
 
+" {{{ File associations (that ain't standard)
+
+autocmd BufRead,BufNewFile *.vue set filetype=html
+
+" }}}
+
 
 
 " {{{ Mappings
@@ -198,11 +204,17 @@ let g:buffergator_suppress_keymaps = 1
 " NERDCommenter
 let g:NERDDefaultAlign = 'left'
 
-"nerdtree
+" nerdtree
 let NERDTreeQuitOnOpen = 1
 let NERDTreeWinSize = 50
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$']
 let NERDTreeHijackNetrw=1
+
+" devicons
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFolderOpenClose = 1
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['vue'] = ''
 
 " pymode
 let g:pymode_options_max_line_length = 120
@@ -312,6 +324,8 @@ Plug 'pangloss/vim-javascript'
 Plug 'othree/javascript-libraries-syntax.vim'
 " TypeScript syntax files
 Plug 'leafgarland/typescript-vim'
+" syntax highlighting for Vue.js components
+Plug 'posva/vim-vue'
 " needed by *tsuquyomi*
 Plug 'Shougo/vimproc.vim'
 " works as a client for a TSServer
@@ -351,8 +365,6 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'klen/python-mode', { 'branch': 'develop' }
 " powerline variant
 Plug 'vim-airline/vim-airline'
-" Adds file type glyphs/icons to many popular vim plugins
-Plug 'ryanoasis/vim-devicons'
 " fancy start screen for vim
 Plug 'mhinz/vim-startify'
 " tagbar
@@ -380,6 +392,11 @@ Plug 'zchee/deoplete-jedi'
 Plug 'junegunn/goyo.vim'
 " hyperfocus-writing in vim
 Plug 'junegunn/limelight.vim'
+
+" Make sure this one loads last so that all plugins it
+" supports have already been loaded
+" Adds file type glyphs/icons to many popular vim plugins
+Plug 'ryanoasis/vim-devicons'
 
 call plug#end()
 " }}}
