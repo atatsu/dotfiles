@@ -10,6 +10,8 @@ fi
 
 
 #Xorg apparently deprecated ctrl+alt+bksp, overriding
+# NOTE: This now produces the following warning:
+#       "Unsupported high keycode 372 for name <I372> ignored..."
 setxkbmap -option terminate:ctrl_alt_bksp
 
 #merge custom X resources file
@@ -41,6 +43,10 @@ start-pulseaudio-x11 &
 
 #start awesome
 wm_bin=${1:-awesome}
-~/.fehbg &
 export LC_ALL=en_US.UTF-8
+
+if [ -x ~/bin/startup ]; then
+	~/bin/startup
+fi;
+
 exec ssh-agent $wm_bin
