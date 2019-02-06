@@ -208,7 +208,7 @@ M.web = {
 		function (c, tag, s)
 			mouse.coords({ x = c.x, y = c.y})
 		end,
-		{ index = 1, master_width_factor = 0.75, layout = awful.layout.suit.tile.bottom }
+		{ index = 1, master_width_factor = 0.75, layout = awful.layout.suit.magnifier }
 	)
 }
 -- }}}
@@ -314,10 +314,12 @@ M.chat = {
 		class = {
 			"weechat",
 			"Mumble",
+			"discord",
 		},
 		instance = {
 			"weechat",
 			"mumble",
+			"discord",
 		}
 	},
 	--callback = ruleutils.chat_rule_callback
@@ -341,7 +343,7 @@ M.chat = {
 			-- weechat
 			awful.client.setmaster(c)
 		end,
-		{ master_width_factor = 0.8 },
+		{ master_width_factor = 0.8, layout = awful.layout.suit.tile.bottom },
 		{ after = icons.web, fallback = 1 }
 	)
 }
