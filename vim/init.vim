@@ -42,6 +42,7 @@ endif
 filetype on
 filetype plugin on
 filetype plugin indent on
+autocmd BufWritePre *.py :call flake8#Flake8()
 
 " display
 set number
@@ -237,6 +238,15 @@ let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
 " vim-colors-pencil 
 let g:pencil_higher_contrast_ui = 1 
 
+" vim-flake8
+let g:flake8_cmd="/usr/bin/flake8"
+let g:flake8_show_in_gutter=1
+"let g:flake8_show_in_file=1
+"
+" ale
+nmap <silent> <C-n> <Plug>(ale_next_wrap)
+nmap <silent> <C-p> <Plug>(ale_previous_wrap)
+
 " }}}
 
 
@@ -393,10 +403,24 @@ Plug 'junegunn/goyo.vim'
 " hyperfocus-writing in vim
 Plug 'junegunn/limelight.vim'
 
+" edit code that's embedded within other code
+Plug 'AndrewRadev/inline_edit.vim'
+
 " Make sure this one loads last so that all plugins it
 " supports have already been loaded
 " Adds file type glyphs/icons to many popular vim plugins
 Plug 'ryanoasis/vim-devicons'
+
+" Check syntax in Vim asynchronously and fix files,
+" with Language Server Protocol (LSP) support
+Plug 'dense-analysis/ale'
+
+" A Vim plugin that provides GraphQL file detection, 
+" syntax highlighting, and indentation.
+Plug 'jparise/vim-graphql'
+
+" A Vim plugin that manages your tag files
+Plug 'ludovicchabant/vim-gutentags'
 
 call plug#end()
 " }}}
