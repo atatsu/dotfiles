@@ -16,7 +16,7 @@ set list
 " tabs and shit
 set softtabstop=2
 set tabstop=2
-set noexpandtab
+set expandtab
 set shiftwidth=2
 set autoindent
 
@@ -42,6 +42,16 @@ endif
 filetype on
 filetype plugin on
 filetype plugin indent on
+" FIXME: move these all to `ftplugin`
+autocmd BufRead,BufNewFile *.vue set filetype=html
+" remove trailing whitespace from various filetypes
+autocmd BufWritePre *.js :%s/\s\+$//e
+autocmd BufWritePre *.vue :%s/\s\+$//e
+autocmd BufWritePre *.html :%s/\s\+$//e
+autocmd BufWritePre *.css :%s/\s\+$//e
+autocmd BufWritePre *.py :call flake8#Flake8()
+autocmd FileType dockerfile autocmd BufWritePre <buffer> :%s/\s\+$//e
+"autocmd FileType html autocmd BufWritePre <buffer> call HtmlBeautify()
 
 " display
 set number
@@ -222,7 +232,9 @@ let g:pymode_options_colorcolumn = 1
 "let g:pymode_virtualenv = 1
 "let g:pymode_virtualenv_path = './virtualenv'
 let g:pymode_rope = 0
-let g:pymode_lint_checkers = ['pylint', 'pyflakes', 'mccabe']
+" let g:pymode_lint_checkers = ['pylint', 'pyflakes', 'mccabe']
+" pyflakes doesn't seem respect `from __future__ import annotations`
+let g:pymode_lint_checkers = ['pylint', 'mccabe']
 let g:pymode_lint_options_pep8 = {'max_line_length': g:pymode_options_max_line_length}
 let g:pymode_lint_options_pylint = {'max-line-length': g:pymode_options_max_line_length}
 let g:pymode_lint_ignore = ['W191']
@@ -236,6 +248,11 @@ let g:SuperTabDefaultCompletionType = '<c-x><c-o>'
 
 " vim-colors-pencil 
 let g:pencil_higher_contrast_ui = 1 
+
+" vim-flake8
+let g:flake8_cmd="/usr/bin/flake8"
+let g:flake8_show_in_gutter=1
+"let g:flake8_show_in_file=1
 
 " }}}
 
@@ -280,6 +297,7 @@ map <leader>Tb :TagbarToggle<CR>
 " {{{ plugin overrides
 " pymode and it's fuckin' spaces only shit
 autocmd FileType python call overrides#pymode()
+
 " }}}
 
 
@@ -357,7 +375,6 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 " nerdtree git status
 Plug 'Xuyuanp/nerdtree-git-plugin'
 " buffergator
-"
 Plug 'jeetsukumaran/vim-buffergator'
 " plugin for intensely orgasmic commenting
 Plug 'scrooloose/nerdcommenter'
@@ -392,6 +409,15 @@ Plug 'zchee/deoplete-jedi'
 Plug 'junegunn/goyo.vim'
 " hyperfocus-writing in vim
 Plug 'junegunn/limelight.vim'
+" syntax highlighting for Stylus
+Plug 'wavded/vim-stylus'
+" vim syntax file & snippets for Docker's Dockerfile
+Plug 'ekalinin/Dockerfile.vim'
+" vim plugin which formats javascript files by js-beautify
+Plug 'maksimr/vim-jsbeautify'
+
+" edit code that's embedded within other code
+Plug 'AndrewRadev/inline_edit.vim'
 
 " Make sure this one loads last so that all plugins it
 " supports have already been loaded
