@@ -1,7 +1,10 @@
 # {{{ User Settings
 
-# {{{ Environment
+if [[ ! -d ~/bin ]] {
+	mkdir ~/bin
+}
 
+# {{{ Environment
 export XDG_MENU_PREFIX=""
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_CONFIG_DIRS="/etc/xdg"
@@ -11,9 +14,26 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 
 # Purposefully stomping over /usr/bin with ~/bin
 export PATH=~/bin:~/.config/awesome/bin:$PATH:/games/bin
+
+if [[ -d ~/bin ]] {
+	export PATH=$PATH:~/bin
+}
+
+if [[ -d ~/.local/bin ]] {
+	export PATH=$PATH:~/.local/bin
+}
+
+if [[ -d ~/.config/awesome/bin ]] {
+	export PATH=~/.config/awesome/bin:$PATH
+}
+
+if [[ -d /games/bin ]] {
+	export PATH=$PATH:/games/bin
+}
+
 if [[ -d ~/.luarocks ]] {
-    PATH=$PATH:~/.luarocks/bin
-    eval `luarocks path`
+	PATH=$PATH:~/.luarocks/bin
+	eval `luarocks path`
 }
 
 # virsh
@@ -38,6 +58,10 @@ export NPM_PACKAGES=~/.npm-packages
 export PATH=$NPM_PACKAGES/bin:$PATH
 #export MANPATH=$NPM_PACKAGES/share/man:$(manpath)
 export NODE_PATH=$NPM_PACKAGES/lib/node_modules:$NODE_PATH
+
+if [[ ! -d ~/.downloads ]] {
+	mkdir -p ~/downloads/{qutebrowser,chromium,vivaldi}
+}
 
 # {{{ Set the appropriate paths for lua5.1 and lua5.2
 # }}}
@@ -143,9 +167,12 @@ alias npm-exec='PATH=$(npm bin):$PATH'
 
 # {{{ if no keys in agent invoke `ssh-add`
 ssh_add_if_empty () {
-	if [[ `ssh-add -l` = "The agent has no identities." ]] {
+	if [[ -e ~/.ssh/atatsu.pub && `ss-add -l` = "The agent has no identities." ]] {
 		ssh-add
 	}
+	#if [[ `ssh-add -l` = "The agent has no identities." ]] {
+	#  ssh-add
+	#}
 }
 
 # }}}
@@ -342,7 +369,7 @@ function setprompt () {
 	screen*)
             PR_TITLEBAR=$'%{\e_screen \005 (\005t) | %(!.*ROOT* |.)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\e\\%}'
             # ensure SSH agent is still usable after an X restart
-            SSH_AUTH_SOCK=`find /tmp/gpg-* -name S.gpg-agent.ssh`
+            #SSH_AUTH_SOCK=`find /tmp/gpg-* -name S.gpg-agent.ssh`
 	    ;;
 	*)
             PR_TITLEBAR=''

@@ -248,8 +248,8 @@ function M.pacman ()
 		local buttons = awful.button(
 			{},
 			1,
-			--function () sexec("pacman -Qu | xmessage -file - -nearmouse") end
-			function () sexec("xbps-install -un | awk '{print $1}' | xmessage -file - -nearmouse") end
+			function () sexec("pacman -Qu | xmessage -file - -nearmouse") end
+			--function () sexec("xbps-install -un | awk '{print $1}' | xmessage -file - -nearmouse") end
 		)
 
 		local icon = M.color_text(icons.tux .. " ", beautiful.widget_icon_color)
