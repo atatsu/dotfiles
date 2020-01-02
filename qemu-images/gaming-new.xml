@@ -20,8 +20,8 @@
   </resource>
   <os>
     <type arch='x86_64' machine='pc-i440fx-2.12'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/ovmf/x64/ovmf_x64.bin</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/gaming-new_VARS.fd</nvram>
+		<loader readonly="yes" type="pflash">/usr/share/ovmf/x64/OVMF_CODE.fd</loader>
+		<nvram>/usr/share/ovmf/x64/OVMF_VARS.fd</nvram>
     <bootmenu enable='no'/>
   </os>
   <features>
@@ -81,6 +81,7 @@
       <alias name='virtio-disk2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </disk>
+		<!--
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source file='/home/atatsu/downloads/qutebrowser/virtio-win-0.1.149.iso'/>
@@ -90,6 +91,7 @@
       <alias name='ide0-0-0'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+		-->
     <controller type='usb' index='0' model='ich9-ehci1'>
       <alias name='usb'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x7'/>

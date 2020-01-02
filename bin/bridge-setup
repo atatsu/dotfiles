@@ -1,3 +1,9 @@
 #!/usr/bin/zsh -f 
 
-lxsudo _bridge-setup
+# Necessary Artix/Arch packages
+#  * lxqt-sudo
+#  * dhcpcd
+#  * dhcpcd-runit
+#  * dhclient
+
+lxqt-sudo _bridge-setup

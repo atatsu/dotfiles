@@ -1,10 +1,11 @@
 #!/usr/bin/zsh -f
 
-#sudo ip link add name br0 type bridge
-#sudo ip link set br0 up 
-#sudo ip link set enp6s0 master br0
-#sudo dhclient br0
-#sudo ip addr add dev br0 192.168.11.26/24
+# seems to work in Artix/Arch
+sudo ip link add name br0 type bridge
+sudo ip link set br0 up 
+sudo ip link set enp6s0 master br0
+sudo dhclient br0
+sudo ip addr add dev br0 192.168.11.26/24
 
 #sudo ip link set virbr0 up
 #sudo ip link set enp6s0 master virbr0
@@ -28,12 +29,13 @@
 #sudo dhclient br0
 
 
-sudo dhcpcd --release enp6s0
-sudo ip link add br0 type bridge
-sudo ip addr flush dev enp6s0
-sudo ip link set enp6s0 master br0
-sudo ip tuntap add dev tap0 mode tap user $(whoami)
-sudo ip link set tap0 master br0
-sudo ip link set dev br0 up
-sudo ip link set tap0 up
-sudo ip addr add dev br0 192.168.11.26/24
+# seems to work in Void
+#sudo dhcpcd --release enp6s0
+#sudo ip link add br0 type bridge
+#sudo ip addr flush dev enp6s0
+#sudo ip link set enp6s0 master br0
+#sudo ip tuntap add dev tap0 mode tap user $(whoami)
+#sudo ip link set tap0 master br0
+#sudo ip link set dev br0 up
+#sudo ip link set tap0 up
+#sudo ip addr add dev br0 192.168.11.26/24

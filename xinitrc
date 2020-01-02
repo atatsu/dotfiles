@@ -31,8 +31,7 @@ fi;
 
 #start up xcompmgr
 #xcompmgr -c -t-5 -l-5 -r4.2 -o.55 -f -D5 &
-compton &
-start-pulseaudio-x11 &
+picom &
 # touchpad shit, so obviously uncomment when a touchpad is present
 #syndaemon -i -0.5 -t -K -R -d
 #xscreensaver -nosplash &
