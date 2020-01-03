@@ -1,0 +1,3 @@
+#!/bin/zsh -f
+
+XX="$(ls /run/runit/service)"; printf '%s\n' "$XX"

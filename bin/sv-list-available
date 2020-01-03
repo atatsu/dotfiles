@@ -1,0 +1,3 @@
+#!/bin/zsh -f
+
+XX="$(ls /etc/runit/sv)"; printf '%s\n' "$XX"

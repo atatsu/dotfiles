@@ -1,0 +1,22 @@
+#!/usr/bin/zsh -f
+
+SERVICE="$1"
+
+if [[ -z "${SERVICE}" ]] {
+  echo "You must supply a service name to enable."
+  exit 1
+}
+
+if [[ ! -d /etc/runit/sv/$SERVICE ]] {
+  echo "${SERVICE} does not appear to be a valid service (use 'sv-list-available' to see installed services)."
+  exit 1
+}
+
+if [[ -d /etc/runit/sv/$SERVICE ]] && [[ -L /run/runit/service/$SERVICE ]] {
+  echo "${SERVICE} is already enabled."
+  exit 1
+}
+
+sudo ln -s /etc/runit/sv/$SERVICE /run/runit/service/
+
+echo "Enabled ${SERVICE}"
