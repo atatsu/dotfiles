@@ -167,7 +167,7 @@ alias npm-exec='PATH=$(npm bin):$PATH'
 
 # {{{ if no keys in agent invoke `ssh-add`
 ssh_add_if_empty () {
-	if [[ -e ~/.ssh/atatsu.pub && `ss-add -l` = "The agent has no identities." ]] {
+	if [[ -e ~/.ssh/atatsu.pub && `ssh-add -l` = "The agent has no identities." ]] {
 		ssh-add
 	}
 	#if [[ `ssh-add -l` = "The agent has no identities." ]] {

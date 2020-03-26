@@ -1,9 +1,6 @@
 """" Dependencies
 " * nerd-fonts-complete (AUR)
 " * alexanderjeurissen/ranger_devicons (for ranger... dev icons) 
-if has('unix')
-	let s:uname = substitute(system('uname -s'), '\n', '', '')
-endif
 
 " {{{ General shit
 set encoding=utf-8 
@@ -16,7 +13,7 @@ set list
 " tabs and shit
 set softtabstop=2
 set tabstop=2
-set expandtab
+set noexpandtab
 set shiftwidth=2
 set autoindent
 
@@ -43,7 +40,6 @@ filetype on
 filetype plugin on
 filetype plugin indent on
 " FIXME: move these all to `ftplugin`
-autocmd BufRead,BufNewFile *.vue set filetype=html
 " remove trailing whitespace from various filetypes
 autocmd BufWritePre *.js :%s/\s\+$//e
 autocmd BufWritePre *.vue :%s/\s\+$//e
@@ -121,8 +117,16 @@ nmap <CR> za
 "":autocmd CmdwinEnter * nnoremap <CR> <CR>
 :autocmd BufReadPost quickfix nnoremap <CR> <CR>
 
+" provide a way to remind neovim wtf the whitespace chars are supposed to be
+nnoremap <leader><F10> :setlocal listchars=tab:»·,trail:·,eol:¬,space:␣<CR>
 " toggle whitespace
 nnoremap <F10> :<C-U>setlocal list! list? <CR>
+" I don't know wtf is going on but if I load one file type (like a js file)
+" and then load a different file type (like a py file) the whitespace for the
+" latter file is completely fucked. Remind neovim what whitespace chars should
+" be whenever a file is opened
+autocmd BufNewFile,BufRead * setlocal listchars=tab:»·,trail:·,eol:¬,space:␣
+
 
 " paste mode toggle
 nnoremap <F12> :set invpaste paste?<CR>
@@ -135,19 +139,10 @@ cabbrev bd :BD!
 tnoremap <C-d> <C-\><C-n>:BD!<CR>
 
 " buffer sizing
-if s:uname != 'Darwin'
-	map <silent> <A-h> <C-w>>
-	map <silent> <A-j> <C-w>-
-	map <silent> <A-k> <C-w>+
-	map <silent> <A-l> <C-w><
-else 
-	" yay mac, same keys as non-mac bindings but mac alt+X 
-	" produces an actual character we need to bind to
-	map <silent> ˙ <C-w>>
-	map <silent> ∆ <C-w>-
-	map <silent> ˚ <C-w>+
-	map <silent> ¬ <C-w><
-endif 
+map <silent> <A-h> <C-w>>
+map <silent> <A-j> <C-w>-
+map <silent> <A-k> <C-w>+
+map <silent> <A-l> <C-w><
 
 " buffer navigation
 "map <silent> <C-h> <C-w>h <C-w>_
@@ -255,8 +250,8 @@ let g:flake8_show_in_gutter=1
 "let g:flake8_show_in_file=1
 
 " ale
-nmap <silent> <C-n> <Plug>(ale_next_wrap)
-nmap <silent> <C-p> <Plug>(ale_previous_wrap)
+"nmap <silent> <C-n> <Plug>(ale_next_wrap)
+"nmap <silent> <C-p> <Plug>(ale_previous_wrap)
 
 " }}}
 
@@ -308,22 +303,37 @@ autocmd FileType python call overrides#pymode()
 
 
 " {{{ vim-plug
-call plug#begin('~/.vim/plugged')
+call plug#begin('~/.local/share/nvim/plugged')
 
+" --------------------------------------------
+" -- Colors
 " color scheme collection
 Plug 'flazz/vim-colorschemes'
-" color scheme
-Plug 'reedes/vim-colors-pencil' 
-" color scheme
-Plug 'morhetz/gruvbox' 
-" color scheme 
-Plug 'NLKNguyen/papercolor-theme' 
-" color scheme
-Plug 'dracula/vim' 
-" html5 omnicomplete, indent, and syntax 
-Plug 'othree/html5.vim'
+
+" --------------------------------------------
+" -- Navigation
+" tree explorer 
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+" cli fuzzy finder
+" note: don't forget to also install `the_silver_searcher`
+"Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+" preserves splits when closing buffers
+Plug 'qpkorr/vim-bufkill'
+" buffergator
+Plug 'jeetsukumaran/vim-buffergator'
+" plugin to toggle, display and navigate marks
+Plug 'kshenoy/vim-signature'
+
+" --------------------------------------------
+" -- VCS
 " git wrapper 
 Plug 'tpope/vim-fugitive'
+" shows git diff in the gutter
+Plug 'airblade/vim-gitgutter'
+" nerdtree git status
+Plug 'Xuyuanp/nerdtree-git-plugin'
 " a git commit browser `:GV` to open commit browser `:GV!` only commits pertaining to current file
 " `:GV?` fills location list with revisions of current file
 " `:GV` or :GV? can be used in visual mode to track selected lines
@@ -336,111 +346,92 @@ Plug 'tpope/vim-fugitive'
 " `q` to close
 Plug 'junegunn/gv.vim'
 
-" automatically closes html tags (and positions cursor center of tags
-Plug 'vim-scripts/HTML-AutoCloseTag'
-" additional c++ syntax highlighting
-Plug 'octol/vim-cpp-enhanced-highlight'
-" vastly improved javascript indentation and syntax support
-Plug 'pangloss/vim-javascript'
-" syntax highlighting for a number of popular js libraries
-Plug 'othree/javascript-libraries-syntax.vim'
-" TypeScript syntax files
-Plug 'leafgarland/typescript-vim'
-" syntax highlighting for Vue.js components
-Plug 'posva/vim-vue'
-" needed by *tsuquyomi*
-Plug 'Shougo/vimproc.vim'
-" works as a client for a TSServer
-Plug 'Quramy/tsuquyomi'
-" automatically closes quotes, parens, brackets, etc.
-Plug 'Raimondi/delimitMate'
-" preview colors (hex)
-Plug 'ap/vim-css-color'
-" color picker
-Plug 'KabbAmine/vCoolor.vim'
-" preserves splits when closing buffers
-Plug 'qpkorr/vim-bufkill'
-" shows git diff in the gutter
-Plug 'airblade/vim-gitgutter'
-" pairs of handy bracket mappings
-Plug 'tpope/vim-unimpaired'
-" plugin to toggle, display and navigate marks
-Plug 'kshenoy/vim-signature'
-
-"Plug 'hdima/python-syntax'
-" semantic highlighting for vim
-"Plug 'jaxbot/semantic-highlight.vim'
-" cli fuzzy finder
-" note: don't forget to also install `the_silver_searcher`
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-
-" tree explorer 
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-" nerdtree git status
-Plug 'Xuyuanp/nerdtree-git-plugin'
-" buffergator
-Plug 'jeetsukumaran/vim-buffergator'
-" plugin for intensely orgasmic commenting
-Plug 'scrooloose/nerdcommenter'
-" pymode
-Plug 'klen/python-mode', { 'branch': 'develop' }
+" --------------------------------------------
+" -- Bells and whistles
 " powerline variant
 Plug 'vim-airline/vim-airline'
 " fancy start screen for vim
 Plug 'mhinz/vim-startify'
 " tagbar
 Plug 'majutsushi/tagbar'
-" tab completion
-Plug 'ervandew/supertab'
-" surround
-Plug 'tpope/vim-surround'
-" TODO: don't forget to learn this one
-Plug 'mattn/emmet-vim'
-" snippets
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-" linter
-Plug 'nvie/vim-flake8'
-
-" jedi
-Plug 'davidhalter/jedi-vim'
-" asynchronous keyword completion 
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-" deoplete and jedi
-Plug 'zchee/deoplete-jedi' 
-
 " distraction-free writing in vim
 Plug 'junegunn/goyo.vim'
 " hyperfocus-writing in vim
 Plug 'junegunn/limelight.vim'
-" syntax highlighting for Stylus
-Plug 'wavded/vim-stylus'
-" vim syntax file & snippets for Docker's Dockerfile
-Plug 'ekalinin/Dockerfile.vim'
-" vim plugin which formats javascript files by js-beautify
-Plug 'maksimr/vim-jsbeautify'
 
-" edit code that's embedded within other code
-Plug 'AndrewRadev/inline_edit.vim'
-
-" edit code that's embedded within other code
-Plug 'AndrewRadev/inline_edit.vim'
-
-" Make sure this one loads last so that all plugins it
-" supports have already been loaded
-" Adds file type glyphs/icons to many popular vim plugins
-Plug 'ryanoasis/vim-devicons'
-
+" --------------------------------------------
+" -- General coding utilities
+" A Vim plugin that manages your tag files
+Plug 'ludovicchabant/vim-gutentags'
+" automatically closes quotes, parens, brackets, etc.
+Plug 'Raimondi/delimitMate'
+" pairs of handy bracket mappings
+Plug 'tpope/vim-unimpaired'
+" semantic highlighting for vim
+"Plug 'jaxbot/semantic-highlight.vim'
+" plugin for intensely orgasmic commenting
+Plug 'scrooloose/nerdcommenter'
+" tab completion
+Plug 'ervandew/supertab'
+" surround
+Plug 'tpope/vim-surround'
+" asynchronous keyword completion 
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " Check syntax in Vim asynchronously and fix files,
 " with Language Server Protocol (LSP) support
 Plug 'dense-analysis/ale'
 
+" --------------------------------------------
+" -- Language specific shit
+" - Python
+" Python syntax highlighting for Vim
+"Plug 'hdima/python-syntax'
+" Semantic Highlighting for Python in Neovim
+Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins' }
+" pymode
+Plug 'klen/python-mode', { 'branch': 'develop' }
+" linter
+Plug 'nvie/vim-flake8'
+" jedi
+Plug 'davidhalter/jedi-vim'
+" deoplete and jedi
+Plug 'zchee/deoplete-jedi' 
+
+" - Web
+" automatically closes html tags (and positions cursor center of tags
+Plug 'vim-scripts/HTML-AutoCloseTag'
+" vastly improved javascript indentation and syntax support
+Plug 'pangloss/vim-javascript'
+" html5 omnicomplete, indent, and syntax 
+Plug 'othree/html5.vim'
+" syntax highlighting for a number of popular js libraries
+Plug 'othree/javascript-libraries-syntax.vim'
+" syntax highlighting for Vue.js components
+Plug 'posva/vim-vue'
+" preview colors (hex)
+Plug 'ap/vim-css-color'
+" TODO: don't forget to learn this one
+Plug 'mattn/emmet-vim'
+" vim plugin which formats javascript files by js-beautify
+"Plug 'maksimr/vim-jsbeautify'
+" edit code that's embedded within other code
+Plug 'AndrewRadev/inline_edit.vim'
 " A Vim plugin that provides GraphQL file detection, 
 " syntax highlighting, and indentation.
 Plug 'jparise/vim-graphql'
+" Tern-based javascript editing support
+" XXX: Assumes you've ran `npm install -g tern` first!
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 
-" A Vim plugin that manages your tag files
-Plug 'ludovicchabant/vim-gutentags'
+" - Docker
+" vim syntax file & snippets for Docker's Dockerfile
+Plug 'ekalinin/Dockerfile.vim'
+
+" --------------------------------------------
+" Make sure this one loads last so that all plugins it
+" supports have already been loaded
+" Adds file type glyphs/icons to many popular vim plugins
+Plug 'ryanoasis/vim-devicons'
 
 call plug#end()
 " }}}
