@@ -206,6 +206,10 @@ let g:buffergator_show_full_directory_path = 0
 let g:buffergator_sort_regime = "basename"
 let g:buffergator_suppress_keymaps = 1
 
+" deoplete
+" see if this improves performance with numirias/semshi
+"let g:deoplete#auto_complete_delay = 100
+
 " NERDCommenter
 let g:NERDDefaultAlign = 'left'
 
@@ -423,9 +427,17 @@ Plug 'jparise/vim-graphql'
 " XXX: Assumes you've ran `npm install -g tern` first!
 Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 
+" --------------------------------------------
+" -- Configuration Syntax
 " - Docker
 " vim syntax file & snippets for Docker's Dockerfile
 Plug 'ekalinin/Dockerfile.vim'
+
+" - nginx
+Plug 'chr4/nginx.vim'
+
+" - PlantUML
+Plug 'aklt/plantuml-syntax'
 
 " --------------------------------------------
 " Make sure this one loads last so that all plugins it
