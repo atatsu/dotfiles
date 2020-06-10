@@ -118,7 +118,7 @@ function M.simplify_widget_internals (widget, lookup)
 	setmetatable(widget, {
 		__index = function (table, key)
 			local children = lookup:get_children_by_id(key)
-			if #children > 0 then
+			if children ~= nil and #children > 0 then
 				return children[1]
 			end
 		end

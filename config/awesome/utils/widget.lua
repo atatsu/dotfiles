@@ -263,8 +263,8 @@ function M.pacman ()
 		status:buttons(buttons)
 
 		local function update_status ()
-			--easy_async("zsh -c 'pacman -Qu | wc -l'", function (stdout, stderr, exitreason, exitcode) 
-			easy_async("zsh -c 'xbps-install -un | wc -l'", function (stdout, stderr, exitreason, exitcode) 
+			easy_async("zsh -c 'pacman -Qu | wc -l'", function (stdout, stderr, exitreason, exitcode) 
+			--easy_async("zsh -c 'xbps-install -un | wc -l'", function (stdout, stderr, exitreason, exitcode) 
 				if exitcode > 0 then
 					status.text = ":("
 					return
